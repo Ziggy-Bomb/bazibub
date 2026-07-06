@@ -14,3 +14,4 @@ sound are inside it. To change the game, edit that file. To play a local
 copy, just open it in any browser.
 
 © 2026 Bazibub. All rights reserved.
+Character and building artwork adapted from ["Tiny Swords" by Pixel Frog](https://pixelfrog-assets.itch.io/tiny-swords) (free for commercial use — thank you!).
