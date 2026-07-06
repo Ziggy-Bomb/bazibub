@@ -702,7 +702,7 @@
     </div>
     <h2 style="margin-top:30px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v3.1.0 · © 2026 · art: “Tiny Swords” by Pixel Frog</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v3.1.1 · © 2026 · art: “Tiny Swords” by Pixel Frog</div></div>
 </div>
 
 <div class="overlay" id="deployOverlay" style="display:none">
@@ -992,7 +992,7 @@ const tileNeighbors=(side,node)=>(ADJ[side][node]||[]).filter(n=>n[0]!=='H');
 
 /* ===================== HEROES ===================== */
 const ARCH={
-  knight:{label:'Knight',kind:'Warrior · Melee',hp:34,atk:7,range:1,atkfx:'slash',regen:2,
+  knight:{label:'Knight',kind:'Warrior · Melee',hp:49,atk:7,range:1,atkfx:'slash',regen:2,
     spell:{name:'Shield Charge',cd:3,range:2,target:true,blurb:'Charge at an enemy, hit hard and leave them stunned.'},
     abil:{name:'War Cry',cd:3,target:'none',blurb:'A mighty war cry makes your nearby creeps tougher.'}},
   archer:{label:'Archer',kind:'Warrior · Sniper',hp:20,atk:4,range:3,atkfx:'arrow',regen:2,
@@ -1001,10 +1001,10 @@ const ARCH={
   ember:{label:'Embermage',kind:'Wizard · Ranged',hp:16,atk:4,range:2,atkfx:'bolt',regen:2,multi:3,
     spell:{name:'Fireball',cd:3,range:2,target:true,blurb:'Hurl a fireball that burns those standing nearby too.'},
     abil:{name:'Ember Banner',cd:3,target:'none',blurb:'Wave the ember banner — your creeps fight harder.'}},
-  frost:{label:'Frostsage',kind:'Wizard · Melee',hp:28,atk:6,range:1,atkfx:'slash',regen:2,
+  frost:{label:'Frostsage',kind:'Wizard · Melee',hp:43,atk:6,range:1,atkfx:'slash',regen:2,
     spell:{name:'Frost Nova',cd:3,range:0,target:false,blurb:'Freeze everyone around you with an icy blast.'},
     abil:{name:'Frost Barrier',cd:3,range:1,target:'allyHero',blurb:'Wrap yourself or a friend in a magic ice shield.'}},
-  tank:{label:'Warden',kind:'Guardian · Tank',hp:50,atk:3,range:1,atkfx:'slash',regen:4,
+  tank:{label:'Warden',kind:'Guardian · Tank',hp:65,atk:3,range:1,atkfx:'slash',regen:4,
     spell:{name:'Mending Light',cd:3,range:0,target:false,blurb:'A warm light heals you and the friends beside you.'},
     abil:{name:'Bulwark',cd:3,target:'none',blurb:'Raise a huge shield that soaks up enemy hits.'}},
   summoner:{label:'Bonecaller',kind:'Wizard · Summoner',hp:22,atk:4,range:2,atkfx:'bolt',regen:2,
