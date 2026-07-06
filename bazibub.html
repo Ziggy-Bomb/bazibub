@@ -609,6 +609,28 @@
   .heart{background:#233b44;border-color:#37535c}
   .heart .protec{color:#cfe3d0}
   .heart .nmh{color:#eaf0e2}
+
+  /* v3.1 patch */
+  .sp-title{font-size:80px;top:13%;letter-spacing:2px}
+  .hcard small{font-size:18px;line-height:1.35}
+  .hcard .t{font-size:14px}
+  .hcard .kind{font-size:16px}
+  .tag2{font-size:17px}
+  .heart.ghost .asp.h{margin:0 0 0 auto}
+  .heart.sand .asp.h{margin:0 auto 0 0}
+  .heart .protec{min-height:20px}
+  .heart .pen{min-height:58px}
+  .motes{position:absolute;inset:0;pointer-events:none;z-index:1;opacity:.45;background-image:radial-gradient(circle,rgba(255,255,255,.8) 1.5px,transparent 2.5px),radial-gradient(circle,rgba(255,223,140,.7) 1.5px,transparent 2.5px);background-size:130px 100px,170px 140px;animation:motesA 16s linear infinite}
+  .lanewrap.night .motes{opacity:.6;filter:hue-rotate(120deg)}
+  @keyframes motesA{to{background-position:70px -100px,-80px -140px}}
+  @media(max-width:640px){
+    .sp-title{font-size:42px}
+    .hcard small{font-size:16px}
+    .stat{font-size:13px}
+  }
+
+  .tag{background:#e6d9b2;border:2px solid #8a6f3f;color:#3d2c15}
+  .hcard .gold,.hcard .note{color:#8a5c12}
 </style>
 </head>
 <body>
@@ -642,7 +664,6 @@
   <div class="sp-armies"><span id="spL"></span><span id="spR"></span></div>
   <div class="sp-water"></div>
   <div class="sp-title">BAZIBUB</div>
-  <div class="sp-rib">MOONFOLK &nbsp;VS&nbsp; SUNFOLK</div>
   <div class="sp-tap">▶ TAP TO BEGIN</div>
   <div class="sp-cred" id="spCred"></div>
 </div>
@@ -654,7 +675,7 @@
     <h1 style="margin-bottom:4px">BAZIBUB</h1>
     <div class="hint" style="margin-bottom:14px">Moonfolk vs Sunfolk</div>
     <div id="nameRow" style="display:none;margin-bottom:12px"><div class="hint" style="margin-bottom:6px">What shall we call you, commander?</div><input id="cmdName" maxlength="12" placeholder="YOUR NAME"></div>
-    <div id="newchip" class="hint" style="display:none;margin-bottom:10px;color:#8a5c12">✨ NEW in v3.0 — a whole new look!</div>
+    <div id="newchip" class="hint" style="display:none;margin-bottom:10px;color:#8a5c12">✨ NEW in v3.1 — bigger, clearer, louder!</div>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('play')">▶ PLAY</button>
     <button class="big" style="width:100%;background:#333a55" onclick="pickMode('how')">❓ HOW TO PLAY</button>
   </div>
@@ -681,7 +702,7 @@
     </div>
     <h2 style="margin-top:30px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v3.0.0 · © 2026 · art: “Tiny Swords” by Pixel Frog</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v3.1.0 · © 2026 · art: “Tiny Swords” by Pixel Frog</div></div>
 </div>
 
 <div class="overlay" id="deployOverlay" style="display:none">
@@ -849,6 +870,8 @@ function noiz(o){if(!SND.on||!SND.ctx)return;const c=SND.ctx,t0=c.currentTime+(o
   const g=c.createGain();_env(g,t0,.006,d,o.v||.1);s.connect(f);f.connect(g);g.connect(c.destination);s.start(t0);}
 function sfx(name,delay){const D=delay||0;switch(name){
   case 'click':tone({f:660,v:.05,d:.05,delay:D});break;
+  case 'ding':tone({f:1046,t:'square',v:.06,d:.09,delay:D});tone({f:1568,t:'square',v:.05,d:.14,delay:D+.07});break;
+  case 'pop':tone({f:420,f2:660,t:'triangle',v:.07,d:.07,delay:D});break;
   case 'step':tone({f:300,f2:380,t:'triangle',v:.06,d:.07,delay:D});break;
   case 'turn':tone({f:523,t:'triangle',v:.06,d:.09,delay:D});tone({f:784,t:'triangle',v:.06,d:.12,delay:D+.09});break;
   case 'slash':noiz({d:.08,v:.12,fq:2600,delay:D});tone({f:170,f2:80,v:.07,d:.08,delay:D});break;
@@ -875,14 +898,14 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='3.0.0';
+const GAME_VER='3.1.0';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
 /* minimal UI: action buttons live in a tap-your-hero popup; classic panel is opt-in via Help */
 let CLASSIC_UI=(function(){try{return localStorage.getItem('bzb_classic')==='on'}catch(e){return false}})();
 function toggleClassicUI(){CLASSIC_UI=!CLASSIC_UI;try{localStorage.setItem('bzb_classic',CLASSIC_UI?'on':'off')}catch(e){}sfx('click');hideHelp();if(S)render();}
-function openActPop(){if(!S||S.phase!=='player'||S.over||!S.me.alive)return;const me=S.me;
+function openActPop(){if(!S||S.phase!=='player'||S.over||!S.me.alive)return;sfx('pop');const me=S.me;
   const mv=!(me.ap<COST.move||me.snared), at=!(me.ap<COST.attack||attackTargets(me).length===0), spU=spellUsable(), abU=abilityUsable();
   const btn=(k,cls,ic,lb,cost,en)=>`<button class="pbtn ${cls} ${en?'':'dis'}" ${en?`onclick="popPick('${k}')"`:''}><span class="ic">${ic}</span><span class="lb2">${lb}</span><span class="cost2">${cost}</span></button>`;
   document.getElementById('actPopIn').innerHTML=`
@@ -970,23 +993,23 @@ const tileNeighbors=(side,node)=>(ADJ[side][node]||[]).filter(n=>n[0]!=='H');
 /* ===================== HEROES ===================== */
 const ARCH={
   knight:{label:'Knight',kind:'Warrior · Melee',hp:34,atk:7,range:1,atkfx:'slash',regen:2,
-    spell:{name:'Shield Charge',cd:3,range:2,target:true,blurb:'Charge an enemy within 2, hit hard & STUN it.'},
-    abil:{name:'War Cry',cd:3,target:'none',blurb:'Friendly creeps in your lane gain +6 max HP and heal.'}},
+    spell:{name:'Shield Charge',cd:3,range:2,target:true,blurb:'Charge at an enemy, hit hard and leave them stunned.'},
+    abil:{name:'War Cry',cd:3,target:'none',blurb:'A mighty war cry makes your nearby creeps tougher.'}},
   archer:{label:'Archer',kind:'Warrior · Sniper',hp:20,atk:4,range:3,atkfx:'arrow',regen:2,
-    spell:{name:'Volley',cd:2,range:0,target:false,blurb:'Rain arrows on EVERY enemy in your lane.'},
-    abil:{name:'Pinning Shot',cd:3,range:3,target:'enemyHero',blurb:'3 dmg to an enemy hero within 3; it can’t move next turn.'}},
+    spell:{name:'Volley',cd:2,range:0,target:false,blurb:'Rain arrows down on every enemy on your road.'},
+    abil:{name:'Pinning Shot',cd:3,range:3,target:'enemyHero',blurb:'Pin an enemy hero to the spot so it can’t move.'}},
   ember:{label:'Embermage',kind:'Wizard · Ranged',hp:16,atk:4,range:2,atkfx:'bolt',regen:2,multi:3,
-    spell:{name:'Fireball',cd:3,range:2,target:true,blurb:'12 to one enemy within 2, +5 splash to neighbours.'},
-    abil:{name:'Ember Banner',cd:3,target:'none',blurb:'Friendly creeps in your lane gain +2 attack.'}},
+    spell:{name:'Fireball',cd:3,range:2,target:true,blurb:'Hurl a fireball that burns those standing nearby too.'},
+    abil:{name:'Ember Banner',cd:3,target:'none',blurb:'Wave the ember banner — your creeps fight harder.'}},
   frost:{label:'Frostsage',kind:'Wizard · Melee',hp:28,atk:6,range:1,atkfx:'slash',regen:2,
-    spell:{name:'Frost Nova',cd:3,range:0,target:false,blurb:'Freeze & hurt EVERY enemy right next to you.'},
-    abil:{name:'Frost Barrier',cd:3,range:1,target:'allyHero',blurb:'Shield yourself or an adjacent ally: absorb 8 damage.'}},
+    spell:{name:'Frost Nova',cd:3,range:0,target:false,blurb:'Freeze everyone around you with an icy blast.'},
+    abil:{name:'Frost Barrier',cd:3,range:1,target:'allyHero',blurb:'Wrap yourself or a friend in a magic ice shield.'}},
   tank:{label:'Warden',kind:'Guardian · Tank',hp:50,atk:3,range:1,atkfx:'slash',regen:4,
-    spell:{name:'Mending Light',cd:3,range:0,target:false,blurb:'Heal yourself and adjacent allies for 8.'},
-    abil:{name:'Bulwark',cd:3,target:'none',blurb:'Raise a shield that absorbs 14 damage.'}},
+    spell:{name:'Mending Light',cd:3,range:0,target:false,blurb:'A warm light heals you and the friends beside you.'},
+    abil:{name:'Bulwark',cd:3,target:'none',blurb:'Raise a huge shield that soaks up enemy hits.'}},
   summoner:{label:'Bonecaller',kind:'Wizard · Summoner',hp:22,atk:4,range:2,atkfx:'bolt',regen:2,
-    spell:{name:'Raise Creep',cd:5,range:0,target:false,blurb:'Summon one friendly creep at your spot. Long cooldown.'},
-    abil:{name:'Mend',cd:4,range:1,target:'allyHero',blurb:'Heal an adjacent ally hero for 5.'}},
+    spell:{name:'Raise Creep',cd:5,range:0,target:false,blurb:'Summon a little creep friend to fight beside you.'},
+    abil:{name:'Mend',cd:4,range:1,target:'allyHero',blurb:'Mend a hero standing right beside you.'}},
 };
 const GNAME={knight:'Sir Wisp',archer:'Hollow',ember:'Phantom',frost:'Chillshade',tank:'Aegis',summoner:'Weaver'};
 const SNAME={knight:'Dunelord',archer:'Stalker',ember:'Ashglass',frost:'Glassveil',tank:'Bastion',summoner:'Conjurer'};
@@ -1417,7 +1440,7 @@ function sceneHTML(r){const day=isDay();
      <div class="decorow"><span class="dg">${anim(SPR.scene.tree,'tr')}${anim(SPR.scene.bush,'bu')}</span><span class="dg"><img class="dst pk" src="${SPR.scene.pumpkin}"><img class="dst mu" src="${SPR.scene.mush}"></span></div>
      <div class="strip backpath"></div>
      <div class="strip groundband gg" style="background-image:url(${SPR.scene.grass})"></div>
-     <div class="strip groundband gs" style="background-image:url(${SPR.scene.sandg})"></div></div>`;
+     <div class="strip groundband gs" style="background-image:url(${SPR.scene.sandg})"></div><div class="motes"></div></div>`;
   return `<div class="scene">
      <div class="strip rockwall" style="background-image:url(${SPR.scene.rock})"></div>
      <div class="strip soil" style="background-image:url(${SPR.scene.soil})"></div>
@@ -1572,7 +1595,7 @@ function showEnd(win){sfx(win?'victory':'defeat');
   document.getElementById('endOverlay').style.display='flex';
   document.querySelectorAll('#endText .cnt0').forEach((el,i)=>{
     const target=+el.dataset.t;
-    setTimeout(()=>{sfx('step');const t0=performance.now();
+    setTimeout(()=>{sfx('ding');const t0=performance.now();
       const tick=()=>{const f=Math.min(1,(performance.now()-t0)/650);
         el.textContent=Math.round(target*f);
         if(f<1)requestAnimationFrame(tick); else if(el.parentElement.parentElement.classList.contains('total')&&total>0)sfx('fanfare');};
