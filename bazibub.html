@@ -61,11 +61,10 @@
   .heart.ghost .spr.h{filter:drop-shadow(0 0 6px var(--ghost-glow))}
   .heart.sand .spr.h{filter:drop-shadow(0 0 6px var(--sand-glow))}
   .heart.danger .spr.h{animation:shake .25s steps(2) infinite}
-  .heart.target{outline:4px solid var(--bad);outline-offset:-4px;cursor:pointer;animation:heartTarg .6s steps(2) infinite}
+  .heart.target{outline:4px solid var(--gold);outline-offset:-4px;cursor:pointer;animation:heartTarg .6s steps(2) infinite}
   @keyframes heartTarg{50%{outline-color:#fff;box-shadow:inset 0 0 44px rgba(255,107,122,.75)}}
-  .heart.target .vbar{border-color:var(--bad);box-shadow:0 0 16px rgba(255,107,122,.95),inset 0 0 0 1px var(--bad)}
-  .heart.target .vbar i{background:var(--bad)!important;animation:pulse .6s steps(2) infinite}
-  .heart.target .asp.h{filter:drop-shadow(0 0 14px var(--bad))!important}
+  .heart.target .vbar{border-color:var(--gold);box-shadow:0 0 16px rgba(255,217,84,.9),inset 0 0 0 1px var(--gold)}
+  .heart.target .asp.h{filter:drop-shadow(0 0 14px var(--gold))!important}
   @keyframes bob{50%{transform:translateY(-3px)}}
   @keyframes shake{50%{transform:translateX(-2px)}}
   .heart small{color:var(--muted);font-size:16px}
@@ -361,7 +360,7 @@
     .heart .asp.h{width:32px;height:32px}
     .heart .nmh{display:none}
     .heart .hpl{display:none}.heart .warnH{display:none}
-    .heart .vbar{width:11px;min-height:60px;margin:2px 0}
+    .heart .vbar{width:18px;min-height:60px;margin:2px 0}
     .heart small{font-size:9px}
     .pen{display:none}
     .heroRow{bottom:88px;left:2px;right:2px;gap:2px}
@@ -448,7 +447,7 @@
   .tok.ready{z-index:9}
   .minhint2.tapme{cursor:pointer}
   .cancelmini{font-family:var(--disp);font-size:10px;padding:10px 11px;background:#5a2a36;border:3px solid #000;color:#fff;cursor:pointer;box-shadow:inset 2px 2px 0 rgba(255,255,255,.12)}
-  .heart .vbar{width:16px;flex:1 1 auto;min-height:110px;background:#000;border:2px solid #000;box-shadow:inset 0 0 0 1px #2a2750;display:flex;align-items:flex-end;margin:4px 0}
+  .heart .vbar{width:26px;flex:1 1 auto;min-height:110px;background:#000;border:2px solid #000;box-shadow:inset 0 0 0 1px #2a2750;display:flex;align-items:flex-end;margin:4px 0}
   .heart .vbar i{display:block;width:100%;background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.3) 0 1px,transparent 1px 4px);transition:height .3s}
   .movemode .tok{pointer-events:none}
   /* title splash */
@@ -631,6 +630,11 @@
 
   .tag{background:#e6d9b2;border:2px solid #8a6f3f;color:#3d2c15}
   .hcard .gold,.hcard .note{color:#8a5c12}
+
+  /* v3.2 patch */
+  .tok.shielded .asp::before{content:'';position:absolute;left:50%;top:50%;width:125%;height:125%;transform:translate(-50%,-50%);border:3px solid #9fe8ff;border-radius:50%;box-shadow:0 0 14px rgba(127,224,255,.9),inset 0 0 12px rgba(127,224,255,.45);animation:pulse 1.1s steps(3) infinite;pointer-events:none;z-index:1}
+  .frontRow .mid.edge-r{margin-left:auto;margin-right:0}
+  .frontRow .mid.edge-l{margin-right:auto;margin-left:0}
 </style>
 </head>
 <body>
@@ -675,7 +679,7 @@
     <h1 style="margin-bottom:4px">BAZIBUB</h1>
     <div class="hint" style="margin-bottom:14px">Moonfolk vs Sunfolk</div>
     <div id="nameRow" style="display:none;margin-bottom:12px"><div class="hint" style="margin-bottom:6px">What shall we call you, commander?</div><input id="cmdName" maxlength="12" placeholder="YOUR NAME"></div>
-    <div id="newchip" class="hint" style="display:none;margin-bottom:10px;color:#8a5c12">✨ NEW in v3.1 — bigger, clearer, louder!</div>
+    <div id="newchip" class="hint" style="display:none;margin-bottom:10px;color:#8a5c12">✨ NEW in v3.2 — a longer battlefield & mightier shields!</div>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('play')">▶ PLAY</button>
     <button class="big" style="width:100%;background:#333a55" onclick="pickMode('how')">❓ HOW TO PLAY</button>
   </div>
@@ -702,7 +706,7 @@
     </div>
     <h2 style="margin-top:30px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v3.1.1 · © 2026 · art: “Tiny Swords” by Pixel Frog</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v3.2.0 · © 2026 · art: “Tiny Swords” by Pixel Frog</div></div>
 </div>
 
 <div class="overlay" id="deployOverlay" style="display:none">
@@ -898,7 +902,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='3.1.0';
+const GAME_VER='3.2.0';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -973,10 +977,10 @@ function healPulse(side){const st=document.querySelector('.stage');if(!st)return
   st.classList.add('hpulse-'+side);setTimeout(()=>st.classList.remove('hpulse-'+side),950);}
 
 /* ===================== MAP ===================== */
-const NT=5, AP_MAX=4, WAVE_EVERY=3, SPECIAL_ROUND=7, SUDDEN_ROUND=20;
+const NT=6, AP_MAX=4, WAVE_EVERY=3, SPECIAL_ROUND=7, SUDDEN_ROUND=20;
 const COST={move:1,attack:2,spell:3,ability:2};
 const ROUTES=[{nm:'SUNPATH',cls:'overground'},{nm:'ROOTWAY',cls:'underground'}];
-const GW_T=1,SW_T=3;
+const GW_T=1,SW_T=4;
 const tk=(r,t)=>`${r}:${t}`; const HG='H:ghost',HS='H:sand';
 // each side has its own map graph: you may only cross lanes at YOUR OWN base column
 function buildAdj(crossT){const A={};const L=(a,b)=>{(A[a]=A[a]||[]).push(b);(A[b]=A[b]||[]).push(a);};
@@ -985,7 +989,7 @@ function buildAdj(crossT){const A={};const L=(a,b)=>{(A[a]=A[a]||[]).push(b);(A[
   L(HG,tk(0,0));L(HG,tk(1,0));L(HS,tk(0,NT-1));L(HS,tk(1,NT-1));
   return A;}
 const ADJ={ghost:buildAdj(0),sand:buildAdj(NT-1)};
-function bfs(side,s){const A=ADJ[side],d={[s]:0},q=[s];while(q.length){const n=q.shift();for(const m of A[n]||[])if(d[m]===undefined){d[m]=d[n]+1;q.push(m);}}return d;}
+function bfs(side,s){const A=ADJ[side],d={[s]:0},q=[s];while(q.length){const n=q.shift();if(n[0]==='H'&&n!==s)continue;for(const m of A[n]||[])if(d[m]===undefined){d[m]=d[n]+1;q.push(m);}}return d;}
 const dist=(side,a,b)=>{const d=bfs(side,a);return d[b]===undefined?99:d[b];};
 const wait=ms=>new Promise(r=>setTimeout(r,ms/((S&&S.speed)||1)));
 const tileNeighbors=(side,node)=>(ADJ[side][node]||[]).filter(n=>n[0]!=='H');
@@ -1042,7 +1046,7 @@ function newGame(pk){
   const heroes=[]; myKeys.forEach((k,i)=>heroes.push(makeHero(k,side,i===0?'human':'ally',i%2,myBase)));
   foeKeys.forEach((k,i)=>heroes.push(makeHero(k,es,'enemy',i%2,foeBase)));
   const tower=(s,t,label,nm)=>[0,1].map(r=>({type:'tower',side:s,r,t,label,nm,hp:60,maxhp:60,atk:6,alive:true}));
-  S={heroes,me:heroes[0],playerSide:side,tower:{ghost:tower('ghost',GW_T,'Moonspire','Moonspire'),sand:tower('sand',SW_T,'Sunspire','Sunspire')},
+  S={heroes,me:heroes[0],playerSide:side,tower:{ghost:tower('ghost',GW_T,'Tower','Tower'),sand:tower('sand',SW_T,'Tower','Tower')},
     creeps:[],heart:{ghost:{type:'heart',side:'ghost',hp:55,maxhp:55},sand:{type:'heart',side:'sand',hp:55,maxhp:55}},
     speed:(function(){try{return localStorage.getItem('bzb_speed')==='2'?2:1}catch(e){return 1}})(),cycle:true,
     stats:{kills:0,creeps:0,towers:0,boss:0,lostHeroes:0,lostCreeps:0,lostTowers:0},round:1,phase:'player',mode:'idle',actingId:null,enemyStrat:'',specialDeployed:false,over:false};
@@ -1132,7 +1136,7 @@ function dealDamage(attackerSide,u,amt,lane){
   u.hp-=amt; pushFloat(u,'-'+amt,'bad');
   if(u.hp<=0){
     const mine=attackerSide===S.playerSide;
-    if(u.type==='hero'){u.alive=false;u.hp=0;u.shield=0;u.respawnIn=2+Math.floor((S.round-1)/4);pushFloat(u,'💀','bad');
+    if(u.type==='hero'){u.alive=false;u.hp=0;u.shield=0;u.respawnIn=1+Math.floor((S.round-1)/4);pushFloat(u,'💀','bad');
       if(mine)S.stats.kills++; else if(u.side===S.playerSide)S.stats.lostHeroes++;
       burst(uid(u),'#ffffff',10); shake(); sfx('death');
       log(`💀 ${u.name} is destroyed! (back in ${u.respawnIn})`,u.side,true);
@@ -1161,7 +1165,7 @@ function castSpell(h,target){const sp=h.spell;sp.cur=sp.cd;
     const dn=bfs(h.side,unitNode(target));enemyUnits(h.side).forEach(u=>{if(u!==target&&u.type!=='heart'&&laneOf(u)===laneOf(target)&&dn[unitNode(u)]<=1)dealDamage(h.side,u,5);});}
   else if(h.key==='frost'){log(`${h.name} ⚡FROST NOVA freezes nearby foes!`,h.side,true);const dn=bfs(h.side,heroNode(h));
     enemyUnits(h.side).forEach(u=>{if(u.type==='hero'&&laneOf(u)===h.pos.r&&dn[unitNode(u)]<=1){queueFx(uid(h),uid(u),'frost');dealDamage(h.side,u,5);u.stunned=true;}});}
-  else if(h.key==='tank'){const dn=bfs(h.side,heroNode(h));let n=0;aliveHeroes(h.side).forEach(a=>{if(dn[heroNode(a)]<=1&&a.hp<a.maxhp){a.hp=Math.min(a.maxhp,a.hp+8);queueFx(uid(h),uid(a),'heal');pushFloat(a,'+8','good');n++;}});
+  else if(h.key==='tank'){const dn=bfs(h.side,heroNode(h));let n=0;aliveHeroes(h.side).forEach(a=>{if(dn[heroNode(a)]<=1&&a.hp<a.maxhp){a.hp=Math.min(a.maxhp,a.hp+18);queueFx(uid(h),uid(a),'heal');pushFloat(a,'+18','good');n++;}});
     log(`${h.name} ⚡MENDING LIGHT heals ${n} ally(s).`,h.side,true);toast('MENDING LIGHT',h.side);}
   else if(h.key==='summoner'){S.creeps.push(mkCreep(h.side,h.pos.r,h.pos.t));sfx('cheer');log(`${h.name} ⚡RAISES a creep on ${ROUTES[h.pos.r].nm}!`,h.side,true);toast('RAISED!',h.side);}
 }
@@ -1169,9 +1173,9 @@ function castAbility(h,target){const ab=h.abil;ab.cur=ab.cd;
   if(h.key==='knight'){let n=0;liveCreeps().forEach(c=>{if(c.side===h.side&&c.lane===h.pos.r){c.maxhp+=6;c.hp=c.maxhp;pushFloat(c,'+HP','good');n++;}});sfx('cheer');log(`${h.name} bellows ⚡WAR CRY! ${n} creep(s) toughened.`,h.side,true);toast('WAR CRY!',h.side);}
   else if(h.key==='ember'){let n=0;liveCreeps().forEach(c=>{if(c.side===h.side&&c.lane===h.pos.r){c.bonusAtk+=2;pushFloat(c,'+ATK','good');n++;}});sfx('cheer');log(`${h.name} raises the ⚡EMBER BANNER! ${n} creep(s) enraged.`,h.side,true);toast('EMBER BANNER!',h.side);}
   else if(h.key==='archer'){queueFx(uid(h),uid(target),'arrow');dealDamage(h.side,target,3);target.snared=true;pushFloat(target,'PINNED','bad');log(`${h.name} ⚡PINS ${target.name} — it can’t move next turn!`,h.side,true);}
-  else if(h.key==='frost'){target.shield=(target.shield||0)+8;queueFx(uid(h),uid(target),'heal');pushFloat(target,'+SHIELD','good');log(`${h.name} wraps ${target===h?'itself':target.name} in a ⚡FROST BARRIER (absorb 8).`,h.side,true);toast('FROST BARRIER',h.side);}
-  else if(h.key==='tank'){h.shield=(h.shield||0)+14;sfx('shield');pushFloat(h,'+SHIELD','good');log(`${h.name} raises a ⚡BULWARK (absorb 14).`,h.side,true);toast('BULWARK',h.side);}
-  else if(h.key==='summoner'){target.hp=Math.min(target.maxhp,target.hp+5);queueFx(uid(h),uid(target),'heal');pushFloat(target,'+5','good');log(`${h.name} ⚡MENDS ${target===h?'itself':target.name} (+5).`,h.side,true);}
+  else if(h.key==='frost'){target.shield=(target.shield||0)+18;target.shieldT=2;queueFx(uid(h),uid(target),'heal');pushFloat(target,'+SHIELD','good');log(`${h.name} wraps ${target===h?'itself':target.name} in a ⚡FROST BARRIER (absorb 18).`,h.side,true);toast('FROST BARRIER',h.side);}
+  else if(h.key==='tank'){h.shield=(h.shield||0)+24;h.shieldT=2;sfx('shield');pushFloat(h,'+SHIELD','good');log(`${h.name} raises a ⚡BULWARK (absorb 24).`,h.side,true);toast('BULWARK',h.side);}
+  else if(h.key==='summoner'){target.hp=Math.min(target.maxhp,target.hp+15);queueFx(uid(h),uid(target),'heal');pushFloat(target,'+15','good');log(`${h.name} ⚡MENDS ${target===h?'itself':target.name} (+15).`,h.side,true);}
 }
 
 /* ===================== PLAYER TURN ===================== */
@@ -1340,7 +1344,7 @@ function stepIsSafe(h,r,t){ // don't stroll into deathtraps: stay behind the cre
   const es=foeSide(h.side),tw=S.tower[es][r];
   const screen=liveCreeps().some(c=>c.side===h.side&&c.lane===r&&(h.side==='ghost'?c.t>=t:c.t<=t));
   if(screen) return true;
-  if(tw.alive&&Math.abs(tw.t-t)<=1&&h.ap-1<COST.attack) return false;         // tower zap range with no AP left to fight
+  if(tw.alive&&Math.abs(tw.t-t)<=2&&h.ap-1<COST.attack) return false;         // tower zap range with no AP left to fight
   const foes2=aliveHeroes(es).filter(e=>e.pos.r===r&&Math.abs(e.pos.t-t)<=1).length;
   if(foes2>=2&&h.ap-1<COST.attack) return false;                              // outnumbered with no AP left to fight
   return true;}
@@ -1362,8 +1366,8 @@ async function towerPhase(){
   for(const side of ['ghost','sand']) for(const w of S.tower[side]){
     if(stale())return;
     if(!w.alive) continue; const d=bfs(side,tk(w.r,w.t)), cands=[];
-    aliveHeroes(foeSide(side)).forEach(h=>{if(d[heroNode(h)]<=1)cands.push(h);});
-    liveCreeps().forEach(c=>{if(c.side===foeSide(side)&&d[tk(c.lane,c.t)]<=1)cands.push(c);});
+    aliveHeroes(foeSide(side)).forEach(h=>{if(d[heroNode(h)]<=2)cands.push(h);});
+    liveCreeps().forEach(c=>{if(c.side===foeSide(side)&&d[tk(c.lane,c.t)]<=2)cands.push(c);});
     if(!cands.length) continue;
     cands.sort((a,b)=>threat(side,a)-threat(side,b)); const tgt=cands[0];
     queueFx('tower:'+side+':'+w.r,uid(tgt),'zap'); log(`⚡ ${side} tower zaps ${tgt.type==='hero'?tgt.name:'a creep'} for ${w.atk}.`,'sys'); dealDamage(side,tgt,w.atk,w.r);
@@ -1374,6 +1378,7 @@ function worldTick(){
   for(const side of ['ghost','sand']) S.tower[side].forEach(w=>{ if(!w.alive)return;
     aliveHeroes(side).forEach(h=>{if(h.pos.r===w.r&&Math.abs(h.pos.t-w.t)<=1&&h.hp<h.maxhp){h.hp=Math.min(h.maxhp,h.hp+4);pushFloat(h,'+4','good');}});});
   S.heroes.forEach(h=>{if(h.alive&&h.hp<h.maxhp){h.hp=Math.min(h.maxhp,h.hp+h.regen);pushFloat(h,'+'+h.regen,'good');}});
+  S.heroes.forEach(h=>{if(h.shield>0){h.shieldT=(h.shieldT||1)-1;if(h.shieldT<=0){h.shield=0;pushFloat(h,'shield fades','bad');}}});
   S.heroes.forEach(h=>{if(!h.alive){h.respawnIn--;if(h.respawnIn<=0){h.alive=true;h.hp=h.maxhp;h.stunned=false;h.snared=false;h.shield=0;h.pos={r:h.preferredLane,t:h.side==='ghost'?0:NT-1};log(`${h.name} returns to the fight.`,h.side);}}
     if(h.spell.cur>0)h.spell.cur--; if(h.abil.cur>0)h.abil.cur--;});
   S.creeps=S.creeps.filter(c=>c.alive);
@@ -1473,7 +1478,8 @@ function laneCol(r){const me=S.me,R=ROUTES[r];
       const norms=here.filter(c=>!c.big); if(norms.length)html+=squadTokenHTML(side,norms,hits,stg);
       if(side==='ghost')gCreep+=html; else sCreep+=html;
     }
-    for(const side of ['ghost','sand']) S.tower[side].forEach(w=>{ if(w.r===r&&w.t===t&&w.alive) mid+=towerTokenHTML(w,r,hits,stg); });
+    let midSide='';
+    for(const side of ['ghost','sand']) S.tower[side].forEach(w=>{ if(w.r===r&&w.t===t&&w.alive){mid+=towerTokenHTML(w,r,hits,stg);midSide=side;} });
     let xarrow='';
     if(t===crossT)xarrow+=`<div class="crossmark">⇅<span>CROSS</span></div>`;
     if(S.mode==='move'&&t===crossT&&reachAll.some(x=>x.r===1-r&&x.t===crossT))
@@ -1482,7 +1488,7 @@ function laneCol(r){const me=S.me,R=ROUTES[r];
     tiles+=`<div class="tile ${cls}${rc}${inR}" data-tile="${r},${t}">
        <div class="tloc">${loc}</div>${xarrow}${hptr}
        <div class="heroRow">${gHero?`<div class="zside g">${gHero}</div>`:''}${sHero?`<div class="zside s">${sHero}</div>`:''}</div>
-       <div class="frontRow">${gCreep?`<div class="zside g">${gCreep}</div>`:''}${mid?`<div class="mid">${mid}</div>`:''}${sCreep?`<div class="zside s">${sCreep}</div>`:''}</div></div>`;
+       <div class="frontRow">${gCreep?`<div class="zside g">${gCreep}</div>`:''}${mid?`<div class="mid ${midSide==='ghost'?'edge-r':'edge-l'}">${mid}</div>`:''}${sCreep?`<div class="zside s">${sCreep}</div>`:''}</div></div>`;
   }
   return `<div class="lanewrap ${R.cls} ${isDay()?'day':'night'}">${sceneHTML(r)}<div class="lane-top"><span class="nm">${R.nm} (${r===0?'TOP':'BOTTOM'})</span>${r===0?`<span class="aff">${isDay()?'☀️ DAY — nightfall in '+cycleLeft():'🌙 NIGHT — sunrise in '+cycleLeft()}</span>`:''}</div><div class="lane">${tiles}</div></div>`;}
 function apPips(me){let s='';const a=(S&&S.apAnim&&Date.now()-S.apAnim.at<700)?S.apAnim:null;
