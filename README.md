@@ -1,4 +1,4 @@
-# Bazibub — Moonfolk vs Sunfolk
+# Bazibub — Tidefolk vs Flamefolk
 
 A kid-friendly, turn-based lane battle game that runs entirely in the browser.
 One player plus two ally bots vs three enemy bots, across two lanes
@@ -14,4 +14,4 @@ sound are inside it. To change the game, edit that file. To play a local
 copy, just open it in any browser.
 
 © 2026 Bazibub. All rights reserved.
-Character and building artwork adapted from ["Tiny Swords" by Pixel Frog](https://pixelfrog-assets.itch.io/tiny-swords) (free for commercial use — thank you!).
+Character and building artwork adapted from ["Tiny Swords" by Pixel Frog](https://pixelfrog-assets.itch.io/tiny-swords); slimes from ["Pixel Slime Asset Pack" by GreenRangerPIX](https://greenrangerpix.itch.io/pixel-slime-asset) (CC-BY). Thank you both!
