@@ -1,4 +1,4 @@
-# Bazibub — Ghosts vs the Sandfolk
+# Bazibub — Moonfolk vs Sunfolk
 
 A kid-friendly, turn-based lane battle game that runs entirely in the browser.
 One player plus two ally bots vs three enemy bots, across two lanes

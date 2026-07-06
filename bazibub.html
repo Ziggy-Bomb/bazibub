@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-<title>Bazibub — Ghosts vs the Sandfolk</title>
+<title>Bazibub — Moonfolk vs Sunfolk</title>
 <!-- Bazibub © 2026. All rights reserved. -->
 <meta name="copyright" content="© 2026 Bazibub. All rights reserved."/>
-<meta name="description" content="A quick turn-based pixel battle: lead your heroes and creep waves down two lanes and smash the enemy Heart. Free, plays in your browser."/>
+<meta name="description" content="A quick turn-based pixel battle: lead your heroes and creep waves down two lanes and smash the enemy Castle. Free, plays in your browser."/>
 <meta name="theme-color" content="#0a0a1a"/>
-<meta property="og:title" content="Bazibub — Ghosts vs the Sandfolk"/>
-<meta property="og:description" content="A quick turn-based pixel battle for 1 player vs bots. Pick a hero, lead the horde, smash the enemy Heart!"/>
+<meta property="og:title" content="Bazibub — Moonfolk vs Sunfolk"/>
+<meta property="og:description" content="A quick turn-based pixel battle for 1 player vs bots. Pick a hero, lead the horde, smash the enemy Castle!"/>
 <meta property="og:type" content="website"/>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>👻</text></svg>"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🌙</text></svg>"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
@@ -217,16 +217,30 @@
   /* animated sprite sheets */
   .asp{position:relative}
   .howviz{display:flex;justify-content:center;align-items:flex-end;gap:14px;min-height:104px;background:linear-gradient(#1c2b45,#0f1626);border:2px solid #2a3350;border-radius:8px;padding:12px;margin:10px 0}
-  .howviz .asp.uv{width:64px;height:64px}
-  .howviz .asp.wv{width:84px;height:84px}
-  .howviz .asp.hv{width:76px;height:76px}
+  .howviz .asp.uv{width:76px;height:76px}
+  .howviz .asp.wv{width:96px;height:96px}
+  .howviz .asp.hv{width:88px;height:88px}
+  .howbig{font-size:52px}
+  .howvs.dmx{font-size:30px;color:#8fe0ff}
+  .demoviz{position:relative;justify-content:flex-start;gap:26px;padding-left:26px}
+  .dm-hero{position:relative;filter:drop-shadow(0 0 6px #ffd24a)}
+  .dm-finger{position:absolute;left:64px;top:34px;font-size:30px;z-index:3;animation:dmfinger 5s steps(12) infinite}
+  .dm-pop{display:flex;flex-direction:column;gap:6px;opacity:0;animation:dmpop 5s steps(6) infinite}
+  .dm-pop b{background:#23305a;border:2px solid #3a4a7a;border-radius:6px;padding:5px 12px;font-size:12px;color:#eaf0ff}
+  .dm-pop b.b2{animation:dmflash 5s steps(2) infinite}
+  @keyframes dmfinger{0%,10%{transform:translate(60px,46px);opacity:0}22%{transform:translate(0,0);opacity:1}28%{transform:translate(0,0) scale(.72)}34%{transform:translate(0,0) scale(1);opacity:1}46%,100%{opacity:0;transform:translate(0,0)}}
+  @keyframes dmpop{0%,30%{opacity:0;transform:translateX(-8px)}38%,90%{opacity:1;transform:none}96%,100%{opacity:0}}
+  @keyframes dmflash{0%,52%{background:#23305a}56%,74%{background:#2e7d4f}78%,100%{background:#23305a}}
+  .crossmark{position:absolute;left:3px;top:14px;z-index:1;pointer-events:none;text-align:center;font-size:13px;color:#8fe0ff;opacity:.75;animation:bob 1.8s steps(2) infinite}
+  .crossmark span{display:block;font-size:6px;font-family:var(--disp);color:#cdd4ff;letter-spacing:1px}
+  .heart .protec{font-family:var(--disp);font-size:6px;color:#cdd4ff;margin-top:3px;line-height:1.6}
   .howviz .asp.fl .fr{transform:scaleX(-1)}
   .howvs{font-size:20px;align-self:center;color:var(--gold);font-weight:bold}
-  .howttl{color:var(--gold);margin:0 0 2px;font-size:18px;text-align:center}
-  #howBody p{font-size:13px;line-height:1.55;margin:6px 0 0}
+  .howttl{color:var(--gold);margin:0 0 2px;font-size:22px;text-align:center}
+  #howBody p{font-size:15px;line-height:1.6;margin:8px 0 0}
   .hownav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
   .howdots{display:flex;gap:6px}
-  .hdot{width:8px;height:8px;border-radius:50%;background:#33395a;display:inline-block}
+  .hdot{width:10px;height:10px;border-radius:50%;background:#33395a;display:inline-block}
   .hdot.on{background:var(--gold)}
   .scorebox{margin-top:12px;background:#141628;border:2px solid #2a3350;border-radius:8px;padding:10px 14px;text-align:left}
   .srow{display:flex;justify-content:space-between;gap:12px;font-size:12px;padding:3px 0;opacity:0;animation:fadeup .4s steps(4) forwards}
@@ -530,7 +544,7 @@
   <img class="sp-bolt" id="spBolt" alt="">
   <div class="sp-heroes"><span id="spL"></span><span id="spR"></span></div>
   <div class="sp-title">BAZIBUB</div>
-  <div class="sp-sub">GHOSTS VS SANDFOLK</div>
+  <div class="sp-sub">MOONFOLK VS SUNFOLK</div>
   <div class="sp-tap">▶ TAP TO BEGIN</div>
 </div>
 
@@ -539,13 +553,13 @@
 <div class="overlay" id="modeOverlay" style="display:none;z-index:65">
   <div class="card" style="max-width:360px;text-align:center">
     <h1 style="margin-bottom:4px">BAZIBUB</h1>
-    <div class="hint" style="margin-bottom:14px">Ghosts vs the Sandfolk</div>
+    <div class="hint" style="margin-bottom:14px">Moonfolk vs Sunfolk</div>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('play')">▶ PLAY</button>
     <button class="big" style="width:100%;background:#333a55" onclick="pickMode('how')">❓ HOW TO PLAY</button>
   </div>
 </div>
 <div class="overlay" id="howOverlay" style="display:none;z-index:66">
-  <div class="card" style="max-width:430px">
+  <div class="card" style="max-width:540px">
     <div id="howBody"></div>
     <div class="hownav">
       <button class="big" id="howBack" style="background:#333a55" onclick="howNav(-1)">◀</button>
@@ -557,16 +571,16 @@
 </div>
 <div class="overlay" id="startOverlay">
   <div class="card"><div id="startArt"></div>
-    <div class="tag1">⚔ Which side will destroy the other's Heart first?</div>
+    <div class="tag1">⚔ Which side will smash the other's Castle first?</div>
     <div class="tag2">Pick a side · pick a hero · battle in 5–10 minutes</div>
     <h2 style="margin-top:22px">CHOOSE YOUR SIDE</h2>
     <div class="sidepick">
-      <button class="sidebtn on" data-side="ghost" onclick="setSide('ghost')">👻 GHOSTS<br><span style="font-size:9px">left</span></button>
-      <button class="sidebtn" data-side="sand" onclick="setSide('sand')">🏜️ SANDFOLK<br><span style="font-size:9px">right</span></button>
+      <button class="sidebtn on" data-side="ghost" onclick="setSide('ghost')">🌙 MOONFOLK<br><span style="font-size:9px">left</span></button>
+      <button class="sidebtn" data-side="sand" onclick="setSide('sand')">☀️ SUNFOLK<br><span style="font-size:9px">right</span></button>
     </div>
     <h2 style="margin-top:30px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v2.2.0 · © 2026 · art: “Tiny Swords” by Pixel Frog</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v2.3.0 · © 2026 · art: “Tiny Swords” by Pixel Frog</div></div>
 </div>
 
 <div class="overlay" id="deployOverlay" style="display:none">
@@ -587,13 +601,14 @@
 <div class="overlay" id="helpOverlay" style="display:none">
   <div class="card"><h2>HOW TO PLAY</h2>
     <ol class="steps">
-      <li>🎯 Destroy the <b>enemy Heart</b> before yours falls!</li>
+      <li>🏰 Destroy the <b>enemy Castle</b> before yours falls! A Castle can only be hurt when the <b>tower on that road</b> is down — each side has one tower per road, so guard both.</li>
       <li>⬢ <b>Tap your glowing hero</b> to open its actions. Each turn = <b>4 Action Points</b>: Move (1/tile), Attack (2), Spell (3), Ability (2).</li>
-      <li>🟢 Your team glows <b>green</b> (★YOU = white); enemies glow <b>red</b>. Heal, shield and buff your allies!</li>
-      <li>⚔ <b>Creeps</b> hold the front of each square; your <b>heroes stand behind</b> them. Creeps &amp; towers focus whoever's pushed <b>closest to the Heart</b>.</li>
-      <li>🏰 <b>Towers</b> zap enemies and <b>heal your hero if you stand by them</b>. 💀 If you fall you wait in the Spirit Gate.</li>
-      <li>👹 On <b>round 7</b> you deploy a huge special creep in a lane of your choice!</li>
-      <li>☀️🌙 <b>Day & night alternate every 4 rounds</b> — at sunrise the whole Sandfolk army is restored 15 Health; at nightfall the Ghosts are. Lanes connect only at <b>your own base corner</b>, and attacks & spells never cross lanes.</li>
+      <li>⇅ The two roads only connect at <b>your own home corner</b> (look for the ⇅ CROSS mark). Fight all together on one road, or split 2–1 — your choice. Attacks &amp; spells never cross roads.</li>
+      <li>⚔ <b>Creeps</b> march every 3 rounds — the top road sends <b>2 Sunfolk vs 1 Moonfolk</b> creep, the bottom road the reverse. Push where you're strong, defend where you're outnumbered.</li>
+      <li>🏰 <b>Towers</b> zap enemies, and <b>heal your hero +4 if you stand beside them</b>. 💀 If you fall you wait in the Gatehouse and return in a few rounds.</li>
+      <li>👹 On <b>round 7</b> you deploy a huge monster in a road of your choice!</li>
+      <li>☀️🌙 <b>Day &amp; night alternate every 4 rounds</b> — sunrise restores the whole Sunfolk army 15 Health; nightfall restores the Moonfolk. From <b>round 20</b> both Castles crumble automatically (sudden death) so no game lasts forever.</li>
+      <li>🏆 <b>Scoring:</b> points for every kill, tower and monster, a bonus for winning fast, minus points for what you lose. Your best score is saved — beat it!</li>
       <li>⌨ Shortcuts: <b>1</b> Move · <b>2</b> Attack · <b>3</b> Spell · <b>4</b> Ability · <b>E</b> End Turn · <b>ESC</b> cancel. The 🔊 button mutes sound.</li>
     </ol>
     <div class="row" style="justify-content:center;gap:10px">
@@ -789,13 +804,16 @@ function dismissSplash(){const s=document.getElementById('splash');if(!s||s.clas
 let howI=0;
 function howSlideList(){const viz=h=>`<div class="howviz">${h}</div>`;
  return [
- {t:'THE GOAL',h:viz(anim(SPR.heart.ghost,'hv')+'<span class="howvs">VS</span>'+anim(SPR.heart.sand,'hv'))+'<p>Each side has a <b>Heart castle</b>. Smash the enemy Heart before they smash yours — the first castle to fall loses!</p>'},
- {t:'YOUR TURN',h:viz(anim(SPR.hero.knight.ghost,'uv'))+'<p>Tap your <b>glowing hero</b>, then pick an action. Actions cost ⚡: <b>MOVE 1⚡ · ATTACK 2⚡ · SPELL 3⚡</b>. You get <b>4⚡ every turn</b> — spend them, then press END.</p>'},
- {t:'STAY IN YOUR LANE',h:viz(anim(SPR.hero.archer.ghost,'uv')+'<span class="howvs">⚔️</span>'+anim(SPR.creep.sand,'uv fl'))+'<p>There are two roads: the sunny <b>Sunpath</b> and the cave <b>Rootway</b>. You can only fight enemies on <b>your own road</b> — and you can switch roads at your home corner.</p>'},
- {t:'TOWERS GUARD HEARTS',h:viz(anim(SPR.tower.sand,'wv')+anim(SPR.heart.sand,'hv'))+'<p>A Heart can\'t be hurt while its road\'s <b>tower</b> still stands. Smash the tower first — then charge the Heart!</p>'},
- {t:'CREEPS, DAY & NIGHT',h:viz(anim(SPR.creep.ghost,'uv')+'<span class="howvs">☀️🌙</span>'+anim(SPR.creep.sand,'uv fl'))+'<p>Every 3 rounds little <b>creeps</b> march out and fight for you. The sky matters too: <b>day heals the Sandfolk, night heals the Ghosts</b>.</p>'},
- {t:'ROUND 7: MONSTERS!',h:viz(anim(SPR.special.ghost,'wv')+'<span class="howvs">💥</span>'+anim(SPR.special.sand,'wv fl'))+'<p>At <b>round 7</b> each side unleashes a <b>monster</b> into a road of their choice. Survive theirs, aim yours well — good luck, hero!</p>'},
-];}
+ {t:'THE GOAL',h:viz(anim(SPR.heart.ghost,'hv')+'<span class="howvs">VS</span>'+anim(SPR.heart.sand,'hv'))+'<p>Two clans: the <b>Moonfolk</b> (blue, left) and the <b>Sunfolk</b> (gold, right). Each has a <b>Castle</b>. Smash the enemy Castle before they smash yours — the first Castle to fall loses!</p>'},
+ {t:'TAKE YOUR TURN',h:`<div class="howviz demoviz"><div class="dm-hero">${anim(SPR.hero.knight.ghost,'uv')}</div><span class="dm-finger">👆</span><div class="dm-pop"><b>🦶 MOVE</b><b class="b2">⚔ ATTACK</b><b>✨ SPELL</b></div></div><p>Tap your <b>glowing hero</b> and an action menu pops up — tap an action, then tap a glowing tile or target. Everything costs ⚡: <b>MOVE 1 · ATTACK 2 · SPELL 3 · ABILITY 2</b>. You get <b>4⚡ every turn</b>, then press END.</p>`},
+ {t:'TWO ROADS — YOUR PLAN',h:viz(anim(SPR.hero.archer.ghost,'uv')+'<span class="howvs dmx">⇅</span>'+anim(SPR.hero.tank.ghost,'uv'))+'<p>The sunny <b>Sunpath</b> runs on top, the cave <b>Rootway</b> below. You can only fight enemies on <b>your own road</b> — and the roads connect only at <b>your home corner</b> (look for the ⇅ CROSS mark on the board). March everyone together, or split your team 2–1 — your call, general.</p>'},
+ {t:'TOWERS GUARD CASTLES',h:viz(anim(SPR.tower.sand,'wv')+anim(SPR.heart.sand,'hv'))+'<p>A Castle can\'t be hurt while <b>that road\'s tower</b> stands — each side has one tower per road, so watch <b>both</b> roads! Bonus: <b>stand beside your own tower and it heals you +4</b> every round.</p>'},
+ {t:'THE CREEP WAVES',h:viz(anim(SPR.creep.ghost,'uv')+'<span class="howvs">⚔️</span>'+anim(SPR.creep.sand,'uv fl')+anim(SPR.creep.sand,'uv fl'))+'<p>Every 3 rounds little <b>creeps</b> march out and fight for you. The roads aren\'t fair: the top road sends <b>2 Sunfolk creeps vs 1 Moonfolk</b>, the bottom road the reverse. Push where you\'re strong — defend where you\'re outnumbered.</p>'},
+ {t:'DAY & NIGHT',h:viz(anim(SPR.creep.sand,'uv fl')+'<span class="howvs">☀️🌙</span>'+anim(SPR.creep.ghost,'uv'))+'<p>The sky flips every 4 rounds. At <b>sunrise the whole Sunfolk army is restored 15 Health</b>; at <b>nightfall the Moonfolk</b> are. Time your big pushes for when YOUR heal is coming!</p>'},
+ {t:'ROUND 7: MONSTERS!',h:viz(anim(SPR.special.ghost,'wv')+'<span class="howvs">💥</span>'+anim(SPR.special.sand,'wv fl'))+'<p>At <b>round 7</b> each side unleashes a <b>monster</b> into a road of their choice. Survive theirs, aim yours well!</p>'},
+ {t:'NO ENDLESS GAMES',h:viz(anim(SPR.heart.ghostLow,'hv'))+'<p>From <b>round 20</b> both Castles start crumbling by themselves, faster every round — <b>sudden death</b>. If your Castle is losing health with towers up late in the game, that\'s why. Finish the fight!</p>'},
+ {t:'SCORING',h:viz('<span class="howbig">🏆</span>')+'<p>Points for every hero, creep, tower and monster you destroy, <b>+300 for winning</b> and a <b>speed bonus</b> for finishing fast — minus points for everything you lose. Your <b>best score is saved</b>. Good luck, hero!</p>'},
+ ];}
 function pickMode(m){document.getElementById('modeOverlay').style.display='none';if(m==='how')openHow();}
 function openHow(){howI=0;document.getElementById('howOverlay').style.display='flex';renderHow();}
 function closeHow(){document.getElementById('howOverlay').style.display='none';}
@@ -887,7 +905,7 @@ function newGame(pk){
   const heroes=[]; myKeys.forEach((k,i)=>heroes.push(makeHero(k,side,i===0?'human':'ally',i%2,myBase)));
   foeKeys.forEach((k,i)=>heroes.push(makeHero(k,es,'enemy',i%2,foeBase)));
   const tower=(s,t,label,nm)=>[0,1].map(r=>({type:'tower',side:s,r,t,label,nm,hp:60,maxhp:60,atk:6,alive:true}));
-  S={heroes,me:heroes[0],playerSide:side,tower:{ghost:tower('ghost',GW_T,'Spirit Cairn','Cairn'),sand:tower('sand',SW_T,'Sun Idol','Idol')},
+  S={heroes,me:heroes[0],playerSide:side,tower:{ghost:tower('ghost',GW_T,'Moonspire','Moonspire'),sand:tower('sand',SW_T,'Sunspire','Sunspire')},
     creeps:[],heart:{ghost:{type:'heart',side:'ghost',hp:55,maxhp:55},sand:{type:'heart',side:'sand',hp:55,maxhp:55}},
     speed:(function(){try{return localStorage.getItem('bzb_speed')==='2'?2:1}catch(e){return 1}})(),cycle:true,
     stats:{kills:0,creeps:0,towers:0,boss:0,lostHeroes:0,lostCreeps:0,lostTowers:0},round:1,phase:'player',mode:'idle',actingId:null,enemyStrat:'',specialDeployed:false,over:false};
@@ -923,7 +941,7 @@ function queueFx(fromId,toId,kind){fxQueue.push({fromId,toId,kind});}
 /* ===================== CREEPS ===================== */
 function mkCreep(side,lane,t,o){return Object.assign({type:'creep',id:creepSeq++,side,lane,t,hp:14,maxhp:14,atk:3,bonusAtk:0,alive:true},o||{});}
 function spawnWave(){
-  // sun-loving Sandfolk mass on the TOP lane; the Ghosts mass in the caves below
+  // the Sunfolk mass on the TOP road; the Moonfolk mass in the caves below
   const plan={ghost:[1,2],sand:[2,1]}; // creeps per [top,bottom] lane
   for(const side of ['ghost','sand']){const base=side==='ghost'?0:NT-1;
     for(let r=0;r<2;r++) for(let i=0;i<plan[side][r];i++) S.creeps.push(mkCreep(side,r,base));}
@@ -966,9 +984,9 @@ function creepTarget(c){
 function creepAttack(c,t){ queueFx(uid(c),uid(t),'slash'); dealDamage(c.side,t,c.atk+c.bonusAtk,c.lane); }
 function specialAbility(c){
   if(c.special==='ghost'){ const t=creepTarget(c); if(!t)return; queueFx(uid(c),uid(t),'frost'); dealDamage(c.side,t,c.atk,c.lane);
-    const heal=Math.floor(c.atk/2); c.hp=Math.min(c.maxhp,c.hp+heal); pushFloat(c,'drain+'+heal,'good'); sfx('drain'); log(`👻 The Spirit Bomber drains ${tname(t)} for ${c.atk}!`,'ghost',true); toast('SPIRIT DRAIN!',c.side); }
+    const heal=Math.floor(c.atk/2); c.hp=Math.min(c.maxhp,c.hp+heal); pushFloat(c,'drain+'+heal,'good'); sfx('drain'); log(`🌙 The Moon Bomber drains ${tname(t)} for ${c.atk}!`,'ghost',true); toast('MOON DRAIN!',c.side); }
   else { const t=creepTarget(c); if(!t)return; queueFx(uid(c),uid(t),'fire'); dealDamage(c.side,t,c.atk+2,c.lane);
-    sfx('blast'); log(`💣 The Dune Bomber BLASTS ${tname(t)} for ${c.atk+2}!`,'sand',true); toast('BIG BOOM!',c.side); }
+    sfx('blast'); log(`💣 The Sun Bomber BLASTS ${tname(t)} for ${c.atk+2}!`,'sand',true); toast('BIG BOOM!',c.side); }
 }
 
 /* ===================== COMBAT ===================== */
@@ -984,7 +1002,8 @@ function dealDamage(attackerSide,u,amt,lane){
       if(u===S.me)toast(`YOU ARE DOWN — back in ${u.respawnIn}`,foeSide(S.playerSide)); else toast(`${u.name} FALLS`,u.side);}
     else if(u.type==='tower'){u.alive=false;u.hp=0;if(mine)S.stats.towers++; else if(u.side===S.playerSide)S.stats.lostTowers++;
       burst('tower:'+u.side+':'+u.r,'#ffd954',14); shake(); sfx('explode');
-      log(`💥 The ${u.label} on ${ROUTES[u.r].nm} shatters!`,'sys',true);toast(`${u.label} DOWN`,'sys');}
+      log(`💥 The ${u.label} on ${ROUTES[u.r].nm} shatters!`,'sys',true);toast(`${u.label} DOWN`,'sys');
+      toast(u.side===S.playerSide?`⚠️ YOUR CASTLE IS OPEN VIA ${ROUTES[u.r].nm}!`:`🎯 ENEMY CASTLE IS OPEN VIA ${ROUTES[u.r].nm}!`,u.side===S.playerSide?foeSide(S.playerSide):S.playerSide);}
     else if(u.type==='creep'){u.alive=false;u.hp=0;if(mine){if(u.big)S.stats.boss++;else S.stats.creeps++;} else if(u.side===S.playerSide&&!u.big)S.stats.lostCreeps++;
       if(u.big){sfx('bossdie');burst(uid(u),'#ffffff',18);toast(`💥 ${u.name.toUpperCase()} DESTROYED!`,'sys');shake();}
       else{burst(uid(u),u.side==='ghost'?'#7fe0ff':'#ffcf6e',6); sfx('poof');}}
@@ -1026,19 +1045,19 @@ function beginPlayerPhase(){const me=S.me;me.ap=AP_MAX;S.phase='player';S.mode='
   const day=isDay();
   if(S.cycle!==day){S.cycle=day; const fav=day?'sand':'ghost';
     sfx(day?'fanfare':'drain'); sfx('heal',0.4);
-    toast(day?'☀ THE SUN RISES — SANDFOLK RESTORED +15':'🌙 NIGHT FALLS — GHOSTS RESTORED +15', fav);
+    toast(day?'☀ THE SUN RISES — SUNFOLK RESTORED +15':'🌙 NIGHT FALLS — MOONFOLK RESTORED +15', fav);
     aliveHeroes(fav).forEach(hh=>{if(hh.hp<hh.maxhp){hh.hp=Math.min(hh.maxhp,hh.hp+15);pushFloat(hh,'+15','good');}});
     liveCreeps().forEach(c=>{if(c.side===fav&&c.hp<c.maxhp){c.hp=Math.min(c.maxhp,c.hp+15);pushFloat(c,'+15','good');}});
     S.tower[fav].forEach(w=>{if(w.alive&&w.hp<w.maxhp){w.hp=Math.min(w.maxhp,w.hp+15);pushFloat(w,'+15','good');}});
     healPulse(fav);}
-  if(S.round===SUDDEN_ROUND&&!S.sdA){S.sdA=true;sfx('explode');toast('⚡ SUDDEN DEATH — BOTH HEARTS ARE CRUMBLING!','sys');}
+  if(S.round===SUDDEN_ROUND&&!S.sdA){S.sdA=true;sfx('explode');toast('⚡ SUDDEN DEATH — BOTH CASTLES ARE CRUMBLING!','sys');}
   sfx('turn'); toast('YOUR TURN',S.playerSide);
   if(me.alive&&me.stunned){me.stunned=false;me.snared=false;me.ap=0;log('❄️ You are frozen this round — End Turn.','sys');toast('FROZEN','sys');}
   render();
   showDeploy();
 }
-const SPECIAL={ghost:{name:'Spirit Bomber',emoji:'👻',desc:'It rolls in fast, latches onto a foe, and drains its life each turn.'},
-               sand:{name:'Dune Bomber',emoji:'💣',desc:'It rolls in fast, tanks hits, and blasts a single foe hard each turn.'}};
+const SPECIAL={ghost:{name:'Moon Bomber',emoji:'🌙',desc:'It rolls in fast, latches onto a foe, and drains its life each turn.'},
+               sand:{name:'Sun Bomber',emoji:'💣',desc:'It rolls in fast, tanks hits, and blasts a single foe hard each turn.'}};
 function showDeploy(){
   if(S.round!==SPECIAL_ROUND||S.specialDeployed) return;
   const sp=SPECIAL[S.playerSide];
@@ -1107,7 +1126,7 @@ function clickAct(kind){
   else if(kind==='ability'){ if(!abilityUsable())return; if(me.abil.target==='none'){castAbility(me,null);spend(COST.ability);S.mode='idle';} else S.mode=S.mode==='ability'?'idle':'ability'; }
   const eh=S.heart[foeSide(S.playerSide)];
   if(!S.heartHint&&((S.mode==='attack'&&canHit(me,eh))||(S.mode==='spell'&&spellTargets().includes(eh)))){
-    S.heartHint=1;toast('🎯 THE ENEMY HEART IS IN RANGE — TAP IT!','sys');
+    S.heartHint=1;toast('🎯 THE ENEMY CASTLE IS IN RANGE — TAP IT!','sys');
     setTimeout(()=>{const el=document.querySelector('.heart.target');if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});},80);}
   sfx('click');
   render();
@@ -1128,7 +1147,7 @@ async function endTurn(){
 }
 
 /* ===================== ENEMY STRATEGY ===================== */
-function enemyName(){return foeSide(S.playerSide)==='ghost'?'Ghosts':'Sandfolk';}
+function enemyName(){return foeSide(S.playerSide)==='ghost'?'Moonfolk':'Sunfolk';}
 function laneName(l){return `${ROUTES[l].nm} (${l===0?'TOP':'BOTTOM'})`;}
 function rollEnemyPlan(){
   const strats=['split','stack','sneak'], s=strats[Math.floor(Math.random()*strats.length)];
@@ -1229,7 +1248,7 @@ function worldTick(){
 }
 
 /* ===================== RENDER ===================== */
-function tname(u){return u.type==='heart'?`the ${u.side} Heart`:u.type==='tower'?`the ${u.label}`:u.type==='creep'?(u.name||'a creep'):u.name;}
+function tname(u){return u.type==='heart'?`the ${u.side==='ghost'?'Moonfolk':'Sunfolk'} Castle`:u.type==='tower'?`the ${u.label}`:u.type==='creep'?(u.name||'a creep'):u.name;}
 function img(src,cls){return `<img class="spr ${cls}" src="${src}">`;}
 function render(){renderBanner();renderBoard();renderControls();applyFloats();flushFx();}
 function renderBanner(){const b=document.getElementById('banner'),you=S.phase==='player';
@@ -1245,13 +1264,14 @@ function renderBoard(){const host=document.getElementById('boardHost');
 function heartCell(side){const ht=S.heart[side],frac=ht.hp/ht.maxhp,low=frac<.35;
   const tg=S.phase==='player'&&S.me.alive&&((S.mode==='attack'&&canHit(S.me,ht))||(S.mode==='spell'&&spellTargets().includes(ht)));
   const dead=S.heroes.filter(h=>h.side===side&&!h.alive);
-  const pen=`<div class="pen"><div class="pttl">SPIRIT GATE</div>${dead.length?dead.map(h=>`<div class="grave">${img(SPR.grave[side],'')}<span class="bk">${h.respawnIn}</span></div>`).join(''):'<div class="alive0">all alive</div>'}</div>`;
+  const pen=`<div class="pen"><div class="pttl">GATEHOUSE</div>${dead.length?dead.map(h=>`<div class="grave">${img(SPR.grave[side],'')}<span class="bk">${h.respawnIn}</span></div>`).join(''):'<div class="alive0">all alive</div>'}</div>`;
   const mine=side===S.playerSide;
   return `<div class="heart ${side} ${low?'danger':''} ${tg?'target':''}" data-unit="heart:${side}" data-fx="heart:${side}">
      <div class="role ${mine?'def':'atk2'}">${mine?'🛡 DEFEND!':'⚔ DESTROY!'}</div>
      ${anim(low?SPR.heart[side+'Low']:SPR.heart[side],'h')}
-     <div class="nmh">${mine?'YOUR':'ENEMY'}<br>HEART</div>
-     <div class="hpl">HEART HEALTH</div>
+     <div class="nmh">${mine?'YOUR':'ENEMY'}<br>CASTLE</div>
+     <div class="hpl">CASTLE HEALTH</div>
+     <div class="protec">${towerAlive(side,0)&&towerAlive(side,1)?'🛡 towers guard it':(!towerAlive(side,0)&&!towerAlive(side,1)?'⚠️ OPEN — both roads':'⚠️ OPEN via '+(towerAlive(side,0)?'ROOTWAY':'SUNPATH'))}</div>
      <div class="vbar"><i style="height:${100*frac}%;background:${hpColor(frac)}"></i></div>
      <small>${Math.max(0,ht.hp)}/${ht.maxhp}</small>
      <div class="warnH">${mine?'If it shatters, you lose.':'Shatter it to win!'}</div>${pen}</div>`;}
@@ -1306,7 +1326,7 @@ function laneCol(r){const me=S.me,R=ROUTES[r];
   for(let t=0;t<NT;t++){
     const cls=t<gf?'gctrl':t>sf?'sctrl':'', rc=reach.some(x=>x.t===t)?' reach':'';
     const inR=(rngInfo&&r===me.pos.r&&rngInfo.d[tk(r,t)]<=rngInfo.range)?' rng':'';
-    let loc=''; if(t===0)loc='GHOST BASE'; if(t===NT-1)loc='SAND BASE';
+    let loc=''; if(t===0)loc='MOON BASE'; if(t===NT-1)loc='SUN BASE';
     if(S.tower.ghost.some(w=>w.r===r&&w.t===t)||S.tower.sand.some(w=>w.r===r&&w.t===t))loc='TOWER';
     let gHero='',sHero='',gCreep='',sCreep='',mid='';
     S.heroes.slice().sort((a,b)=>(a===me)-(b===me)).forEach(hh=>{ if(hh.pos.r===r&&hh.pos.t===t){ const html=heroTokenHTML(hh,me,hits,stg); if(hh.side==='ghost')gHero+=html; else sHero+=html; }});
@@ -1318,9 +1338,10 @@ function laneCol(r){const me=S.me,R=ROUTES[r];
     }
     for(const side of ['ghost','sand']) S.tower[side].forEach(w=>{ if(w.r===r&&w.t===t&&w.alive) mid+=towerTokenHTML(w,r,hits,stg); });
     let xarrow='';
+    if(t===crossT)xarrow+=`<div class="crossmark">⇅<span>CROSS</span></div>`;
     if(S.mode==='move'&&t===crossT&&reachAll.some(x=>x.r===1-r&&x.t===crossT))
-      xarrow=`<div class="xarrow ${r===0?'dn':'up'}">${r===0?'⬇':'⬆'}<span>LANE</span></div>`;
-    const hptr=(t===eEnd&&(hits.includes(eHeart)||stg.includes(eHeart)))?`<div class="heartptr">🎯 HEART!</div>`:'';
+      xarrow+=`<div class="xarrow ${r===0?'dn':'up'}">${r===0?'⬇':'⬆'}<span>LANE</span></div>`;
+    const hptr=(t===eEnd&&(hits.includes(eHeart)||stg.includes(eHeart)))?`<div class="heartptr">🎯 CASTLE!</div>`:'';
     tiles+=`<div class="tile ${cls}${rc}${inR}" data-tile="${r},${t}">
        <div class="tloc">${loc}</div>${xarrow}${hptr}
        <div class="heroRow">${gHero?`<div class="zside g">${gHero}</div>`:''}${sHero?`<div class="zside s">${sHero}</div>`:''}</div>
@@ -1400,7 +1421,7 @@ function heartFall(side){if(!S||S.over)return; S.over=true; const win=side!==S.p
   S.heart[side].hp=0;
   render();
   burst('heart:'+side,'#ffd954',24); burst('heart:'+side,'#ffffff',14); shake(); sfx('explode'); sfx('bossdie',0.25);
-  toast(win?'💥 THE ENEMY HEART SHATTERS!':'💔 YOUR HEART SHATTERS!',side);
+  toast(win?'💥 THE ENEMY CASTLE SHATTERS!':'💔 YOUR CASTLE SHATTERS!',side);
   setTimeout(()=>{if(GEN!==gen||!S)return; showEnd(win);},1700);}
 function endGame(win){heartFall(win?foeSide(S.playerSide):S.playerSide);}
 function showEnd(win){sfx(win?'victory':'defeat');
@@ -1427,7 +1448,7 @@ function showEnd(win){sfx(win?'victory':'defeat');
   const total=Math.max(0,rows.reduce((a,r)=>a+r.pts,0));
   const best=+(localStorage.getItem('bzb_best')||0), isBest=total>best;
   if(isBest)localStorage.setItem('bzb_best',String(total));
-  document.getElementById('endText').innerHTML=(win?'You destroyed the enemy Heart. Well commanded!':'Your Heart was destroyed. Try a new hero or a new plan!')+
+  document.getElementById('endText').innerHTML=(win?'You smashed the enemy Castle. Well commanded!':'Your Castle fell. Try a new hero or a new plan!')+
     `<div class="scorebox">${rows.map((r,i)=>`<div class="srow" style="animation-delay:${(.3+i*.4).toFixed(1)}s"><span>${r.ic} ${r.lb}</span><b class="${r.pts<0?'neg':''}">${r.pts<0?'−':'+'}<span class="cnt0" data-t="${Math.abs(r.pts)}">0</span></b></div>`).join('')}
      <div class="srow total" style="animation-delay:${(.3+rows.length*.4).toFixed(1)}s"><span>SCORE</span><b>+<span class="cnt0" data-t="${total}">0</span></b></div>
      ${isBest?`<div class="newbest" style="animation-delay:${(.7+rows.length*.4).toFixed(1)}s">🌟 NEW BEST SCORE!</div>`:`<div class="bestline" style="animation-delay:${(.7+rows.length*.4).toFixed(1)}s">Your best: ${Math.max(best,total)}</div>`}</div>`;
@@ -1449,7 +1470,7 @@ function playIntro(){introMode='start';
   const mine=S.heroes.filter(h=>h.side===S.playerSide),foes=S.heroes.filter(h=>h.controller==='enemy');
   const unit=(h,i)=>`<div class="unit" style="animation-delay:${.6+i*.25}s">${h===S.me?'<span class="youtag">▼ YOU</span>':''}${anim(SPR.hero[h.key][h.side],'')}<span class="lb ${h===S.me?'you':''}">${h===S.me?'★ ':''}${h.name}</span></div>`;
   st.innerHTML=`<div class="ttl">BAZIBUB</div>
-    <div class="sub2">${S.playerSide==='ghost'?'GHOSTS':'SANDFOLK'} vs ${enemyName().toUpperCase()} — PROTECT YOUR HEART. DESTROY THEIRS.</div>
+    <div class="sub2">${S.playerSide==='ghost'?'MOONFOLK':'SUNFOLK'} vs ${enemyName().toUpperCase()} — PROTECT YOUR CASTLE. DESTROY THEIRS.</div>
     <div class="ground2" style="background-image:url(${SPR.ground[S.playerSide==='ghost'?'over':'under']});background-size:44px 44px"></div>
     <div class="team L">${mine.map(unit).join('')}</div>
     <div class="team R">${foes.map(unit).join('')}</div>
