@@ -735,7 +735,7 @@
     </div>
     <h2 style="margin-top:30px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v3.5.2 · © 2026 · art: Pixel Frog · chierit · rvros · Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v3.6.0 · © 2026 · art: Pixel Frog · chierit · rvros · Pimen</div></div>
 </div>
 
 <div class="overlay" id="deployOverlay" style="display:none">
@@ -762,7 +762,7 @@
       <li>⚔ <b>Creeps</b> march every 3 rounds — the top road sends <b>2 Flamefolk vs 1 Tidefolk</b> creep, the bottom road the reverse. Push where you're strong, defend where you're outnumbered.</li>
       <li>🏰 <b>Towers</b> zap enemies, and <b>heal your hero +4 if you stand beside them</b>. 💀 If you fall you wait in the Gatehouse and return in a few rounds.</li>
       <li>👹 On <b>round 7</b> you deploy a huge monster in a road of your choice!</li>
-      <li>☀️🌙 <b>Day &amp; night alternate every 4 rounds</b> — sunrise restores the whole Flamefolk army 15 Health; nightfall restores the Tidefolk. From <b>round 20</b> both Castles crumble automatically (sudden death) so no game lasts forever.</li>
+      <li>☀️🌙 <b>Day &amp; night alternate every 4 rounds</b> — sunrise restores the whole Flamefolk army 15 Health; nightfall restores the Tidefolk. From <b>round 24</b> both Castles crumble automatically (sudden death) so no game lasts forever — you get loud warnings from round 21.</li>
       <li>🏆 <b>Scoring:</b> points for every kill, tower and monster, a bonus for winning fast, minus points for what you lose. Your best score is saved — beat it!</li>
       <li>⌨ Shortcuts: <b>1</b> Move · <b>2</b> Attack · <b>3</b> Spell · <b>4</b> Ability · <b>E</b> End Turn · <b>ESC</b> cancel. The 🔊 button mutes sound.</li>
     </ol>
@@ -931,7 +931,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='3.5.2';
+const GAME_VER='3.6.0';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -973,7 +973,7 @@ function howSlideList(){const viz=h=>`<div class="howviz">${h}</div>`;
  {t:'THE CREEP WAVES',h:viz(anim(SPR.creep.ghost,'uv')+'<span class="howvs">⚔️</span>'+anim(SPR.creep.sand,'uv fl')+anim(SPR.creep.sand,'uv fl'))+'<p>Every 3 rounds little <b>creeps</b> march out and fight for you. The roads aren\'t fair: the top road sends <b>2 Flamefolk creeps vs 1 Tidefolk</b>, the bottom road the reverse. Push where you\'re strong — defend where you\'re outnumbered.</p>'},
  {t:'DAY & NIGHT',h:viz(anim(SPR.creep.sand,'uv fl')+'<span class="howvs">☀️🌙</span>'+anim(SPR.creep.ghost,'uv'))+'<p>The sky flips every 4 rounds. At <b>sunrise the whole Flamefolk army is restored 15 Health</b>; at <b>nightfall the Tidefolk</b> are. Time your big pushes for when YOUR heal is coming!</p>'},
  {t:'ROUND 7: MONSTERS!',h:viz(anim(SPR.special.ghost,'wv')+'<span class="howvs">💥</span>'+anim(SPR.special.sand,'wv fl'))+'<p>At <b>round 7</b> each side unleashes a <b>monster</b> into a road of their choice. Survive theirs, aim yours well!</p>'},
- {t:'NO ENDLESS GAMES',h:viz(anim(SPR.heart.ghostLow,'hv'))+'<p>From <b>round 20</b> both Castles start crumbling by themselves, faster every round — <b>sudden death</b>. If your Castle is losing health with towers up late in the game, that\'s why. Finish the fight!</p>'},
+ {t:'NO ENDLESS GAMES',h:viz(anim(SPR.heart.ghostLow,'hv'))+'<p>From <b>round 24</b> both Castles start crumbling by themselves, faster every round — <b>sudden death</b>. If your Castle is losing health with towers up late in the game, that\'s why. Finish the fight!</p>'},
  {t:'SCORING',h:viz('<span class="howbig">🏆</span>')+'<p>Points for every hero, creep, tower and monster you destroy, <b>+300 for winning</b> and a <b>speed bonus</b> for finishing fast — minus points for everything you lose. Your <b>best score is saved</b>. Good luck, hero!</p>'},
  ];}
 function pickMode(m){
@@ -1010,7 +1010,7 @@ function healPulse(side){const st=document.querySelector('.stage');if(!st)return
   st.classList.add('hpulse-'+side);setTimeout(()=>st.classList.remove('hpulse-'+side),950);}
 
 /* ===================== MAP ===================== */
-const NT=6, AP_MAX=4, WAVE_EVERY=3, SPECIAL_ROUND=7, SUDDEN_ROUND=20;
+const NT=6, AP_MAX=4, WAVE_EVERY=3, SPECIAL_ROUND=7, SUDDEN_ROUND=24;
 const COST={move:1,attack:2,spell:3,ability:2};
 const ROUTES=[{nm:'SUNPATH',cls:'overground'},{nm:'ROOTWAY',cls:'underground'}];
 const GW_T=1,SW_T=4;
@@ -1230,6 +1230,7 @@ function beginPlayerPhase(){const me=S.me;me.ap=AP_MAX;S.phase='player';S.mode='
     liveCreeps().forEach(c=>{if(c.side===fav&&c.hp<c.maxhp){c.hp=Math.min(c.maxhp,c.hp+15);pushFloat(c,'+15','good');}});
     S.tower[fav].forEach(w=>{if(w.alive&&w.hp<w.maxhp){w.hp=Math.min(w.maxhp,w.hp+15);pushFloat(w,'+15','good');}});
     healPulse(fav);}
+  if(S.round>=SUDDEN_ROUND-3&&S.round<SUDDEN_ROUND)toast('⚡ SUDDEN DEATH IN '+(SUDDEN_ROUND-S.round)+' ROUND'+(SUDDEN_ROUND-S.round===1?'':'S')+' — finish the fight!','sys');
   if(S.round===SUDDEN_ROUND&&!S.sdA){S.sdA=true;sfx('explode');toast('⚡ SUDDEN DEATH — BOTH CASTLES ARE CRUMBLING!','sys');}
   sfx('turn'); toast('YOUR TURN',S.playerSide);
   if(me.alive&&me.stunned){me.stunned=false;me.snared=false;me.ap=0;log('❄️ You are frozen this round — End Turn.','sys');toast('FROZEN','sys');}
