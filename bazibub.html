@@ -731,7 +731,7 @@
     <h1 style="margin-bottom:4px">BAZIBUB</h1>
     <div class="hint" style="margin-bottom:14px">Tidefolk vs Flamefolk</div>
     <div id="nameRow" style="display:none;margin-bottom:12px"><div class="hint" style="margin-bottom:6px">What shall we call you, commander?</div><input id="cmdName" maxlength="12" placeholder="YOUR NAME"></div>
-    <div id="newchip" class="hint" style="display:none;margin-bottom:10px;color:#8a5c12">✨ NEW in v4.2 — play friends over WHATSAPP with Play-by-Link!</div>
+    <div id="newchip" class="hint" style="display:none;margin-bottom:10px;color:#8a5c12">✨ NEW in v4.3 — CO-OP mode: team up in pass & play or by link!</div>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('play')">▶ PLAY vs BOTS</button>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('2p')">👥 2 PLAYERS — pass &amp; play</button>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('link')">📤 PLAY BY LINK — turns over WhatsApp</button>
@@ -761,9 +761,14 @@
     </div>
     <h2 style="margin-top:30px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v4.2.1 · © 2026 · art: Pixel Frog · chierit · rvros · Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v4.3.0 · © 2026 · art: Pixel Frog · chierit · rvros · Pimen</div></div>
 </div>
 
+<div class="overlay" id="teamOverlay" style="display:none;z-index:65">
+  <div class="card" style="max-width:380px;text-align:center"><h2>HOW WILL YOU PLAY?</h2>
+    <button class="big" style="width:100%;margin-bottom:10px" onclick="chooseTeamMode('vs')">⚔ VERSUS — one of you per side</button>
+    <button class="big" style="width:100%" onclick="chooseTeamMode('coop')">🤝 CO-OP — team up against the bots</button></div>
+</div>
 <div class="overlay" id="shareOverlay" style="display:none;z-index:64">
   <div class="card" style="max-width:420px;text-align:center"><h2>📤 SEND YOUR TURN</h2>
     <div class="hint" id="shareHint"></div>
@@ -807,6 +812,7 @@
       <li>👹 On <b>round 7</b> you deploy a huge monster in a road of your choice!</li>
       <li>☀️🌙 <b>Day &amp; night alternate every 4 rounds</b> — sunrise restores the whole Flamefolk army 15 Health; nightfall restores the Tidefolk. Lanes connect only at your own home corner, and attacks never cross roads.</li>
       <li>🏆 <b>Scoring:</b> points for every kill, tower and monster, a bonus for winning fast, minus points for what you lose. Your best score is saved — beat it!</li>
+      <li>🤝 <b>Co-op:</b> both pass &amp; play and link mode offer VERSUS or CO-OP — in co-op you and a friend each lead a hero on the SAME side against the bots.</li>
       <li>📤 <b>Play by Link:</b> take turns over WhatsApp — play your turn, send the link, and your friend taps it to play theirs. (Friendly games only — links are easy to tinker with!)</li>
       <li>👥 <b>2 Players (pass &amp; play):</b> choose it on the start screen — each commander leads one hero and two bot allies, passing the phone between turns.</li>
       <li>⌨ Shortcuts: <b>1</b> Move · <b>2</b> Attack · <b>3</b> Spell · <b>4</b> Ability · <b>E</b> End Turn · <b>ESC</b> cancel. The 🔊 button mutes sound.</li>
@@ -976,7 +982,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='4.2.1';
+const GAME_VER='4.3.0';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1026,7 +1032,8 @@ function pickMode(m){
   try{const inp=document.getElementById('cmdName');
     if(inp&&inp.value.trim())localStorage.setItem('bzb_name',inp.value.trim().replace(/[<>&"'`]/g,'').slice(0,12));}catch(e){}
   document.getElementById('modeOverlay').style.display='none';
-  PENDING_2P=(m==='2p');PENDING_LINK=(m==='link');P1SEL=null;
+  PENDING_2P=(m==='2p');PENDING_LINK=(m==='link');P1SEL=null;PENDING_COOP=false;
+  if(PENDING_2P||PENDING_LINK){document.getElementById('teamOverlay').style.display='flex';}
   if(PENDING_2P){document.getElementById('tag1').innerHTML='🎮 <b>PLAYER 1</b> — pick your side and hero. Player 2 gets the other side!';}
   if(PENDING_LINK){document.getElementById('tag1').innerHTML='📤 <b>PLAY BY LINK</b> — pick your side and hero, play your turn, then send the link. Your friend picks their hero when they open it!';}
   if(m==='how')openHow();}
@@ -1107,7 +1114,8 @@ function makeHero(key,side,controller,r,t){const a=ARCH[key];
     maxhp:a.hp,hp:a.hp,atk:a.atk,range:a.range,multi:a.multi||1,regen:a.regen||2,spell:{...a.spell,cur:0},abil:{...a.abil,cur:0},
     pos:{r,t},preferredLane:r,alive:true,respawnIn:0,stunned:false,snared:false,shield:0,ap:AP_MAX,type:'hero'};}
 let selectedSide='ghost';
-function setSide(s){selectedSide=s;sfx('click');document.querySelectorAll('.sidebtn').forEach(b=>b.classList.toggle('on',b.dataset.side===s));renderPick();}
+function themeSide(sd){document.body.classList.toggle('side-ghost',sd==='ghost');document.body.classList.toggle('side-sand',sd==='sand');document.body.style.setProperty('--reach',sd==='ghost'?'#7fe0ff':'#ffcf6e');}
+function setSide(s){selectedSide=s;sfx('click');document.querySelectorAll('.sidebtn').forEach(b=>b.classList.toggle('on',b.dataset.side===s));themeSide(s);renderPick();}
 function renderPick(){
   document.getElementById('startArt').innerHTML=`${anim(SPR.heart.ghost,'')}<span class="vs">VS</span>${anim(SPR.heart.sand,'')}`;
   const _card=([k,a])=>`
@@ -1131,7 +1139,7 @@ function packGame(){
   const o={v:1,r:S.round,hf:S.half,p1:S.p1side==='ghost'?0:1,t:S.playerSide==='ghost'?0:1,
     H,C,T,he:[clampi(S.heart.ghost.hp,0,55),clampi(S.heart.sand.hp,0,55)],
     sp:[S.spDone&&S.spDone.ghost?1:0,S.spDone&&S.spDone.sand?1:0],
-    n1:(S.n1||CMD()).slice(0,12),n2:(S.n2||P2NAME()).slice(0,12),cl:S.p2claimed?1:0,rc:(S.recap||[]).slice(-5),cy:S.cycle?1:0,sl:[S.spLane&&S.spLane.ghost!=null?S.spLane.ghost:-1,S.spLane&&S.spLane.sand!=null?S.spLane.sand:-1],g:S.gid||0,tc:S.round*2+S.half};
+    n1:(S.n1||CMD()).slice(0,12),n2:(S.n2||P2NAME()).slice(0,12),cl:S.p2claimed?1:0,rc:(S.recap||[]).slice(-5),cy:S.cycle?1:0,sl:[S.spLane&&S.spLane.ghost!=null?S.spLane.ghost:-1,S.spLane&&S.spLane.sand!=null?S.spLane.sand:-1],g:S.gid||0,tc:S.round*2+S.half,co:S.coop?1:0,sd2:S.specialDeployed?1:0};
   const js=JSON.stringify(o);
   try{if(S.gid)localStorage.setItem('bzb_tc_'+S.gid,String(S.round*2+S.half));}catch(e){}
   return btoa(unescape(encodeURIComponent(js))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
@@ -1161,19 +1169,19 @@ function unpackGame(b64){
     c.bonusAtk=clampi(a[7],0,20);
     return c;});
   const tower=(sd,t)=>[0,1].map(r=>({type:'tower',side:sd,r,t,label:'Tower',nm:'Tower',hp:60,maxhp:60,atk:6,alive:true}));
-  const S2={heroes,me:null,playerSide:turnSide,twoP:true,linkP:true,half:clampi(o.hf,1,2),p1side,
+  const S2={heroes,me:null,playerSide:turnSide,twoP:true,linkP:true,coop:!!o.co,specialDeployed:!!o.sd2,half:clampi(o.hf,1,2),p1side,
     spDone:{ghost:!!(o.sp&&o.sp[0]),sand:!!(o.sp&&o.sp[1])},spLane:{},p2claimed:!!o.cl,
     n1:String(o.n1||'PLAYER 1').replace(/[<>&"'`]/g,'').slice(0,12),n2:String(o.n2||'PLAYER 2').replace(/[<>&"'`]/g,'').slice(0,12),
     tower:{ghost:tower('ghost',GW_T),sand:tower('sand',SW_T)},
     creeps,heart:{ghost:{type:'heart',side:'ghost',hp:clampi(o.he&&o.he[0],0,55),maxhp:55},sand:{type:'heart',side:'sand',hp:clampi(o.he&&o.he[1],0,55),maxhp:55}},
     speed:1,cycle:true,stats:{kills:0,creeps:0,towers:0,boss:0,lostHeroes:0,lostCreeps:0,lostTowers:0},heartLog:[],
-    round:clampi(o.r,1,999),phase:'enemy',mode:'idle',actingId:null,enemyStrat:'',specialDeployed:false,over:false,
+    round:clampi(o.r,1,999),phase:'enemy',mode:'idle',actingId:null,enemyStrat:'',over:false,
     recap:Array.isArray(o.rc)?o.rc.slice(0,5).map(x=>String(x).replace(/[<>&"'`]/g,'').slice(0,60)):[]};
   ['ghost','sand'].forEach((sd,i)=>[0,1].forEach(r=>{const w=S2.tower[sd][r],a=o.T[i]&&o.T[i][r];if(a){w.hp=clampi(a[0],0,60);w.alive=!!a[1]&&w.hp>0;}}));
   S2.cycle=('cy' in o)?!!o.cy:isDayAt(S2.round);
   S2.gid=clampi(o.g,0,999999999);
   if(Array.isArray(o.sl)){if(o.sl[0]>=0)S2.spLane.ghost=clampi(o.sl[0],0,1);if(o.sl[1]>=0)S2.spLane.sand=clampi(o.sl[1],0,1);}
-  S2.me=heroes.find(h=>h.side===turnSide&&(h.controller==='human'||h.controller==='human2'))||heroes[0];
+  S2.me=S2.coop?(heroes.find(h=>h.controller===(S2.half===1?'human':'human2'))||heroes[0]):(heroes.find(h=>h.side===turnSide&&(h.controller==='human'||h.controller==='human2'))||heroes[0]);
   return S2;
 }
 function isDayAt(r){return Math.floor((r-1)/4)%2===0;}
@@ -1202,23 +1210,33 @@ function copyTurn(){
   try{navigator.clipboard.writeText(ta.value);}catch(e){document.execCommand('copy');}
   toast('📋 LINK COPIED','sys');
 }
-function startLink(p1){
+function startLink(p1,coop){
   GEN++; creepSeq=0;
-  const s1=p1.side, s2=foeSide(s1);
+  const s1=p1.side, s2=coop?s1:foeSide(s1);
   document.body.classList.toggle('side-ghost',s1==='ghost');
   document.body.classList.toggle('side-sand',s1==='sand');
   const all=['knight','archer','ember','frost','tank','summoner'];
   const pool=all.filter(k=>k!==p1.key);
   const base1=s1==='ghost'?0:NT-1, base2=s2==='ghost'?0:NT-1;
   const heroes=[];
-  heroes.push(makeHero(p1.key,s1,'human',0,base1));
-  heroes.push(makeHero(pool[0],s1,'ally',1,base1));
-  heroes.push(makeHero(pool[1],s1,'ally',0,base1));
-  heroes.push(makeHero(pool[2],s2,'human2',0,base2));
-  heroes.push(makeHero(pool[3],s2,'enemy',1,base2));
-  heroes.push(makeHero(pool[4],s2,'enemy',0,base2));
+  if(coop){
+    const es=foeSide(s1), eb=es==='ghost'?0:NT-1;
+    heroes.push(makeHero(p1.key,s1,'human',0,base1));
+    heroes.push(makeHero(pool[0],s1,'human2',1,base1));
+    heroes.push(makeHero(pool[1],s1,'ally',0,base1));
+    heroes.push(makeHero(pool[2],es,'enemy',0,eb));
+    heroes.push(makeHero(pool[3],es,'enemy',1,eb));
+    heroes.push(makeHero(pool[4],es,'enemy',0,eb));
+  }else{
+    heroes.push(makeHero(p1.key,s1,'human',0,base1));
+    heroes.push(makeHero(pool[0],s1,'ally',1,base1));
+    heroes.push(makeHero(pool[1],s1,'ally',0,base1));
+    heroes.push(makeHero(pool[2],s2,'human2',0,base2));
+    heroes.push(makeHero(pool[3],s2,'enemy',1,base2));
+    heroes.push(makeHero(pool[4],s2,'enemy',0,base2));
+  }
   const tower=(sd,t)=>[0,1].map(r=>({type:'tower',side:sd,r,t,label:'Tower',nm:'Tower',hp:60,maxhp:60,atk:6,alive:true}));
-  S={heroes,me:heroes[0],playerSide:s1,twoP:true,linkP:true,half:1,p1side:s1,spDone:{},spLane:{},p2claimed:false,gid:1+Math.floor(Math.random()*999999990),
+  S={heroes,me:heroes[0],playerSide:s1,twoP:true,linkP:true,coop:!!coop,half:1,p1side:s1,spDone:{},spLane:{},p2claimed:false,gid:1+Math.floor(Math.random()*999999990),
     n1:CMD(),n2:'PLAYER 2',
     tower:{ghost:tower('ghost',GW_T),sand:tower('sand',SW_T)},
     creeps:[],heart:{ghost:{type:'heart',side:'ghost',hp:55,maxhp:55},sand:{type:'heart',side:'sand',hp:55,maxhp:55}},
@@ -1252,8 +1270,8 @@ function loadLinkGame(hash){
       selectedSide=S.playerSide;
       document.getElementById('startOverlay').style.display='flex';
       renderPickP2();
-      document.getElementById('tag1').innerHTML=`📤 <b>${S.n1}</b> challenges you to Bazibub! You lead the <b>${sideFolk(S.playerSide)}</b> — choose your hero.
-        <div style="margin-top:8px"><input id="cmdName2" maxlength="12" placeholder="YOUR NAME" style="font-family:var(--disp);font-size:11px;padding:9px;border:3px solid #8a6f3f;background:#f7efd6;color:#3d2c15;text-align:center"></div>`;
+      const _claimTxt=S.coop?`🤝 <b>${S.n1}</b> needs you! Fight BESIDE them for the <b>${sideFolk(S.playerSide)}</b> — choose your hero.`:`📤 <b>${S.n1}</b> challenges you to Bazibub! You lead the <b>${sideFolk(S.playerSide)}</b> — choose your hero.`;
+      document.getElementById('tag1').innerHTML=_claimTxt+`<div style="margin-top:8px"><input id="cmdName2" maxlength="12" placeholder="YOUR NAME" style="font-family:var(--disp);font-size:11px;padding:9px;border:3px solid #8a6f3f;background:#f7efd6;color:#3d2c15;text-align:center"></div>`;
       if(S.recap&&S.recap.length)document.getElementById('tag1').innerHTML+=`<div style="margin-top:8px;text-align:left;font-size:15px">📜 <b>${S.n1}'s turn:</b><br>${S.recap.slice(-4).join('<br>')}</div>`;
       LINK_CLAIM=true;
       return;
@@ -1278,43 +1296,69 @@ function claimLinkHero(pk){
   document.getElementById('startOverlay').style.display='none';
   showPass();
 }
+let PENDING_COOP=false;
+function chooseTeamMode(t){
+  PENDING_COOP=(t==='coop');sfx('click');
+  document.getElementById('teamOverlay').style.display='none';
+  if(PENDING_COOP)document.getElementById('tag1').innerHTML=PENDING_LINK
+    ?'🤝 <b>CO-OP BY LINK</b> — pick your team\'s side and YOUR hero; your friend joins your side from the link!'
+    :'🤝 <b>CO-OP</b> — Player 1: pick your team\'s side and YOUR hero. Player 2 joins your side!';
+  else document.getElementById('tag1').innerHTML=PENDING_LINK
+    ?'📤 <b>PLAY BY LINK</b> — pick your side and hero, play your turn, then send the link. Your friend picks their hero when they open it!'
+    :'🎮 <b>PLAYER 1</b> — pick your side and hero. Player 2 gets the other side!';
+}
+function isHuman(h){return h.controller==='human'||h.controller==='human2';}
 function P2NAME(){try{return localStorage.getItem('bzb_name2')||'PLAYER 2'}catch(e){return 'PLAYER 2'}}
 function sideFolk(sd){return sd==='ghost'?'Tidefolk':'Flamefolk';}
-function curName(){if(!S||!S.twoP)return CMD();if(S.linkP)return S.playerSide===S.p1side?(S.n1||'PLAYER 1'):(S.n2||'PLAYER 2');return S.playerSide===S.p1side?CMD():P2NAME();}
+function curName(){if(!S||!S.twoP)return CMD();
+  if(S.coop){const p2=S.me&&S.me.controller==='human2';if(S.linkP)return p2?(S.n2||'PLAYER 2'):(S.n1||'PLAYER 1');return p2?P2NAME():CMD();}
+  if(S.linkP)return S.playerSide===S.p1side?(S.n1||'PLAYER 1'):(S.n2||'PLAYER 2');return S.playerSide===S.p1side?CMD():P2NAME();}
 function renderPickP2(){
   document.getElementById('tag1').innerHTML=`🎮 <b>PLAYER 2</b> — you lead the ${sideFolk(selectedSide)}! Choose your hero.
     <div style="margin-top:8px"><input id="cmdName2" maxlength="12" placeholder="PLAYER 2 NAME" value="${(function(){try{return (localStorage.getItem('bzb_name2')||'').replace(/[<>&\"']/g,'')}catch(e){return ''}})()}" style="font-family:var(--disp);font-size:11px;padding:9px;border:3px solid #8a6f3f;background:#f7efd6;color:#3d2c15;text-align:center"></div>`;
   document.querySelector('.sidepick').style.display='none';
   const sh2=document.getElementById('sideH2');if(sh2)sh2.style.display='none';
+  themeSide(selectedSide);
   renderPick();
   document.getElementById('startOverlay').scrollTop=0;
 }
 function newGame(pk){
   if(LINK_CLAIM){claimLinkHero(pk);return;}
-  if(PENDING_LINK){PENDING_LINK=false;startLink({side:selectedSide,key:pk});return;}
-  if(PENDING_2P&&!P1SEL){P1SEL={side:selectedSide,key:pk};selectedSide=foeSide(selectedSide);renderPickP2();return;}
+  if(PENDING_LINK){PENDING_LINK=false;startLink({side:selectedSide,key:pk},PENDING_COOP);return;}
+  if(PENDING_2P&&!P1SEL){P1SEL={side:selectedSide,key:pk};if(!PENDING_COOP)selectedSide=foeSide(selectedSide);renderPickP2();if(PENDING_COOP)document.getElementById('tag1').innerHTML=`🤝 <b>PLAYER 2</b> — you fight BESIDE ${CMD()==='YOU'?'Player 1':CMD()} for the ${sideFolk(selectedSide)}! Choose a different hero.\n    <div style="margin-top:8px"><input id="cmdName2" maxlength="12" placeholder="PLAYER 2 NAME" style="font-family:var(--disp);font-size:11px;padding:9px;border:3px solid #8a6f3f;background:#f7efd6;color:#3d2c15;text-align:center"></div>`;return;}
   if(PENDING_2P&&P1SEL){
     try{const inp=document.getElementById('cmdName2');if(inp&&inp.value.trim())localStorage.setItem('bzb_name2',inp.value.trim().replace(/[<>&"'`]/g,'').slice(0,12));}catch(e){}
-    start2P(P1SEL,{side:selectedSide,key:pk});return;}
+    if(PENDING_COOP&&pk===P1SEL.key){toast('Pick a DIFFERENT hero to your teammate!','sys');return;}
+    start2P(P1SEL,{side:selectedSide,key:pk},PENDING_COOP);return;}
   realNewGame(pk);
 }
-function start2P(p1,p2){
+function start2P(p1,p2,coop){
   GEN++; creepSeq=0;
-  const s1=p1.side, s2=p2.side;
+  const s1=p1.side, s2=coop?p1.side:p2.side;
   document.body.classList.toggle('side-ghost',s1==='ghost');
   document.body.classList.toggle('side-sand',s1==='sand');
   const all=['knight','archer','ember','frost','tank','summoner'];
   const pool=all.filter(k=>k!==p1.key&&k!==p2.key);
   const base1=s1==='ghost'?0:NT-1, base2=s2==='ghost'?0:NT-1;
   const heroes=[];
-  heroes.push(makeHero(p1.key,s1,'human',0,base1));
-  heroes.push(makeHero(pool[0],s1,'ally',1,base1));
-  heroes.push(makeHero(pool[1],s1,'ally',0,base1));
-  heroes.push(makeHero(p2.key,s2,'human2',0,base2));
-  heroes.push(makeHero(pool[2]||pool[0],s2,'enemy',1,base2));
-  heroes.push(makeHero(pool[3]||pool[1],s2,'enemy',0,base2));
+  if(coop){
+    const es=foeSide(s1), eb=es==='ghost'?0:NT-1;
+    heroes.push(makeHero(p1.key,s1,'human',0,base1));
+    heroes.push(makeHero(p2.key,s1,'human2',1,base1));
+    heroes.push(makeHero(pool[0],s1,'ally',0,base1));
+    heroes.push(makeHero(pool[1],es,'enemy',0,eb));
+    heroes.push(makeHero(pool[2],es,'enemy',1,eb));
+    heroes.push(makeHero(pool[3],es,'enemy',0,eb));
+  }else{
+    heroes.push(makeHero(p1.key,s1,'human',0,base1));
+    heroes.push(makeHero(pool[0],s1,'ally',1,base1));
+    heroes.push(makeHero(pool[1],s1,'ally',0,base1));
+    heroes.push(makeHero(p2.key,s2,'human2',0,base2));
+    heroes.push(makeHero(pool[2]||pool[0],s2,'enemy',1,base2));
+    heroes.push(makeHero(pool[3]||pool[1],s2,'enemy',0,base2));
+  }
   const tower=(sd,t,label,nm)=>[0,1].map(r=>({type:'tower',side:sd,r,t,label,nm,hp:60,maxhp:60,atk:6,alive:true}));
-  S={heroes,me:heroes[0],playerSide:s1,twoP:true,half:1,p1side:s1,spDone:{},
+  S={heroes,me:heroes[0],playerSide:s1,twoP:true,coop:!!coop,half:1,p1side:s1,spDone:{},
     tower:{ghost:tower('ghost',GW_T,'Tower','Tower'),sand:tower('sand',SW_T,'Tower','Tower')},
     creeps:[],heart:{ghost:{type:'heart',side:'ghost',hp:55,maxhp:55},sand:{type:'heart',side:'sand',hp:55,maxhp:55}},
     speed:(function(){try{return localStorage.getItem('bzb_speed')==='2'?2:1}catch(e){return 1}})(),cycle:true,
@@ -1322,6 +1366,9 @@ function start2P(p1,p2){
   document.body.style.setProperty('--reach', s1==='ghost'?'#7fe0ff':'#ffcf6e');
   document.getElementById('startOverlay').style.display='none';
   playIntro();
+}
+function swapMe(){
+  S.me=S.heroes.find(h=>h.side===S.playerSide&&isHuman(h)&&h!==S.me)||S.me;
 }
 function swapView(){
   S.playerSide=foeSide(S.playerSide);
@@ -1520,7 +1567,7 @@ const SPECIAL={ghost:{name:'Water Priestess',emoji:'💧',desc:'A serene water m
                sand:{name:'Fire Knight',emoji:'🔥',desc:'A blazing champion — easier to fell (40 HP), but his great sword hits like a hammer.'}};
 function showDeploy(){
   if(S.round!==SPECIAL_ROUND) return;
-  if(S.twoP){
+  if(S.twoP&&!S.coop){
     if(S.spDone[S.playerSide]) return;
     const sp2=SPECIAL[S.playerSide];
     document.getElementById('deployCard').innerHTML=`<h2>DEPLOY YOUR ${sp2.name.toUpperCase()} ${sp2.emoji}</h2>
@@ -1608,6 +1655,21 @@ function clickAct(kind){
 async function endTurn(){
   if(S.phase!=='player'||S.over) return; sfx('click'); S.me.snared=false; S.mode='idle';S.phase='enemy';render();
   const gen=GEN, stale=()=>GEN!==gen||!S||S.over;
+  if(S.twoP&&S.coop){
+    if(S.half===1){
+      S.half=2; swapMe(); if(S.linkP)showShare(); else showPass(); return;
+    }
+    for(const h of [...S.heroes.filter(h=>h.side===S.playerSide&&!isHuman(h)),...S.heroes.filter(h=>h.side!==S.playerSide)]){ if(stale())return; await botTurn(h); }
+    if(stale())return;
+    S.actingId=null; await wait(120); if(stale())return;
+    await creepPhase(); if(stale())return;
+    await towerPhase(); if(stale())return;
+    worldTick(); render(); if(stale())return;
+    await wait(220); if(stale())return;
+    S.round++;
+    if((S.round-1)%WAVE_EVERY===0){ rollEnemyPlan(); spawnWave(); }
+    S.half=1; swapMe(); if(S.linkP)showShare(); else showPass(); return;
+  }
   if(S.twoP){
     const curSide=S.playerSide;
     for(const h of S.heroes.filter(h=>h.side===curSide&&h.controller!=='human'&&h.controller!=='human2')){ if(stale())return; await botTurn(h); }
@@ -1918,6 +1980,19 @@ function heartFall(side){if(!S||S.over)return; S.over=true; S.fallSide=side; con
   toast(win?'💥 THE ENEMY CASTLE SHATTERS!':'💔 YOUR CASTLE SHATTERS!',side);
   setTimeout(()=>{if(GEN!==gen||!S)return; showEnd(win);},1700);}
 function showEnd(win){
+  if(S.twoP&&S.coop){
+    const nm=(S.linkP?(S.n1||'PLAYER 1'):CMD())+' & '+(S.linkP?(S.n2||'PLAYER 2'):P2NAME());
+    sfx(win?'victory':'defeat');
+    document.getElementById('endTitle').textContent=win?`🏆 ${nm} WIN!`:'SO CLOSE!';
+    document.getElementById('endTitle').classList.toggle('lost',!win);
+    document.getElementById('endTitle').style.color='';
+    document.getElementById('againBtn').textContent=win?'▶ PLAY AGAIN':'⚔ REMATCH';
+    const conf3=win?Array.from({length:18},(_,i)=>`<i class="conf" style="left:${4+i*5}%;animation-delay:${(i%6)*.32}s;background:${['#ffd24a','#46c8ff','#5fe39a','#ff5d6c','#fff'][i%5]}"></i>`).join(''):'';
+    const hs=S.heroes.filter(isHuman);
+    document.getElementById('endArt').innerHTML=win?`<div class="endscene">${conf3}<div class="rays"></div><img class="crown" src="${SPR.crown}">${anim(SPR.hero[hs[0].key][hs[0].side],'endhero')}</div>`:`<div class="endscene">${anim(SPR.heart[S.playerSide+'Low'],'endheart')}</div>`;
+    document.getElementById('endText').innerHTML=(win?`Side by side, <b>${nm}</b> smashed the enemy Castle in ${S.round} rounds!`:`The ${enemyName()} held their castle — this time. Rally together and strike back!`)+(S.linkP?`<div style="margin-top:10px"><button class="big" onclick="showShare()">📤 SEND THE RESULT</button></div>`:'');
+    document.getElementById('endOverlay').style.display='flex';
+    return;}
   if(S.twoP){sfx('victory');
     const winSide=foeSide(S.fallSide), wHero=S.heroes.find(h=>h.side===winSide&&(h.controller==='human'||h.controller==='human2'));
     const wName=S.linkP?(winSide===S.p1side?(S.n1||'PLAYER 1'):(S.n2||'PLAYER 2')):(winSide===S.p1side?CMD():P2NAME());
@@ -1992,7 +2067,7 @@ function playIntro(){introMode='start';
 }
 function finishIntro(){if(introDone)return;introDone=true;introT.forEach(clearTimeout);introT=[];
   document.getElementById('introOverlay').style.display='none';
-  if(introMode==='start'){if(!S.twoP)rollEnemyPlan(); spawnWave(); if(S.twoP&&!S.linkP){S.phase='enemy';showPass();}else beginPlayerPhase();} else render();}
+  if(introMode==='start'){if(!S.twoP||S.coop)rollEnemyPlan(); spawnWave(); if(S.twoP&&!S.linkP){S.phase='enemy';showPass();}else beginPlayerPhase();} else render();}
 function skipIntro(){finishIntro();}
 function playArrival(myLane,enLane){
   introMode='arrival';
@@ -2030,7 +2105,8 @@ function confirmLanes(){
   playIntro();
 }
 function restartGame(){
-  PENDING_2P=false;P1SEL=null;selectedSide='ghost';
+  PENDING_2P=false;P1SEL=null;PENDING_COOP=false;selectedSide='ghost';themeSide('ghost');
+  const tov=document.getElementById('teamOverlay');if(tov)tov.style.display='none';
   document.querySelectorAll('.sidebtn').forEach(b=>b.classList.toggle('on',b.dataset.side==='ghost'));
   const sh2=document.getElementById('sideH2');if(sh2)sh2.style.display='';
   const po=document.getElementById('passOverlay');if(po)po.style.display='none';
