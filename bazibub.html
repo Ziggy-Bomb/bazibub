@@ -662,6 +662,8 @@
   @keyframes healrise{from{transform:translate(-50%,-40%)}to{transform:translate(-50%,-85%)}}
   .creepghost .fr{filter:hue-rotate(-8deg) saturate(1.2)}
   .tok.creepsand .asp{filter:drop-shadow(0 0 5px rgba(255,120,40,.7)) drop-shadow(2px 2px 0 rgba(0,0,0,.3))}
+
+  .dmglog{font-size:12px;color:#6b5636;margin-top:8px;text-align:left;line-height:1.5}
 </style>
 </head>
 <body>
@@ -733,7 +735,7 @@
     </div>
     <h2 style="margin-top:30px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v3.5.1 · © 2026 · art: Pixel Frog · chierit · rvros · Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v3.5.2 · © 2026 · art: Pixel Frog · chierit · rvros · Pimen</div></div>
 </div>
 
 <div class="overlay" id="deployOverlay" style="display:none">
@@ -929,7 +931,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='3.5.1';
+const GAME_VER='3.5.2';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1084,7 +1086,7 @@ function newGame(pk){
   S={heroes,me:heroes[0],playerSide:side,tower:{ghost:tower('ghost',GW_T,'Tower','Tower'),sand:tower('sand',SW_T,'Tower','Tower')},
     creeps:[],heart:{ghost:{type:'heart',side:'ghost',hp:55,maxhp:55},sand:{type:'heart',side:'sand',hp:55,maxhp:55}},
     speed:(function(){try{return localStorage.getItem('bzb_speed')==='2'?2:1}catch(e){return 1}})(),cycle:true,
-    stats:{kills:0,creeps:0,towers:0,boss:0,lostHeroes:0,lostCreeps:0,lostTowers:0},round:1,phase:'player',mode:'idle',actingId:null,enemyStrat:'',specialDeployed:false,over:false};
+    stats:{kills:0,creeps:0,towers:0,boss:0,lostHeroes:0,lostCreeps:0,lostTowers:0},heartLog:[],round:1,phase:'player',mode:'idle',actingId:null,enemyStrat:'',specialDeployed:false,over:false};
   document.body.style.setProperty('--reach', side==='ghost'?'#7fe0ff':'#ffcf6e');
   document.getElementById('startOverlay').style.display='none';
   log('The lanes stir. Lead your horde, commander.','sys');
@@ -1170,6 +1172,7 @@ function dealDamage(attackerSide,u,amt,lane){
   if(u.type==='heart'&&S.round<SUDDEN_ROUND&&towerAlive(u.side,0)&&towerAlive(u.side,1)){pushFloat(u,'🛡 protected','good');return;}
   if(u.type==='hero'&&u.shield>0){const a=Math.min(u.shield,amt);u.shield-=a;amt-=a;pushFloat(u,'-'+a+'shield','good');if(amt<=0)return;}
   u.hp-=amt; pushFloat(u,'-'+amt,'bad');
+  if(u.type==='heart')S.heartLog.push({r:S.round,side:u.side,amt,src:'hit by the '+(attackerSide==='ghost'?'Tidefolk':'Flamefolk')});
   if(u.hp<=0){
     const mine=attackerSide===S.playerSide;
     if(u.type==='hero'){u.alive=false;u.hp=0;u.shield=0;u.respawnIn=1+Math.floor((S.round-1)/4);u.diedRound=S.round;pushFloat(u,'💀','bad');
@@ -1421,7 +1424,7 @@ function worldTick(){
   S.creeps=S.creeps.filter(c=>c.alive);
   // sudden death: from round 20 both Hearts crumble faster every round — no endless games
   if(S.round>=SUDDEN_ROUND){const dk=1+Math.floor((S.round-SUDDEN_ROUND)/2);
-    ['ghost','sand'].forEach(sd=>{S.heart[sd].hp-=dk;pushFloat(S.heart[sd],'⚡-'+dk,'bad');});
+    ['ghost','sand'].forEach(sd=>{S.heart[sd].hp-=dk;pushFloat(S.heart[sd],'⚡-'+dk,'bad');S.heartLog.push({r:S.round,side:sd,amt:dk,src:'⚡ sudden death'});});
     toast('⚡ SUDDEN DEATH — BOTH CASTLES CRUMBLE −'+dk,'sys');}
   const es=foeSide(S.playerSide);
   if(S.heart[es].hp<=0) heartFall(es); else if(S.heart[S.playerSide].hp<=0) heartFall(S.playerSide);
@@ -1637,6 +1640,7 @@ function showEnd(win){sfx(win?'victory':'defeat');
     `<div class="earned">☆ ${CMD()} the ${st.towers>=3?'Tower Toppler':st.boss>=1&&win?'Monster Slayer':win&&S.round<=10?'Lightning General':st.kills>=4?'Fearless Duelist':win?'Castle-Smasher':'Brave Defender'} ☆</div>`)+
     `<div class="scorebox">${rows.map((r,i)=>`<div class="srow" style="animation-delay:${(.3+i*.4).toFixed(1)}s"><span>${r.ic} ${r.lb}</span><b class="${r.pts<0?'neg':''}">${r.pts<0?'−':'+'}<span class="cnt0" data-t="${Math.abs(r.pts)}">0</span></b></div>`).join('')}
      <div class="srow total" style="animation-delay:${(.3+rows.length*.4).toFixed(1)}s"><span>SCORE</span><b>+<span class="cnt0" data-t="${total}">0</span></b></div>
+     ${(S.heartLog||[]).some(e=>e.side===S.playerSide)?`<div class="dmglog">📜 Your castle's damage: ${S.heartLog.filter(e=>e.side===S.playerSide).slice(0,8).map(e=>`R${e.r} −${e.amt} (${e.src})`).join(' · ')}</div>`:''}
      ${isBest?`<div class="newbest" style="animation-delay:${(.7+rows.length*.4).toFixed(1)}s">🌟 ${CMD()}'S NEW BEST SCORE!</div>`:`<div class="bestline" style="animation-delay:${(.7+rows.length*.4).toFixed(1)}s">${CMD()}'s best: ${Math.max(best,total)}</div>`}</div>`;
   document.getElementById('endOverlay').style.display='flex';
   document.querySelectorAll('#endText .cnt0').forEach((el,i)=>{
