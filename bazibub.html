@@ -733,7 +733,7 @@
     </div>
     <h2 style="margin-top:30px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v3.5.0 · © 2026 · art: Pixel Frog · chierit · rvros · Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v3.5.1 · © 2026 · art: Pixel Frog · chierit · rvros · Pimen</div></div>
 </div>
 
 <div class="overlay" id="deployOverlay" style="display:none">
@@ -929,7 +929,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='3.5.0';
+const GAME_VER='3.5.1';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1167,16 +1167,17 @@ function specialAbility(c){
 
 /* ===================== COMBAT ===================== */
 function dealDamage(attackerSide,u,amt,lane){
+  if(u.type==='heart'&&S.round<SUDDEN_ROUND&&towerAlive(u.side,0)&&towerAlive(u.side,1)){pushFloat(u,'🛡 protected','good');return;}
   if(u.type==='hero'&&u.shield>0){const a=Math.min(u.shield,amt);u.shield-=a;amt-=a;pushFloat(u,'-'+a+'shield','good');if(amt<=0)return;}
   u.hp-=amt; pushFloat(u,'-'+amt,'bad');
   if(u.hp<=0){
     const mine=attackerSide===S.playerSide;
-    if(u.type==='hero'){u.alive=false;u.hp=0;u.shield=0;u.respawnIn=1+Math.floor((S.round-1)/4);pushFloat(u,'💀','bad');
+    if(u.type==='hero'){u.alive=false;u.hp=0;u.shield=0;u.respawnIn=1+Math.floor((S.round-1)/4);u.diedRound=S.round;pushFloat(u,'💀','bad');
       if(mine)S.stats.kills++; else if(u.side===S.playerSide)S.stats.lostHeroes++;
       burst(uid(u),'#ffffff',10); shake(); sfx('death');
       log(`💀 ${u.name} is destroyed! (back in ${u.respawnIn})`,u.side,true);
       if(u===S.me)toast(`YOU ARE DOWN — back in ${u.respawnIn}`,foeSide(S.playerSide)); else toast(`${u.name} FALLS`,u.side);}
-    else if(u.type==='tower'){u.alive=false;u.hp=0;if(mine)S.stats.towers++; else if(u.side===S.playerSide)S.stats.lostTowers++;
+    else if(u.type==='tower'){u.alive=false;u.hp=0;S.towerFell=true;if(mine)S.stats.towers++; else if(u.side===S.playerSide)S.stats.lostTowers++;
       burst('tower:'+u.side+':'+u.r,'#ffd954',14); boomAt('tower:'+u.side+':'+u.r,130); shake(); sfx('explode');
       log(`💥 The ${u.label} on ${ROUTES[u.r].nm} shatters!`,'sys',true);toast(`${u.label} DOWN`,'sys');
       toast(u.side===S.playerSide?`⚠️ YOUR CASTLE IS OPEN VIA ${ROUTES[u.r].nm}!`:`🎯 ENEMY CASTLE IS OPEN VIA ${ROUTES[u.r].nm}!`,u.side===S.playerSide?foeSide(S.playerSide):S.playerSide);}
@@ -1208,8 +1209,8 @@ function castAbility(h,target){const ab=h.abil;ab.cur=ab.cd;
   if(h.key==='knight'){let n=0;liveCreeps().forEach(c=>{if(c.side===h.side&&c.lane===h.pos.r){c.maxhp+=6;c.hp=c.maxhp;pushFloat(c,'+HP','good');n++;}});sfx('cheer');log(`${h.name} bellows ⚡WAR CRY! ${n} creep(s) toughened.`,h.side,true);toast('WAR CRY!',h.side);}
   else if(h.key==='ember'){let n=0;liveCreeps().forEach(c=>{if(c.side===h.side&&c.lane===h.pos.r){c.bonusAtk+=2;pushFloat(c,'+ATK','good');n++;}});sfx('cheer');log(`${h.name} raises the ⚡EMBER BANNER! ${n} creep(s) enraged.`,h.side,true);toast('EMBER BANNER!',h.side);}
   else if(h.key==='archer'){queueFx(uid(h),uid(target),'arrow');dealDamage(h.side,target,3);target.snared=true;pushFloat(target,'PINNED','bad');log(`${h.name} ⚡PINS ${target.name} — it can’t move next turn!`,h.side,true);}
-  else if(h.key==='frost'){target.shield=(target.shield||0)+18;target.shieldT=2;queueFx(uid(h),uid(target),'heal');pushFloat(target,'+SHIELD','good');log(`${h.name} wraps ${target===h?'itself':target.name} in a ⚡FROST BARRIER (absorb 18).`,h.side,true);toast('FROST BARRIER',h.side);}
-  else if(h.key==='tank'){h.shield=(h.shield||0)+24;h.shieldT=2;sfx('shield');pushFloat(h,'+SHIELD','good');log(`${h.name} raises a ⚡BULWARK (absorb 24).`,h.side,true);toast('BULWARK',h.side);}
+  else if(h.key==='frost'){target.shield=(target.shield||0)+18;target.shieldT=2;target.shieldCast=S.round;queueFx(uid(h),uid(target),'heal');pushFloat(target,'+SHIELD','good');log(`${h.name} wraps ${target===h?'itself':target.name} in a ⚡FROST BARRIER (absorb 18).`,h.side,true);toast('FROST BARRIER',h.side);}
+  else if(h.key==='tank'){h.shield=(h.shield||0)+24;h.shieldT=2;h.shieldCast=S.round;sfx('shield');pushFloat(h,'+SHIELD','good');log(`${h.name} raises a ⚡BULWARK (absorb 24).`,h.side,true);toast('BULWARK',h.side);}
   else if(h.key==='summoner'){target.hp=Math.min(target.maxhp,target.hp+15);queueFx(uid(h),uid(target),'heal');fxAt(uid(target),h.side==='ghost'?'healw':'healf',260);pushFloat(target,'+15','good');log(`${h.name} ⚡MENDS ${target===h?'itself':target.name} (+15).`,h.side,true);}
 }
 
@@ -1352,6 +1353,7 @@ async function botTurn(h){
       if(!acted && h.ap>=COST.move && !h.snared){if(botStep1(h)){h.ap-=COST.move;acted=true;}}
     }
     if(!acted) break; render(); await wait(230);
+    if(S.towerFell){S.towerFell=false;break;}
   }
   h.snared=false;
 }
@@ -1413,13 +1415,14 @@ function worldTick(){
   for(const side of ['ghost','sand']) S.tower[side].forEach(w=>{ if(!w.alive)return;
     aliveHeroes(side).forEach(h=>{if(h.pos.r===w.r&&Math.abs(h.pos.t-w.t)<=1&&h.hp<h.maxhp){h.hp=Math.min(h.maxhp,h.hp+4);pushFloat(h,'+4','good');}});});
   S.heroes.forEach(h=>{if(h.alive&&h.hp<h.maxhp){h.hp=Math.min(h.maxhp,h.hp+h.regen);pushFloat(h,'+'+h.regen,'good');}});
-  S.heroes.forEach(h=>{if(h.shield>0){h.shieldT=(h.shieldT||1)-1;if(h.shieldT<=0){h.shield=0;pushFloat(h,'shield fades','bad');}}});
-  S.heroes.forEach(h=>{if(!h.alive){h.respawnIn--;if(h.respawnIn<=0){h.alive=true;h.hp=h.maxhp;h.stunned=false;h.snared=false;h.shield=0;h.pos={r:h.preferredLane,t:h.side==='ghost'?0:NT-1};log(`${h.name} returns to the fight.`,h.side);}}
+  S.heroes.forEach(h=>{if(h.shield>0&&h.shieldCast!==S.round){h.shieldT=(h.shieldT||0)-1;if(h.shieldT<=0){h.shield=0;pushFloat(h,'shield fades','bad');}}});
+  S.heroes.forEach(h=>{if(!h.alive){if(h.diedRound===S.round){h.diedRound=-1;return;}h.respawnIn--;if(h.respawnIn<=0){h.alive=true;h.hp=h.maxhp;h.stunned=false;h.snared=false;h.shield=0;h.pos={r:h.preferredLane,t:h.side==='ghost'?0:NT-1};log(`${h.name} returns to the fight.`,h.side);}}
     if(h.spell.cur>0)h.spell.cur--; if(h.abil.cur>0)h.abil.cur--;});
   S.creeps=S.creeps.filter(c=>c.alive);
   // sudden death: from round 20 both Hearts crumble faster every round — no endless games
   if(S.round>=SUDDEN_ROUND){const dk=1+Math.floor((S.round-SUDDEN_ROUND)/2);
-    ['ghost','sand'].forEach(sd=>{S.heart[sd].hp-=dk;pushFloat(S.heart[sd],'-'+dk,'bad');});}
+    ['ghost','sand'].forEach(sd=>{S.heart[sd].hp-=dk;pushFloat(S.heart[sd],'⚡-'+dk,'bad');});
+    toast('⚡ SUDDEN DEATH — BOTH CASTLES CRUMBLE −'+dk,'sys');}
   const es=foeSide(S.playerSide);
   if(S.heart[es].hp<=0) heartFall(es); else if(S.heart[S.playerSide].hp<=0) heartFall(S.playerSide);
 }
@@ -1448,7 +1451,7 @@ function heartCell(side){const ht=S.heart[side],frac=ht.hp/ht.maxhp,low=frac<.35
      ${anim(low?SPR.heart[side+'Low']:SPR.heart[side],'h')}
      <div class="nmh">${mine?'YOUR':'ENEMY'}<br>CASTLE</div>
      <div class="hpl">CASTLE HEALTH</div>
-     <div class="protec">${towerAlive(side,0)&&towerAlive(side,1)?'🛡 towers guard it':(!towerAlive(side,0)&&!towerAlive(side,1)?'⚠️ OPEN — both roads':'⚠️ OPEN via '+(towerAlive(side,0)?'ROOTWAY':'SUNPATH'))}</div>
+     <div class="protec">${S.round>=SUDDEN_ROUND?'⚡ SUDDEN DEATH!':towerAlive(side,0)&&towerAlive(side,1)?'🛡 towers guard it':(!towerAlive(side,0)&&!towerAlive(side,1)?'⚠️ OPEN — both roads':'⚠️ OPEN via '+(towerAlive(side,0)?'ROOTWAY':'SUNPATH'))}</div>
      <div class="vbar"><i style="height:${100*frac}%;background:${hpColor(frac)}"></i></div>
      <small>${Math.max(0,ht.hp)}/${ht.maxhp}</small>
      <div class="warnH">${mine?'If it shatters, you lose.':'Shatter it to win!'}</div>${pen}</div>`;}
