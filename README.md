@@ -14,4 +14,8 @@ sound are inside it. To change the game, edit that file. To play a local
 copy, just open it in any browser.
 
 © 2026 Bazibub. All rights reserved.
-Character and building artwork adapted from ["Tiny Swords" by Pixel Frog](https://pixelfrog-assets.itch.io/tiny-swords); slimes from ["Pixel Slime Asset Pack" by GreenRangerPIX](https://greenrangerpix.itch.io/pixel-slime-asset) (CC-BY). Thank you both!
+Artwork credits (thank you all!):
+- ["Tiny Swords" by Pixel Frog](https://pixelfrog-assets.itch.io/tiny-swords) — heroes, castles, towers, scenery
+- ["Elementals" by chierit](https://itch.io/c/1853936/elementals) (CC-BY) — Water Priestess & Fire Knight champions
+- ["Animated Pixel Slime" by rvros](https://rvros.itch.io/pixel-art-animated-slime) — creeps
+- [Spell effects by Pimen](https://pimen.itch.io/) — fire & ice impacts
