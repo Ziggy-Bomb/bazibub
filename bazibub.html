@@ -759,7 +759,7 @@
     </div>
     <h2 style="margin-top:30px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v4.1.0 · © 2026 · art: Pixel Frog · chierit · rvros · Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v4.1.1 · © 2026 · art: Pixel Frog · chierit · rvros · Pimen</div></div>
 </div>
 
 <div class="overlay" id="passOverlay" style="display:none;z-index:64">
@@ -962,7 +962,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='4.1.0';
+const GAME_VER='4.1.1';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1338,7 +1338,7 @@ function beginPlayerPhase(){const me=S.me;me.ap=AP_MAX;S.phase='player';S.mode='
     aliveHeroes(fav).forEach(hh=>{if(hh.hp<hh.maxhp){hh.hp=Math.min(hh.maxhp,hh.hp+15);pushFloat(hh,'+15','good');}});
     liveCreeps().forEach(c=>{if(c.side===fav&&c.hp<c.maxhp){c.hp=Math.min(c.maxhp,c.hp+15);pushFloat(c,'+15','good');}});
     healPulse(fav);}
-  sfx('turn'); toast(S.twoP?curName().toUpperCase()+"'S TURN":'YOUR TURN',S.playerSide);
+  sfx('turn'); toast(S.twoP?(curName().toUpperCase()==='YOU'?'YOUR TURN':curName().toUpperCase()+"'S TURN"):'YOUR TURN',S.playerSide);
   if(me.alive&&me.stunned){me.stunned=false;me.snared=false;me.ap=0;log('❄️ You are frozen this round — End Turn.','sys');toast('FROZEN','sys');}
   render();
   showDeploy();
@@ -1568,7 +1568,7 @@ function tname(u){return u.type==='heart'?`the ${u.side==='ghost'?'Tidefolk':'Fl
 function img(src,cls){return `<img class="spr ${cls}" src="${src}">`;}
 function render(){renderBanner();renderBoard();renderControls();applyFloats();flushFx();}
 function renderBanner(){const b=document.getElementById('banner'),you=S.phase==='player';
-  if(S.twoP){b.className='banner '+(S.playerSide===S.p1side?'you':'foe2');b.innerHTML=`<span class="dot"></span><span>${you?curName().toUpperCase()+"'S TURN":'BOTS MOVING'}</span>
+  if(S.twoP){b.className='banner '+(S.playerSide===S.p1side?'you':'foe2');const nm2=curName().toUpperCase();b.innerHTML=`<span class="dot"></span><span>${you?(nm2==='YOU'?'YOUR TURN':nm2+"'S TURN"):'BOTS MOVING'}</span>
     <span class="right"><button class="spd" onclick="toggleSpeed()" title="game speed">⏩ ${S.speed}×</button></span>`;return;}
   b.className='banner '+(you?'you':'foe2');
   b.style.color = (you?S.playerSide:foeSide(S.playerSide))==='ghost'?'var(--ghost)':'var(--sand)';
