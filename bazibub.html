@@ -726,6 +726,11 @@
   .tok.ready .asp{filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 12px var(--gold)) drop-shadow(2px 3px 2px rgba(0,0,0,.4))!important}
   .heart .vbar{border-radius:6px;overflow:hidden}
   .heart .vbar i{background-image:linear-gradient(90deg,rgba(255,255,255,.35),rgba(255,255,255,0) 60%)}
+
+  /* v4.5: towers pinned — never nudged by creeps */
+  .twrpin{position:absolute;bottom:12px;z-index:2;pointer-events:auto}
+  .twrpin.edge-r{right:2px}
+  .twrpin.edge-l{left:2px}
 </style>
 </head>
 <body>
@@ -770,7 +775,7 @@
     <h1 style="margin-bottom:4px">BAZIBUB</h1>
     <div class="hint" style="margin-bottom:14px">Tidefolk vs Flamefolk</div>
     <div id="nameRow" style="display:none;margin-bottom:12px"><div class="hint" style="margin-bottom:6px">What shall we call you, commander?</div><input id="cmdName" maxlength="12" placeholder="YOUR NAME"></div>
-    <div id="newchip" class="hint" style="display:none;margin-bottom:10px;color:#8a5c12">✨ NEW in v4.4 — smooth HD look & living coastal/volcanic arenas!</div>
+    <div id="newchip" class="hint" style="display:none;margin-bottom:10px;color:#8a5c12">✨ NEW in v4.5 — a whole new MECH era: every character redrawn!</div>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('play')">▶ PLAY vs BOTS</button>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('2p')">👥 2 PLAYERS — pass &amp; play</button>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('link')">📤 PLAY BY LINK — turns over WhatsApp</button>
@@ -800,7 +805,7 @@
     </div>
     <h2 style="margin-top:30px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v4.4.0 · © 2026 · art: Pixel Frog · chierit · rvros · Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v4.5.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1021,7 +1026,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='4.4.0';
+const GAME_VER='4.5.0';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1529,9 +1534,9 @@ function creepTarget(c){
 function creepAttack(c,t){ queueFx(uid(c),uid(t),'slash'); dealDamage(c.side,t,c.atk+c.bonusAtk,c.lane); }
 function specialAbility(c){
   if(c.special==='ghost'){ const t=creepTarget(c); if(!t)return; queueFx(uid(c),uid(t),'frost');fxAt(uid(t),'ice',430); dealDamage(c.side,t,c.atk,c.lane);
-    const heal=Math.floor(c.atk/2); c.hp=Math.min(c.maxhp,c.hp+heal); pushFloat(c,'drain+'+heal,'good'); sfx('drain'); log(`💧 The Water Priestess freezes ${tname(t)} for ${c.atk}!`,'ghost',true); toast('FREEZING GRIP!',c.side); }
+    const heal=Math.floor(c.atk/2); c.hp=Math.min(c.maxhp,c.hp+heal); pushFloat(c,'drain+'+heal,'good'); sfx('drain'); log(`💧 The Tide Titan freezes ${tname(t)} for ${c.atk}!`,'ghost',true); toast('FREEZING GRIP!',c.side); }
   else { const t=creepTarget(c); if(!t)return; queueFx(uid(c),uid(t),'flamejet');fxAt(uid(t),'fire',300); dealDamage(c.side,t,c.atk+2,c.lane);
-    sfx('blast'); log(`💣 The Fire Knight SCORCHES ${tname(t)} for ${c.atk+2}!`,'sand',true); toast('FLAME BURST!',c.side); }
+    sfx('blast'); log(`💣 The Magma Titan SCORCHES ${tname(t)} for ${c.atk+2}!`,'sand',true); toast('FLAME BURST!',c.side); }
 }
 
 /* ===================== COMBAT ===================== */
@@ -1602,8 +1607,8 @@ function beginPlayerPhase(){const me=S.me;me.ap=AP_MAX;S.phase='player';S.mode='
   render();
   showDeploy();
 }
-const SPECIAL={ghost:{name:'Water Priestess',emoji:'💧',desc:'A serene water mage — her flowing wards soak up huge damage (100 HP), but she strikes softly.'},
-               sand:{name:'Fire Knight',emoji:'🔥',desc:'A blazing champion — easier to fell (40 HP), but his great sword hits like a hammer.'}};
+const SPECIAL={ghost:{name:'Tide Titan',emoji:'💧',desc:'A colossal water-core siege mech — its shielding soaks up huge damage (100 HP), but it strikes softly.'},
+               sand:{name:'Magma Titan',emoji:'🔥',desc:'A blazing siege mech — easier to fell (40 HP), but its flame cannon hits like a hammer.'}};
 function showDeploy(){
   if(S.round!==SPECIAL_ROUND) return;
   if(S.twoP&&!S.coop){
@@ -1938,7 +1943,7 @@ function laneCol(r){const me=S.me,R=ROUTES[r];
     tiles+=`<div class="tile ${cls}${rc}${inR}" data-tile="${r},${t}">
        <div class="tloc">${loc}</div>${xarrow}${hptr}
        <div class="heroRow">${gHero?`<div class="zside g">${gHero}</div>`:''}${sHero?`<div class="zside s">${sHero}</div>`:''}</div>
-       <div class="frontRow">${gCreep?`<div class="zside g">${gCreep}</div>`:''}${mid?`<div class="mid ${midSide==='ghost'?'edge-r':'edge-l'}">${mid}</div>`:''}${sCreep?`<div class="zside s">${sCreep}</div>`:''}</div></div>`;
+       <div class="frontRow">${gCreep?`<div class="zside g">${gCreep}</div>`:''}${sCreep?`<div class="zside s">${sCreep}</div>`:''}</div>${mid?`<div class="twrpin ${midSide==='ghost'?'edge-r':'edge-l'}">${mid}</div>`:''}</div>`;
   }
   return `<div class="lanewrap ${R.cls} ${isDay()?'day':'night'}">${sceneHTML(r)}<div class="lane-top"><span class="nm">${R.nm} (${r===0?'TOP':'BOTTOM'})</span>${r===0?`<span class="aff">${isDay()?'☀️ DAY — nightfall in '+cycleLeft():'🌙 NIGHT — sunrise in '+cycleLeft()}</span>`:''}</div><div class="lane">${tiles}</div></div>`;}
 function apPips(me){let s='';const a=(S&&S.apAnim&&Date.now()-S.apAnim.at<700)?S.apAnim:null;
@@ -2215,6 +2220,274 @@ function scale2x(img){
   dst.getContext('2d').putImageData(dimg,0,0);
   return dst;
 }
+/* ===== v4.5: characters authored in-code as vector mechs ===== */
+
+// ============ Bazibub Mech Workshop — authored vector characters ============
+const OUT='#141a22';                       // outline ink
+function pal(side){return side==='ghost'
+ ? {a1:'#12496e',a2:'#2f86b8',a3:'#7fd4f2',core:'#5ff2ff',coreHi:'#eafeff',glow:'#46d8ff',metal1:'#3a4454',metal2:'#5b6b80',metal3:'#94a6bd',dark:'#232b38'}
+ : {a1:'#7a230c',a2:'#c2521e',a3:'#ffb066',core:'#ffcf4a',coreHi:'#fff6dc',glow:'#ff9a3c',metal1:'#443a36',metal2:'#6b5a50',metal3:'#a3907f',dark:'#2c2320'};}
+function defs(p,id){return `
+ <linearGradient id="body${id}" x1="0" y1="0" x2="0" y2="1">
+   <stop offset="0" stop-color="${p.a3}"/><stop offset=".45" stop-color="${p.a2}"/><stop offset="1" stop-color="${p.a1}"/>
+ </linearGradient>
+ <linearGradient id="met${id}" x1="0" y1="0" x2="0" y2="1">
+   <stop offset="0" stop-color="${p.metal3}"/><stop offset=".5" stop-color="${p.metal2}"/><stop offset="1" stop-color="${p.metal1}"/>
+ </linearGradient>
+ <radialGradient id="core${id}" cx=".35" cy=".3" r=".9">
+   <stop offset="0" stop-color="${p.coreHi}"/><stop offset=".45" stop-color="${p.core}"/><stop offset="1" stop-color="${p.a1}"/>
+ </radialGradient>
+ <linearGradient id="visor${id}" x1="0" y1="0" x2="0" y2="1">
+   <stop offset="0" stop-color="#20303c"/><stop offset="1" stop-color="#0b1218"/>
+ </linearGradient>
+ <filter id="glow${id}" x="-60%" y="-60%" width="220%" height="220%">
+   <feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+ </filter>`;}
+const SW='stroke="'+OUT+'" stroke-width="2.4" stroke-linejoin="round"';
+const SWT='stroke="'+OUT+'" stroke-width="1.6" stroke-linejoin="round"';
+
+// ---- shared chibi-mech chassis; each class adds props + unique head gear ----
+function chassis(p,id,eyes){
+  return `
+  <!-- legs -->
+  <rect x="34" y="84" width="11" height="16" rx="4" fill="url(#met${id})" ${SW}/>
+  <rect x="55" y="84" width="11" height="16" rx="4" fill="url(#met${id})" ${SW}/>
+  <rect x="31" y="96" width="17" height="8" rx="3.5" fill="${p.dark}" ${SW}/>
+  <rect x="52" y="96" width="17" height="8" rx="3.5" fill="${p.dark}" ${SW}/>
+  <!-- torso -->
+  <rect x="27" y="52" width="46" height="37" rx="10" fill="url(#body${id})" ${SW}/>
+  <path d="M31 56 Q50 50 69 56 L69 63 Q50 57 31 63 Z" fill="#ffffff" opacity=".18"/>
+  <rect x="35" y="72" width="30" height="14" rx="5" fill="${p.dark}" ${SWT}/>
+  <circle cx="50" cy="70" r="8.5" fill="url(#core${id})" filter="url(#glow${id})" ${SWT}/>
+  <circle cx="47.5" cy="67.5" r="2.4" fill="${p.coreHi}" opacity=".9"/>
+  <!-- shoulders -->
+  <rect x="18" y="52" width="12" height="15" rx="5" fill="url(#met${id})" ${SW}/>
+  <rect x="70" y="52" width="12" height="15" rx="5" fill="url(#met${id})" ${SW}/>
+  <!-- head -->
+  <rect x="29" y="20" width="42" height="30" rx="10" fill="url(#body${id})" ${SW}/>
+  <path d="M33 24 Q50 19 67 24 L67 30 Q50 25 33 30 Z" fill="#ffffff" opacity=".2"/>
+  <rect x="34" y="28" width="32" height="15" rx="6" fill="url(#visor${id})" ${SWT}/>
+  ${eyes}
+  <!-- antenna -->
+  <line x1="50" y1="20" x2="50" y2="11" stroke="${OUT}" stroke-width="2.4"/>
+  <circle cx="50" cy="9" r="3.4" fill="${p.core}" filter="url(#glow${id})" ${SWT}/>`;
+}
+const eyesHappy=(p)=>`<rect x="39" y="32" width="7" height="7" rx="2.5" fill="${p.core}" filter="url(#glowE)"/><rect x="54" y="32" width="7" height="7" rx="2.5" fill="${p.core}"/>`;
+function eyes(p,id,mood){ // mood: normal|angry|focus
+  const g=`filter="url(#glow${id})"`;
+  if(mood==='angry')return `<path d="M39 33 l8 3 v4 h-8 Z" fill="${p.core}" ${g}/><path d="M61 33 l-8 3 v4 h8 Z" fill="${p.core}"/>`;
+  if(mood==='focus')return `<rect x="38" y="34" width="9" height="4.5" rx="2" fill="${p.core}" ${g}/><rect x="53" y="34" width="9" height="4.5" rx="2" fill="${p.core}"/>`;
+  return `<rect x="39" y="32" width="7.5" height="7.5" rx="3" fill="${p.core}" ${g}/><rect x="53.5" y="32" width="7.5" height="7.5" rx="3" fill="${p.core}"/>`;
+}
+function shadow(){return `<ellipse cx="50" cy="105" rx="26" ry="4.5" fill="#000" opacity=".33"/>`;}
+function wrap(id,inner,vb){return `<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet" viewBox="${vb||'0 0 100 110'}">${inner}</svg>`;}
+
+// ================= HERO CLASSES =================
+function knight(side){const p=pal(side),id='k'+side;
+ return wrap(id,`<defs>${defs(p,id)}</defs>${shadow()}
+  <!-- greatsword -->
+  <g transform="rotate(14 82 60)">
+    <rect x="79" y="18" width="7" height="44" rx="3" fill="url(#met${id})" ${SW}/>
+    <path d="M79 18 L82.5 8 L86 18 Z" fill="${p.metal3}" ${SW}/>
+    <rect x="73" y="60" width="19" height="6" rx="3" fill="${p.a2}" ${SW}/>
+    <rect x="79.5" y="66" width="6" height="10" rx="3" fill="${p.dark}" ${SW}/>
+    <rect x="81" y="22" width="1.8" height="36" fill="#ffffff" opacity=".5"/>
+  </g>
+  ${chassis(p,id,eyes(p,id,'focus'))}
+  <!-- crest -->
+  <path d="M44 20 Q50 6 56 20 Z" fill="${p.core}" filter="url(#glow${id})" ${SWT}/>
+  <!-- shield -->
+  <g>
+   <path d="M12 52 Q26 47 30 52 L30 76 Q21 86 12 76 Z" fill="url(#met${id})" ${SW}/>
+   <path d="M16 56 Q21 54 26 56 L26 73 Q21 79 16 73 Z" fill="url(#body${id})" ${SWT}/>
+   <circle cx="21" cy="63" r="3.2" fill="${p.core}" filter="url(#glow${id})"/>
+  </g>`);}
+function archer(side){const p=pal(side),id='a'+side;
+ return wrap(id,`<defs>${defs(p,id)}</defs>${shadow()}
+  ${chassis(p,id,eyes(p,id,'focus'))}
+  <!-- targeting scope on head -->
+  <circle cx="68" cy="26" r="6.5" fill="${p.dark}" ${SW}/>
+  <circle cx="68" cy="26" r="3" fill="${p.core}" filter="url(#glow${id})"/>
+  <!-- shoulder railbow -->
+  <g transform="rotate(-8 84 56)">
+    <path d="M84 30 Q98 56 84 82" fill="none" stroke="${p.metal3}" stroke-width="5" stroke-linecap="round"/>
+    <path d="M84 30 Q98 56 84 82" fill="none" stroke="${OUT}" stroke-width="8" stroke-linecap="round" opacity="0"/>
+    <path d="M84 30 Q98 56 84 82" fill="none" stroke="${OUT}" stroke-width="1.6"/>
+    <line x1="84" y1="30" x2="84" y2="82" stroke="${p.core}" stroke-width="1.6" filter="url(#glow${id})"/>
+    <path d="M70 54 h22" stroke="${p.core}" stroke-width="3" stroke-linecap="round" filter="url(#glow${id})"/>
+    <path d="M92 54 l-6 -3 v6 Z" fill="${p.coreHi}"/>
+  </g>`);}
+function ember(side){const p=pal(side),id='e'+side;
+ return wrap(id,`<defs>${defs(p,id)}</defs>${shadow()}
+  ${chassis(p,id,eyes(p,id,'angry'))}
+  <!-- flame vents on head -->
+  <rect x="30" y="14" width="8" height="8" rx="2.5" fill="${p.dark}" ${SWT}/>
+  <rect x="62" y="14" width="8" height="8" rx="2.5" fill="${p.dark}" ${SWT}/>
+  <path d="M34 14 q-2 -7 0 -10 q4 4 2 10 Z" fill="${p.core}" filter="url(#glow${id})"/>
+  <path d="M66 14 q2 -7 0 -10 q-4 4 -2 10 Z" fill="${p.core}" filter="url(#glow${id})"/>
+  <!-- flamethrower arm -->
+  <rect x="80" y="52" width="14" height="16" rx="5" fill="url(#met${id})" ${SW}/>
+  <rect x="86" y="46" width="9" height="8" rx="3" fill="${p.dark}" ${SW}/>
+  <path d="M95 50 q9 -3 3 5 q7 0 -1 6 q3 5 -5 3 q-2 3 -4 -2 Z" fill="${p.core}" filter="url(#glow${id})" ${SWT}/>
+  <!-- fuel tank -->
+  <rect x="8" y="54" width="12" height="22" rx="6" fill="url(#met${id})" ${SW}/>
+  <rect x="10" y="58" width="8" height="6" rx="2" fill="${p.core}" opacity=".8"/>`);}
+function frost(side){const p=pal(side),id='f'+side;
+ return wrap(id,`<defs>${defs(p,id)}</defs>${shadow()}
+  ${chassis(p,id,eyes(p,id,'normal'))}
+  <!-- cryo crystal crown -->
+  <path d="M40 20 l4 -9 4 6 4 -8 4 8 4 -6 4 9 Z" fill="${p.a3}" opacity=".95" ${SWT} filter="url(#glow${id})"/>
+  <!-- orb hand -->
+  <circle cx="86" cy="62" r="9" fill="url(#core${id})" filter="url(#glow${id})" ${SW}/>
+  <path d="M86 55 v14 M79 62 h14 M81 57 l10 10 M91 57 l-10 10" stroke="#ffffff" stroke-width="1.4" opacity=".8"/>
+  <!-- coolant pipes -->
+  <path d="M27 60 q-10 4 -8 16" fill="none" stroke="${p.a3}" stroke-width="3.4" stroke-linecap="round"/>
+  <circle cx="19" cy="78" r="4" fill="${p.core}" filter="url(#glow${id})" ${SWT}/>`);}
+function tank(side){const p=pal(side),id='t'+side;
+ return wrap(id,`<defs>${defs(p,id)}</defs>${shadow()}
+  <!-- heavy shoulder plates behind -->
+  <rect x="12" y="46" width="18" height="22" rx="6" fill="url(#met${id})" ${SW}/>
+  <rect x="70" y="46" width="18" height="22" rx="6" fill="url(#met${id})" ${SW}/>
+  ${chassis(p,id,eyes(p,id,'normal'))}
+  <!-- reinforced brow -->
+  <rect x="29" y="18" width="42" height="8" rx="4" fill="url(#met${id})" ${SW}/>
+  <!-- tower shield -->
+  <g>
+   <rect x="2" y="42" width="22" height="44" rx="7" fill="url(#met${id})" ${SW}/>
+   <rect x="6" y="47" width="14" height="34" rx="5" fill="url(#body${id})" ${SWT}/>
+   <rect x="10" y="58" width="6" height="12" rx="3" fill="${p.core}" filter="url(#glow${id})"/>
+  </g>
+  <!-- hammer -->
+  <g transform="rotate(10 86 58)">
+   <rect x="83" y="28" width="6" height="34" rx="3" fill="url(#met${id})" ${SW}/>
+   <rect x="74" y="16" width="24" height="16" rx="5" fill="url(#body${id})" ${SW}/>
+   <rect x="78" y="20" width="16" height="3" fill="#fff" opacity=".35"/>
+  </g>`);}
+function summoner(side){const p=pal(side),id='s'+side;
+ return wrap(id,`<defs>${defs(p,id)}</defs>${shadow()}
+  ${chassis(p,id,eyes(p,id,'normal'))}
+  <!-- hood-like dish -->
+  <path d="M27 22 Q50 4 73 22 L73 30 Q50 14 27 30 Z" fill="url(#met${id})" ${SW}/>
+  <!-- drone bays -->
+  <rect x="6" y="50" width="16" height="12" rx="4" fill="url(#met${id})" ${SW}/>
+  <rect x="78" y="50" width="16" height="12" rx="4" fill="url(#met${id})" ${SW}/>
+  <!-- two mini drones -->
+  <g filter="url(#glow${id})">
+   <circle cx="14" cy="36" r="5.5" fill="url(#body${id})" ${SWT}/>
+   <rect x="10.6" y="33.6" width="7" height="3.4" rx="1.6" fill="${p.core}"/>
+   <line x1="14" y1="30.5" x2="14" y2="27" stroke="${OUT}" stroke-width="1.6"/>
+  </g>
+  <g filter="url(#glow${id})">
+   <circle cx="88" cy="34" r="5.5" fill="url(#body${id})" ${SWT}/>
+   <rect x="84.6" y="31.6" width="7" height="3.4" rx="1.6" fill="${p.core}"/>
+   <line x1="88" y1="28.5" x2="88" y2="25" stroke="${OUT}" stroke-width="1.6"/>
+  </g>`);}
+// ================= UNITS =================
+function creep(side){const p=pal(side),id='c'+side;
+ return wrap(id,`<defs>${defs(p,id)}</defs>
+  <ellipse cx="50" cy="100" rx="22" ry="4" fill="#000" opacity=".33"/>
+  <!-- treads -->
+  <rect x="26" y="84" width="48" height="16" rx="8" fill="${p.dark}" ${SW}/>
+  <circle cx="36" cy="92" r="4" fill="${p.metal2}" ${SWT}/><circle cx="50" cy="92" r="4" fill="${p.metal2}" ${SWT}/><circle cx="64" cy="92" r="4" fill="${p.metal2}" ${SWT}/>
+  <!-- round body -->
+  <rect x="30" y="48" width="40" height="40" rx="14" fill="url(#body${id})" ${SW}/>
+  <path d="M34 53 Q50 47 66 53 L66 60 Q50 54 34 60 Z" fill="#fff" opacity=".2"/>
+  <rect x="36" y="58" width="28" height="13" rx="6" fill="url(#visor${id})" ${SWT}/>
+  <rect x="41" y="61.5" width="6" height="6" rx="2.5" fill="${p.core}" filter="url(#glow${id})"/>
+  <rect x="53" y="61.5" width="6" height="6" rx="2.5" fill="${p.core}"/>
+  <line x1="50" y1="48" x2="50" y2="40" stroke="${OUT}" stroke-width="2.2"/>
+  <circle cx="50" cy="38" r="3" fill="${p.core}" filter="url(#glow${id})" ${SWT}/>`,'0 0 100 106');}
+function towerB(side){const p=pal(side),id='w'+side;
+ return wrap(id,`<defs>${defs(p,id)}</defs>
+  <ellipse cx="50" cy="104" rx="30" ry="5" fill="#000" opacity=".33"/>
+  <!-- base -->
+  <path d="M24 104 L30 78 H70 L76 104 Z" fill="url(#met${id})" ${SW}/>
+  <rect x="30" y="40" width="40" height="42" rx="6" fill="url(#body${id})" ${SW}/>
+  <path d="M33 44 Q50 39 67 44 L67 51 Q50 45 33 51 Z" fill="#fff" opacity=".18"/>
+  <rect x="40" y="58" width="20" height="24" rx="4" fill="${p.dark}" ${SWT}/>
+  <rect x="45" y="64" width="10" height="12" rx="3" fill="${p.core}" opacity=".55"/>
+  <!-- turret head -->
+  <rect x="26" y="22" width="48" height="20" rx="8" fill="url(#met${id})" ${SW}/>
+  <circle cx="50" cy="32" r="7" fill="url(#core${id})" filter="url(#glow${id})" ${SWT}/>
+  <rect x="70" y="28" width="18" height="8" rx="4" fill="${p.dark}" ${SW}/>
+  <circle cx="88" cy="32" r="3.4" fill="${p.core}" filter="url(#glow${id})"/>
+  <!-- side fins -->
+  <path d="M26 26 l-8 -6 v14 l8 -2 Z" fill="url(#body${id})" ${SW}/>
+  <path d="M74 26 l8 -6 v14 l-8 -2 Z" fill="url(#body${id})" ${SW}/>`,'0 0 100 110');}
+function castle(side){const p=pal(side),id='h'+side;
+ return wrap(id,`<defs>${defs(p,id)}</defs>
+  <ellipse cx="60" cy="104" rx="48" ry="6" fill="#000" opacity=".33"/>
+  <!-- side towers -->
+  <rect x="8" y="34" width="24" height="68" rx="6" fill="url(#met${id})" ${SW}/>
+  <rect x="88" y="34" width="24" height="68" rx="6" fill="url(#met${id})" ${SW}/>
+  <rect x="10" y="26" width="20" height="12" rx="4" fill="url(#body${id})" ${SW}/>
+  <rect x="90" y="26" width="20" height="12" rx="4" fill="url(#body${id})" ${SW}/>
+  <circle cx="20" cy="32" r="3.6" fill="${p.core}" filter="url(#glow${id})"/>
+  <circle cx="100" cy="32" r="3.6" fill="${p.core}" filter="url(#glow${id})"/>
+  <!-- keep -->
+  <rect x="28" y="48" width="64" height="54" rx="7" fill="url(#body${id})" ${SW}/>
+  <path d="M32 53 Q60 46 88 53 L88 61 Q60 54 32 61 Z" fill="#fff" opacity=".16"/>
+  <!-- crown deck -->
+  <rect x="34" y="38" width="52" height="14" rx="5" fill="url(#met${id})" ${SW}/>
+  <rect x="40" y="30" width="8" height="10" rx="2.5" fill="${p.metal2}" ${SWT}/>
+  <rect x="56" y="26" width="8" height="14" rx="2.5" fill="${p.metal2}" ${SWT}/>
+  <rect x="72" y="30" width="8" height="10" rx="2.5" fill="${p.metal2}" ${SWT}/>
+  <!-- reactor heart -->
+  <circle cx="60" cy="70" r="13" fill="url(#core${id})" filter="url(#glow${id})" ${SW}/>
+  <circle cx="55.5" cy="65.5" r="3.4" fill="${p.coreHi}" opacity=".95"/>
+  <!-- gate -->
+  <path d="M48 102 v-14 q12 -9 24 0 v14 Z" fill="${p.dark}" ${SW}/>
+  <line x1="60" y1="90" x2="60" y2="102" stroke="${OUT}" stroke-width="1.6"/>`,'0 0 120 112');}
+function boss(side){const p=pal(side),id='b'+side;
+ // hulking siege mech — bigger, hunched, twin cores
+ return wrap(id,`<defs>${defs(p,id)}</defs>
+  <ellipse cx="60" cy="112" rx="40" ry="6" fill="#000" opacity=".35"/>
+  <!-- legs -->
+  <rect x="34" y="88" width="16" height="20" rx="6" fill="url(#met${id})" ${SW}/>
+  <rect x="70" y="88" width="16" height="20" rx="6" fill="url(#met${id})" ${SW}/>
+  <rect x="30" y="102" width="24" height="9" rx="4" fill="${p.dark}" ${SW}/>
+  <rect x="66" y="102" width="24" height="9" rx="4" fill="${p.dark}" ${SW}/>
+  <!-- massive arms -->
+  <rect x="4" y="42" width="22" height="44" rx="9" fill="url(#met${id})" ${SW}/>
+  <rect x="94" y="42" width="22" height="44" rx="9" fill="url(#met${id})" ${SW}/>
+  <rect x="2" y="80" width="26" height="14" rx="6" fill="url(#body${id})" ${SW}/>
+  <rect x="92" y="80" width="26" height="14" rx="6" fill="url(#body${id})" ${SW}/>
+  <!-- hunched torso -->
+  <path d="M26 84 Q22 40 60 34 Q98 40 94 84 Q60 96 26 84 Z" fill="url(#body${id})" ${SW}/>
+  <path d="M32 52 Q60 40 88 52 L88 60 Q60 48 32 60 Z" fill="#fff" opacity=".16"/>
+  <circle cx="46" cy="70" r="8" fill="url(#core${id})" filter="url(#glow${id})" ${SWT}/>
+  <circle cx="74" cy="70" r="8" fill="url(#core${id})" filter="url(#glow${id})" ${SWT}/>
+  <!-- low head -->
+  <rect x="40" y="26" width="40" height="22" rx="8" fill="url(#met${id})" ${SW}/>
+  <rect x="45" y="32" width="30" height="11" rx="5" fill="url(#visor${id})" ${SWT}/>
+  ${side==='ghost'
+    ?`<rect x="49" y="35" width="8" height="5" rx="2" fill="${p.core}" filter="url(#glow${id})"/><rect x="63" y="35" width="8" height="5" rx="2" fill="${p.core}"/>`
+    :`<path d="M49 35 l9 2.5 v3.5 h-9 Z" fill="${p.core}" filter="url(#glow${id})"/><path d="M71 35 l-9 2.5 v3.5 h9 Z" fill="${p.core}"/>`}
+  <!-- spines -->
+  <path d="M46 28 l-4 -9 M60 26 l0 -11 M74 28 l4 -9" stroke="${OUT}" stroke-width="2.6"/>
+  <circle cx="42" cy="17" r="3" fill="${p.core}" filter="url(#glow${id})"/>
+  <circle cx="60" cy="13" r="3.4" fill="${p.core}" filter="url(#glow${id})"/>
+  <circle cx="78" cy="17" r="3" fill="${p.core}" filter="url(#glow${id})"/>`,'0 0 120 118');}
+
+
+function castleLow(side){const p=pal(side),id='hl'+side;
+ let sv=castle(side).replace('id="core'+ 'h'+side, 'id="core'+id); // keep simple: rebuild from castle with overlays
+ return castle(side).replace('</svg>',`
+  <path d="M40 60 l8 10 -6 3 9 12" fill="none" stroke="${OUT}" stroke-width="2.4"/>
+  <path d="M80 54 l-7 9 6 4 -8 11" fill="none" stroke="${OUT}" stroke-width="2.4"/>
+  <rect x="28" y="48" width="64" height="54" rx="7" fill="#000" opacity=".28"/>
+  <path d="M20 26 q4 -12 1 -18 M100 26 q-4 -12 -1 -18" stroke="#5a5a5a" stroke-width="4" fill="none" opacity=".7" stroke-linecap="round"/>
+ </svg>`);}
+function svgEntry(sv){return {u:'data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(sv))),n:1};}
+(function(){
+ const H={knight,archer,ember,frost,tank,summoner};
+ for(const k of Object.keys(H))SPR.hero[k]={ghost:svgEntry(H[k]('ghost')),sand:svgEntry(H[k]('sand'))};
+ SPR.creep={ghost:svgEntry(creep('ghost')),sand:svgEntry(creep('sand'))};
+ SPR.tower={ghost:svgEntry(towerB('ghost')),sand:svgEntry(towerB('sand'))};
+ SPR.special={ghost:svgEntry(boss('ghost')),sand:svgEntry(boss('sand'))};
+ SPR.heart={ghost:svgEntry(castle('ghost')),sand:svgEntry(castle('sand')),ghostLow:svgEntry(castleLow('ghost')),sandLow:svgEntry(castleLow('sand'))};
+})();
+
 window.__smoothReady=(async()=>{try{
   const load=u=>new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=u;});
   const memo=new Map();
@@ -2223,7 +2496,7 @@ window.__smoothReady=(async()=>{try{
     let c=scale2x(await load(u));c=scale2x(c);
     const out=c.toDataURL();memo.set(u,out);return out;
   }
-  async function smooth(entry){if(!entry||!entry.u)return entry;return {u:await smoothURL(entry.u),n:entry.n};}
+  async function smooth(entry){if(!entry||!entry.u||entry.u.startsWith('data:image/svg'))return entry;return {u:await smoothURL(entry.u),n:entry.n};}
   for(const k of Object.keys(SPR.hero))SPR.hero[k]={ghost:await smooth(SPR.hero[k].ghost),sand:await smooth(SPR.hero[k].sand)};
   SPR.creep={ghost:await smooth(SPR.creep.ghost),sand:await smooth(SPR.creep.sand)};
   SPR.tower={ghost:await smooth(SPR.tower.ghost),sand:await smooth(SPR.tower.sand)};
