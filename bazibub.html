@@ -771,6 +771,18 @@
   @keyframes wout{0%{transform:scale(1)}45%{transform:scale(1.07,.88);filter:brightness(1.8) saturate(1.4)}100%{transform:scale(.06,1.7) translateY(-26px);opacity:0;filter:brightness(3)}}
   .tok.warpin .asp{animation:winb .75s ease-out}
   @keyframes winb{0%{transform:scale(.06,1.7) translateY(-26px);opacity:0;filter:brightness(3)}55%{transform:scale(1.07,.88);opacity:1;filter:brightness(1.8)}100%{transform:scale(1)}}
+
+  /* v5.1: splash battle loop */
+  #spWar{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+  .sp-shot{position:absolute;height:4px;width:30px;border-radius:4px;opacity:0}
+  .sp-shot.sr{left:13%;background:linear-gradient(90deg,transparent,#ff9a3c,#fff);box-shadow:0 0 9px #ff7a2c;animation:shotr 1.05s linear forwards}
+  .sp-shot.sl{right:13%;background:linear-gradient(270deg,transparent,#5fd2ff,#fff);box-shadow:0 0 9px #4ac2ff;animation:shotl 1.05s linear forwards}
+  @keyframes shotr{0%{transform:translateX(0);opacity:0}8%{opacity:1}100%{transform:translateX(70vw);opacity:.9}}
+  @keyframes shotl{0%{transform:translateX(0);opacity:0}8%{opacity:1}100%{transform:translateX(-70vw);opacity:.9}}
+  .sp-boomfx{position:absolute;bottom:13%;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,#fff 0%,#ffd954 26%,#ff7a2c 54%,rgba(255,60,20,0) 72%);animation:spboom 1.15s ease-out forwards;z-index:4}
+  @keyframes spboom{0%{transform:scale(.1);opacity:0}12%{opacity:1}55%{transform:scale(1.3);opacity:.9}100%{transform:scale(1.9);opacity:0}}
+  .sp-castles span.sp-hitfall{animation:sphit 2.6s ease-in}
+  @keyframes sphit{0%{transform:translateY(0) rotate(0);filter:brightness(3)}15%{transform:translateY(4px) rotate(-4deg);filter:brightness(1.8)}45%{transform:translateY(11px) rotate(5deg);opacity:.55;filter:brightness(.6) saturate(.35)}70%{transform:translateY(11px) rotate(5deg);opacity:.25;filter:brightness(.5) saturate(.3)}100%{transform:translateY(0);opacity:1;filter:none}}
 </style>
 </head>
 <body>
@@ -851,7 +863,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.0.1 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.1.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1074,7 +1086,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='5.0.1';
+const GAME_VER='5.1.0';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1112,7 +1124,7 @@ function howSlideList(){const viz=h=>`<div class="howviz">${h}</div>`;
  return [
  {t:'THE GOAL',h:viz(anim(SPR.heart.ghost,'hv')+'<span class="howvs">VS</span>'+anim(SPR.heart.sand,'hv'))+'<p>Two robot armies: the <b>Mars Bots</b> (red, left) and the <b>Earth Bots</b> (blue, right). Each has a <b>Base</b>. Destroy the enemy Base before they destroy yours — the first Base to fall loses!</p>'},
  {t:'TAKE YOUR TURN',h:`<div class="howviz demoviz"><div class="dm-hero">${anim(SPR.hero.knight.ghost,'uv')}</div><span class="dm-finger">👆</span><div class="dm-pop"><b>🦶 MOVE</b><b class="b2">⚔ ATTACK</b><b>✨ SPELL</b></div></div><p>Tap your <b>glowing hero</b> and an action menu pops up — tap an action, then tap a glowing tile or target. Everything costs ⚡: <b>MOVE 1 · ATTACK 2 · SPELL 3 · ABILITY 2</b>. You get <b>4⚡ every turn</b>, then press END.</p>`},
- {t:'TWO ROADS — YOUR PLAN',h:viz(anim(SPR.hero.archer.ghost,'uv')+'<span class="howvs dmx">⇅</span>'+anim(SPR.hero.tank.ghost,'uv'))+'<p>The sunny <b>Sunpath</b> runs on top, the cave <b>Rootway</b> below. You can only fight enemies on <b>your own road</b> — and the roads connect only at <b>your home corner</b> (look for the ⇅ CROSS mark on the board). March everyone together, or split your team 2–1 — your call, general.</p>'},
+ {t:'TWO ROADS — YOUR PLAN',h:viz(anim(SPR.hero.archer.ghost,'uv')+'<span class="howvs dmx">⇅</span>'+anim(SPR.hero.tank.ghost,'uv'))+'<p>The sunny <b>Earth Road</b> runs on top, the cave <b>Mars Road</b> below. You can only fight enemies on <b>your own road</b> — and the roads connect only at <b>your home corner</b> (look for the ⇅ CROSS mark on the board). March everyone together, or split your team 2–1 — your call, general.</p>'},
  {t:'TOWERS GUARD BASES',h:viz(anim(SPR.tower.sand,'wv')+anim(SPR.heart.sand,'hv'))+'<p>A Base can\'t be hurt while <b>that road\'s tower</b> stands — each side has one tower per road, so watch <b>both</b> roads! Bonus: <b>stand beside your own tower and it heals you +4</b> every round.</p>'},
  {t:'THE CREEP WAVES',h:viz(anim(SPR.creep.ghost,'uv')+'<span class="howvs">⚔️</span>'+anim(SPR.creep.sand,'uv fl')+anim(SPR.creep.sand,'uv fl'))+'<p>Every 3 rounds little <b>creeps</b> march out and fight for you. The roads aren\'t fair: the top road sends <b>2 Earth creeps vs 1 Mars creep</b>, the bottom road the reverse. Push where you\'re strong — defend where you\'re outnumbered.</p>'},
  {t:'DAY & NIGHT',h:viz(anim(SPR.creep.sand,'uv fl')+'<span class="howvs">☀️🌙</span>'+anim(SPR.creep.ghost,'uv'))+'<p>The sky flips every 4 rounds. At <b>sunrise the whole Earth Bot army recharges 15 Health</b>; at <b>nightfall the Mars Bots</b> do. Time your big pushes for when YOUR heal is coming!</p>'},
@@ -1162,7 +1174,7 @@ function healPulse(side){const st=document.querySelector('.stage');if(!st)return
 /* ===================== MAP ===================== */
 const NT=6, AP_MAX=4, WAVE_EVERY=3, SPECIAL_ROUND=7, SUDDEN_ROUND=24;
 const COST={move:1,attack:2,spell:3,ability:2};
-const ROUTES=[{nm:'SUNPATH',cls:'overground'},{nm:'ROOTWAY',cls:'underground'}];
+const ROUTES=[{nm:'EARTH ROAD',cls:'overground'},{nm:'MARS ROAD',cls:'underground'}];
 const GW_T=1,SW_T=4;
 const tk=(r,t)=>`${r}:${t}`; const HG='H:ghost',HS='H:sand';
 // each side has its own map graph: you may only cross lanes at YOUR OWN base column
@@ -1667,8 +1679,8 @@ function showDeploy(){
       <div style="display:flex;justify-content:center;margin-top:6px">${anim(SPR.special[S.playerSide],'dep')}</div>
       <div class="hint">${sp2.desc}<br>Choose which road to unleash it down.</div>
       <div class="row" style="justify-content:center;margin-top:16px">
-        <button class="big" onclick="deploySpecial2(0)">☀️ SUNPATH (TOP)</button>
-        <button class="big" onclick="deploySpecial2(1)">🌑 ROOTWAY (BOTTOM)</button></div>`;
+        <button class="big" onclick="deploySpecial2(0)">🌍 EARTH ROAD (TOP)</button>
+        <button class="big" onclick="deploySpecial2(1)">🔴 MARS ROAD (BOTTOM)</button></div>`;
     document.getElementById('deployOverlay').style.display='flex';
     return;
   }
@@ -1678,8 +1690,8 @@ function showDeploy(){
     <div style="display:flex;justify-content:center;margin-top:6px">${anim(SPR.special[S.playerSide],'dep')}</div>
     <div class="hint">A mighty creep has risen! ${sp.desc}<br>Choose which lane to unleash it down.</div>
     <div class="row" style="justify-content:center;margin-top:16px">
-      <button class="big" onclick="deploySpecial(0)">☀️ SUNPATH (TOP)</button>
-      <button class="big" onclick="deploySpecial(1)">🌑 ROOTWAY (BOTTOM)</button></div>`;
+      <button class="big" onclick="deploySpecial(0)">🌍 EARTH ROAD (TOP)</button>
+      <button class="big" onclick="deploySpecial(1)">🔴 MARS ROAD (BOTTOM)</button></div>`;
   document.getElementById('deployOverlay').style.display='flex';
 }
 function makeSpecial(side,lane){const sp=SPECIAL[side];const st=side==='ghost'?{hp:100,maxhp:100,atk:7}:{hp:40,maxhp:40,atk:13};return mkCreep(side,lane,side==='ghost'?0:NT-1,Object.assign({big:true,speed:2,special:side,name:sp.name},st));}
@@ -1937,7 +1949,7 @@ function heartCell(side){const ht=S.heart[side],frac=ht.hp/ht.maxhp,low=frac<.35
      ${anim(low?SPR.heart[side+'Low']:SPR.heart[side],'h')}
      <div class="nmh">${side==='ghost'?'MARS':'EARTH'}<br>BASE</div>
      <div class="hpl">BASE HEALTH</div>
-     <div class="protec">${towerAlive(side,0)&&towerAlive(side,1)?'🛡 guarded':(!towerAlive(side,0)&&!towerAlive(side,1)?'⚠️ WIDE OPEN':'⚠️ OPEN: '+(towerAlive(side,0)?'ROOTWAY':'SUNPATH'))}</div>
+     <div class="protec">${towerAlive(side,0)&&towerAlive(side,1)?'🛡 guarded':(!towerAlive(side,0)&&!towerAlive(side,1)?'⚠️ WIDE OPEN':'⚠️ OPEN: '+(towerAlive(side,0)?'MARS ROAD':'EARTH ROAD'))}</div>
      <div class="vbar"><i style="height:${100*frac}%;background:${hpColor(frac)}"></i></div>
      <small>${Math.max(0,ht.hp)}/${ht.maxhp}</small>
      <div class="warnH">${mine?'If it shatters, you lose.':'Shatter it to win!'}</div>${pen}</div>`;}
@@ -2645,6 +2657,35 @@ document.addEventListener('keydown',e=>{
   else if(k==='5'||k==='e'||k==='enter')endTurn();
   else if(k==='escape'){closeActPop();S.mode='idle';render();}
 });
+</script>
+
+<script>
+/* v5.1: splash battle loop — armies trade fire until one base blows up, then it rebuilds and the fight restarts */
+(function(){
+  const sp=document.getElementById('splash'); if(!sp) return;
+  let lay=document.createElement('div'); lay.id='spWar'; sp.appendChild(lay);
+  function volley(){
+    if(sp.classList.contains('off')){clearInterval(tick);return;}
+    for(let i=0;i<6;i++){
+      const s=document.createElement('i');
+      s.className='sp-shot '+(i%2?'sl':'sr');
+      s.style.bottom=(12.5+(i%3)*2.6)+'%';
+      s.style.animationDelay=(i*.28)+'s';
+      lay.appendChild(s); setTimeout(()=>s.remove(),3200);
+    }
+    const left=Math.random()<.5, id=left?'spCL':'spCR';
+    setTimeout(()=>{
+      if(sp.classList.contains('off'))return;
+      const c=document.getElementById(id); if(!c||!c.firstChild)return;
+      const b=document.createElement('i'); b.className='sp-boomfx';
+      if(left)b.style.left='2%'; else b.style.right='2%';
+      lay.appendChild(b); setTimeout(()=>b.remove(),1300);
+      c.classList.add('sp-hitfall'); setTimeout(()=>c.classList.remove('sp-hitfall'),2650);
+    },2100);
+  }
+  const tick=setInterval(volley,6200);
+  setTimeout(volley,1200);
+})();
 </script>
 </body>
 </html>

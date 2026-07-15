@@ -2,7 +2,7 @@
 
 A kid-friendly, turn-based lane battle game that runs entirely in the browser.
 The blue Earth Bots face the red Mars Bots across two roads
-(the sunny **Sunpath** and the underground **Rootway**) — defend your base,
+(the sunny **Earth Road** and the underground **Mars Road**) — defend your base,
 destroy theirs! Play solo vs bots, pass-and-play, or take turns over WhatsApp.
 
 - **Play it:** https://bazibub.pages.dev
