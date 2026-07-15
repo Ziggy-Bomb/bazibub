@@ -827,6 +827,10 @@
     .sp-story{font-size:12px}
     .sp-cred{font-size:16px}
   }
+
+  /* v5.3.1: spell reminders */
+  .aphint{font-size:15px;line-height:1.5;margin-top:9px;text-align:left;color:#4a3820}
+  .spellhint{font-size:14px;line-height:1.4;color:#6b5636;margin-top:3px}
 </style>
 </head>
 <body>
@@ -905,7 +909,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.3.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.3.1 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1133,7 +1137,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='5.3.0';
+const GAME_VER='5.3.1';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1151,6 +1155,7 @@ function openActPop(){if(!S||S.phase!=='player'||S.over||!S.me.alive)return;sfx(
       ${btn('spell','spl2','✨',me.spell.name.toUpperCase(),me.spell.cur>0?'cd '+me.spell.cur:'3 AP',spU)}
       ${btn('ability','abi2','⬢',me.abil.name.toUpperCase(),me.abil.cur>0?'cd '+me.abil.cur:'2 AP',abU)}
     </div>
+    <div class="aphint">✨ <b>${me.spell.name}:</b> ${me.spell.blurb}<br>⬢ <b>${me.abil.name}:</b> ${me.abil.blurb}</div>
     <div class="aprow" style="grid-template-columns:1fr 1fr">
       <button class="pbtn" onclick="closeActPop()"><span class="ic">✖</span><span class="lb2">CLOSE</span><span class="cost2">&nbsp;</span></button>
       <button class="pbtn end2" onclick="popPick('end')"><span class="ic">⏭</span><span class="lb2">END TURN</span><span class="cost2">&nbsp;</span></button>
@@ -1251,11 +1256,11 @@ const ARCH={
     spell:{name:'Frost Nova',cd:3,range:0,target:false,blurb:'Freeze everyone around you.'},
     abil:{name:'Frost Barrier',cd:3,range:1,target:'allyHero',blurb:'Ice shield for you or a friend.'}},
   tank:{label:'Warden',kind:'Guardian · Tank',hp:71,atk:3,range:1,atkfx:'slash',regen:4,
-    spell:{name:'Mending Light',cd:3,range:0,target:false,blurb:'Heal yourself + friends beside you.'},
+    spell:{name:'Mending Light',cd:3,range:0,target:false,blurb:'Heal yourself + friends beside you (+28).'},
     abil:{name:'Bulwark',cd:3,target:'none',blurb:'Huge shield soaks up hits.'}},
   summoner:{label:'Bonecaller',kind:'Wizard · Summoner',hp:22,atk:4,range:2,atkfx:'bolt',regen:2,
     spell:{name:'Raise Creep',cd:5,range:0,target:false,blurb:'Summon a creep helper.'},
-    abil:{name:'Mend',cd:4,range:1,target:'allyHero',blurb:'Heal a hero beside you.'}},
+    abil:{name:'Mend',cd:4,range:1,target:'allyHero',blurb:'Heal a hero beside you (+25).'}},
 };
 const GNAME={knight:'Torq',archer:'Zip',ember:'Sparky',frost:'Cryo',tank:'Brick',summoner:'Beep'};
 const SNAME={knight:'Steel',archer:'Dart',ember:'Flint',frost:'Chill',tank:'Atlas',summoner:'Boop'};
@@ -1685,8 +1690,8 @@ function castSpell(h,target){const sp=h.spell;sp.cur=sp.cd;
     const dn=bfs(h.side,unitNode(target));enemyUnits(h.side).forEach(u=>{if(u!==target&&u.type!=='heart'&&laneOf(u)===laneOf(target)&&dn[unitNode(u)]<=1)dealDamage(h.side,u,5);});}
   else if(h.key==='frost'){log(`${h.name} ⚡FROST NOVA freezes nearby foes!`,h.side,true);const dn=bfs(h.side,heroNode(h));
     enemyUnits(h.side).forEach(u=>{if(u.type==='hero'&&laneOf(u)===h.pos.r&&dn[unitNode(u)]<=1){queueFx(uid(h),uid(u),'frost');fxAt(uid(u),'ice',380);dealDamage(h.side,u,5);u.stunned=true;}});}
-  else if(h.key==='tank'){const dn=bfs(h.side,heroNode(h));let n=0;aliveHeroes(h.side).forEach(a=>{if(dn[heroNode(a)]<=1&&a.hp<a.maxhp){a.hp=Math.min(a.maxhp,a.hp+18);queueFx(uid(h),uid(a),'heal');fxAt(uid(a),h.side==='ghost'?'healw':'healf',260);pushFloat(a,'+18','good');n++;}});
-    log(`${h.name} ⚡MENDING LIGHT heals ${n} ally(s).`,h.side,true);toast('MENDING LIGHT',h.side);}
+  else if(h.key==='tank'){const dn=bfs(h.side,heroNode(h));let n=0;aliveHeroes(h.side).forEach(a=>{if(dn[heroNode(a)]<=1&&a.hp<a.maxhp){a.hp=Math.min(a.maxhp,a.hp+28);queueFx(uid(h),uid(a),'heal');fxAt(uid(a),h.side==='ghost'?'healw':'healf',260);pushFloat(a,'+28','good');n++;}});
+    log(`${h.name} ⚡MENDING LIGHT heals ${n} ally(s) +28.`,h.side,true);toast('MENDING LIGHT',h.side);}
   else if(h.key==='summoner'){S.creeps.push(mkCreep(h.side,h.pos.r,h.pos.t));sfx('cheer');log(`${h.name} ⚡RAISES a creep on ${ROUTES[h.pos.r].nm}!`,h.side,true);toast('RAISED!',h.side);}
 }
 function castAbility(h,target){const ab=h.abil;ab.cur=ab.cd;
@@ -1695,7 +1700,7 @@ function castAbility(h,target){const ab=h.abil;ab.cur=ab.cd;
   else if(h.key==='archer'){queueFx(uid(h),uid(target),'arrow');dealDamage(h.side,target,3);target.snared=true;pushFloat(target,'PINNED','bad');log(`${h.name} ⚡PINS ${target.name} — it can’t move next turn!`,h.side,true);}
   else if(h.key==='frost'){target.shield=(target.shield||0)+18;target.shieldT=2;target.shieldCast=S.round;queueFx(uid(h),uid(target),'heal');pushFloat(target,'+SHIELD','good');log(`${h.name} wraps ${target===h?'itself':target.name} in a ⚡FROST BARRIER (absorb 18).`,h.side,true);toast('FROST BARRIER',h.side);}
   else if(h.key==='tank'){h.shield=(h.shield||0)+24;h.shieldT=2;h.shieldCast=S.round;sfx('shield');pushFloat(h,'+SHIELD','good');log(`${h.name} raises a ⚡BULWARK (absorb 24).`,h.side,true);toast('BULWARK',h.side);}
-  else if(h.key==='summoner'){target.hp=Math.min(target.maxhp,target.hp+15);queueFx(uid(h),uid(target),'heal');fxAt(uid(target),h.side==='ghost'?'healw':'healf',260);pushFloat(target,'+15','good');log(`${h.name} ⚡MENDS ${target===h?'itself':target.name} (+15).`,h.side,true);}
+  else if(h.key==='summoner'){target.hp=Math.min(target.maxhp,target.hp+25);queueFx(uid(h),uid(target),'heal');fxAt(uid(target),h.side==='ghost'?'healw':'healf',260);pushFloat(target,'+25','good');log(`${h.name} ⚡MENDS ${target===h?'itself':target.name} (+25).`,h.side,true);}
 }
 
 /* ===================== PLAYER TURN ===================== */
@@ -2104,7 +2109,7 @@ function renderControls(){const me=S.me,sp=me.spell,ab=me.abil,p=document.getEle
      <div class="pbox">${anim(SPR.hero[me.key][me.side],'')}</div>
      <div class="meta"><b>${me.name}</b> <span style="color:var(--muted)">${me.label}</span>
        <div class="statline"><span class="stat">Health <b>${Math.max(0,me.hp)}/${me.maxhp}</b></span><span class="stat">Damage <b>${me.atk}</b></span><span class="stat">Range <b>${me.range}</b></span>${me.multi>1?`<span class="stat">Hits <b>${me.multi}</b></span>`:''}
-       ${me.shield>0?`<span class="stat" style="color:var(--ghost)">Shield <b>${me.shield}</b></span>`:''}${me.snared?'<span class="stat">⛓ snared</span>':''}</div></div></div>`;}}
+       ${me.shield>0?`<span class="stat" style="color:var(--ghost)">Shield <b>${me.shield}</b></span>`:''}${me.snared?'<span class="stat">⛓ snared</span>':''}</div><div class="spellhint">✨ ${me.spell.blurb} &nbsp;⬢ ${me.abil.blurb}</div></div></div>`;}}
 function floatEl(host,id){let el=host.querySelector(`[data-fx="${CSS.escape(id)}"]`);
   if(!el&&id.indexOf('creep:')===0)el=host.querySelector(`[data-members*=",${id.slice(6)},"]`);
   return el;}
