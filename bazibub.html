@@ -687,6 +687,45 @@
   .heart.danger .vbar i{animation:pulse .55s steps(2) infinite}
   @keyframes shakeV{0%,100%{transform:none}20%{transform:translate(calc(var(--shk,6px)*-1),2px)}40%{transform:translate(var(--shk,6px),-2px)}60%{transform:translate(calc(var(--shk,6px)*-.6),1px)}80%{transform:translate(calc(var(--shk,6px)*.6),-1px)}}
   .stage.shake{animation:shakeV .42s steps(6)}
+
+  /* ===== v4.4: procedural arenas ===== */
+  .scene .p-sky{position:absolute;inset:0}
+  .lanewrap.overground .p-sky{background:linear-gradient(180deg,#8fd4f0 0%,#5FB2E6 30%,#3D8FD1 55%,#2a6faf 72%)}
+  .lanewrap.overground.night .p-sky{background:linear-gradient(180deg,#0c1c3a 0%,#122a52 45%,#183a66 75%)}
+  .lanewrap.underground .p-sky{background:linear-gradient(180deg,#2a0f0e 0%,#4a1410 35%,#7a2410 65%,#c2501a 100%)}
+  .lanewrap.underground.night .p-sky{background:linear-gradient(180deg,#160806 0%,#2c0c08 40%,#571a0c 70%,#8a3512 100%)}
+  .p-sun{position:absolute;right:9%;top:9%;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fffbe8,#ffd76a 55%,rgba(255,190,60,0));box-shadow:0 0 42px 14px rgba(255,214,106,.55)}
+  .p-caldera{position:absolute;left:8%;top:12%;width:74px;height:40px;border-radius:50%;background:radial-gradient(ellipse at 50% 80%,#ffd08a,#ff7a2a 45%,rgba(200,60,10,0) 75%);filter:blur(2px);box-shadow:0 0 46px 18px rgba(255,120,40,.35)}
+  .p-far,.p-mid{position:absolute;left:-10%;right:-10%;pointer-events:none}
+  .lanewrap.overground .p-far{bottom:88px;height:56px;background:radial-gradient(60% 130% at 18% 100%,#2f6ea8 48%,transparent 50%),radial-gradient(55% 120% at 55% 100%,#3a7ab4 48%,transparent 50%),radial-gradient(65% 140% at 88% 100%,#2c689f 48%,transparent 50%);opacity:.75;animation:pfar 34s linear infinite alternate}
+  .lanewrap.overground .p-mid{bottom:70px;height:42px;background:radial-gradient(45% 130% at 8% 100%,#245a8c 49%,transparent 51%),radial-gradient(50% 130% at 42% 100%,#1e527f 49%,transparent 51%),radial-gradient(48% 120% at 80% 100%,#245a8c 49%,transparent 51%);animation:pfar 22s linear infinite alternate-reverse}
+  .lanewrap.underground .p-far{bottom:88px;height:60px;background:radial-gradient(50% 150% at 15% 100%,#3a120c 48%,transparent 50%),radial-gradient(60% 170% at 52% 100%,#4a180e 48%,transparent 50%),radial-gradient(50% 140% at 88% 100%,#38110b 48%,transparent 50%);animation:pfar 40s linear infinite alternate}
+  .lanewrap.underground .p-mid{bottom:66px;height:48px;background:radial-gradient(42% 150% at 25% 100%,#601d0d 49%,transparent 51%),radial-gradient(46% 160% at 66% 100%,#6d2410 49%,transparent 51%);animation:pfar 26s linear infinite alternate-reverse}
+  @keyframes pfar{from{transform:translateX(-14px)}to{transform:translateX(14px)}}
+  .p-lava{position:absolute;left:0;right:0;bottom:44px;height:26px;background:linear-gradient(180deg,rgba(255,170,60,0) 0%,rgba(255,140,40,.28) 45%,rgba(255,110,20,.5) 100%);filter:blur(1px)}
+  .p-lavaline{position:absolute;left:0;right:0;bottom:44px;height:6px;background:repeating-linear-gradient(90deg,#ffbe6a 0 26px,#ff8330 26px 60px,#e8611e 60px 92px);opacity:.85;animation:plava 5s linear infinite;box-shadow:0 0 16px 4px rgba(255,140,40,.55)}
+  @keyframes plava{to{background-position-x:92px}}
+  .p-surf{position:absolute;left:0;right:0;bottom:44px;height:18px;overflow:hidden}
+  .p-surf i{position:absolute;left:-30%;right:-30%;height:14px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.85),rgba(255,255,255,0) 70%);opacity:.5}
+  .p-surf i:nth-child(1){bottom:-4px;animation:psurf 6s ease-in-out infinite}
+  .p-surf i:nth-child(2){bottom:-8px;animation:psurf 9s ease-in-out infinite reverse;opacity:.3}
+  @keyframes psurf{0%,100%{transform:translateX(-24px) scaleY(.8)}50%{transform:translateX(24px) scaleY(1.15)}}
+  .p-embers{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(circle,rgba(255,190,90,.95) 1.6px,transparent 2.6px),radial-gradient(circle,rgba(255,120,40,.8) 1.3px,transparent 2.3px),radial-gradient(circle,rgba(255,220,140,.7) 1px,transparent 2px);background-size:170px 140px,120px 190px,90px 110px;animation:pemb 9s linear infinite;opacity:.85}
+  @keyframes pemb{to{background-position:40px -140px,-50px -190px,20px -110px}}
+  .p-foam{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(circle,rgba(255,255,255,.8) 1.4px,transparent 2.4px),radial-gradient(circle,rgba(190,240,255,.7) 1.1px,transparent 2px);background-size:150px 120px,110px 160px;animation:pfoam 13s linear infinite;opacity:.5}
+  @keyframes pfoam{to{background-position:-60px -120px,50px -160px}}
+  .p-shimmer{position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 42%,rgba(255,200,120,.08) 50%,transparent 58%);background-size:300% 100%;animation:pshim 7s ease-in-out infinite}
+  @keyframes pshim{0%,100%{background-position:120% 0}50%{background-position:-20% 0}}
+  /* ===== v4.4: smooth HD characters + elemental auras ===== */
+  .asp .fr{image-rendering:auto!important}
+  .grave-tok img,.pen img{image-rendering:auto}
+  .tok.ghost .asp,.tok.creepghost .asp{filter:drop-shadow(0 0 6px rgba(95,196,239,.7)) drop-shadow(2px 3px 2px rgba(0,0,0,.35))}
+  .tok.sand .asp,.tok.creepsand .asp{filter:drop-shadow(0 0 6px rgba(255,150,60,.7)) drop-shadow(2px 3px 2px rgba(0,0,0,.35))}
+  .hpbar{border-radius:4px;overflow:hidden;box-shadow:0 0 5px rgba(0,0,0,.5)}
+  .hpbar i{background-image:linear-gradient(180deg,rgba(255,255,255,.45),rgba(255,255,255,0) 55%)!important;border-radius:3px}
+  .tok.ready .asp{filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 12px var(--gold)) drop-shadow(2px 3px 2px rgba(0,0,0,.4))!important}
+  .heart .vbar{border-radius:6px;overflow:hidden}
+  .heart .vbar i{background-image:linear-gradient(90deg,rgba(255,255,255,.35),rgba(255,255,255,0) 60%)}
 </style>
 </head>
 <body>
@@ -731,7 +770,7 @@
     <h1 style="margin-bottom:4px">BAZIBUB</h1>
     <div class="hint" style="margin-bottom:14px">Tidefolk vs Flamefolk</div>
     <div id="nameRow" style="display:none;margin-bottom:12px"><div class="hint" style="margin-bottom:6px">What shall we call you, commander?</div><input id="cmdName" maxlength="12" placeholder="YOUR NAME"></div>
-    <div id="newchip" class="hint" style="display:none;margin-bottom:10px;color:#8a5c12">✨ NEW in v4.3 — CO-OP mode: team up in pass & play or by link!</div>
+    <div id="newchip" class="hint" style="display:none;margin-bottom:10px;color:#8a5c12">✨ NEW in v4.4 — smooth HD look & living coastal/volcanic arenas!</div>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('play')">▶ PLAY vs BOTS</button>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('2p')">👥 2 PLAYERS — pass &amp; play</button>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('link')">📤 PLAY BY LINK — turns over WhatsApp</button>
@@ -761,7 +800,7 @@
     </div>
     <h2 style="margin-top:30px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v4.3.0 · © 2026 · art: Pixel Frog · chierit · rvros · Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v4.4.0 · © 2026 · art: Pixel Frog · chierit · rvros · Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -982,7 +1021,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='4.3.0';
+const GAME_VER='4.4.0';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1850,20 +1889,20 @@ function towerTokenHTML(w,r,hits,stg){const tg=hits.includes(w)||stg.includes(w)
     ${anim(SPR.tower[w.side],'w')}<div class="nm">${w.nm}</div><div class="hpbar"><i style="width:${100*w.hp/w.maxhp}%;background:${w.side==='ghost'?'var(--ghost)':'var(--sand)'}"></i></div></div>`;}
 function sceneHTML(r){const day=isDay();
   if(r===0) return `<div class="scene">
-     ${day?`<img class="spr sunspr" src="${SPR.deco.sun}">`
-          :`<img class="spr sunspr" src="${SPR.scene.moon}"><div class="strip stars" style="background-image:url(${SPR.scene.stars})"></div>`}
-     <div class="strip clouds" style="background-image:url(${SPR.scene.clouds})"></div>
-     <div class="decorow"><span class="dg">${anim(SPR.scene.tree,'tr')}${anim(SPR.scene.bush,'bu')}</span><span class="dg"><img class="dst pk" src="${SPR.scene.pumpkin}"><img class="dst mu" src="${SPR.scene.mush}"></span></div>
+     <div class="p-sky"></div>
+     ${day?'<div class="p-sun"></div>':`<img class="spr sunspr" src="${SPR.scene.moon}"><div class="strip stars" style="background-image:url(${SPR.scene.stars})"></div>`}
+     <div class="p-far"></div><div class="p-mid"></div>
+     <div class="p-foam"></div>
+     <div class="p-surf"><i></i><i></i></div>
      <div class="strip backpath"></div>
      <div class="strip groundband gg" style="background-image:url(${SPR.scene.grass})"></div>
      <div class="strip groundband gs" style="background-image:url(${SPR.scene.sandg})"></div><div class="motes"></div></div>`;
   return `<div class="scene">
-     <div class="strip rockwall" style="background-image:url(${SPR.scene.rock})"></div>
-     <div class="strip soil" style="background-image:url(${SPR.scene.soil})"></div>
-     <div class="strip stal" style="background-image:url(${SPR.scene.stal})"></div>
-     <div class="strip boulders" style="background-image:url(${SPR.scene.boulders})"></div>
-     ${day?'<div class="lightshaft"></div><div class="lightshaft ls2"></div>':''}
-     <div class="strip stalag" style="background-image:url(${SPR.scene.stalag})"></div>
+     <div class="p-sky"></div>
+     <div class="p-caldera"></div>
+     <div class="p-far"></div><div class="p-mid"></div>
+     <div class="p-embers"></div><div class="p-shimmer"></div>
+     <div class="p-lava"></div><div class="p-lavaline"></div>
      <div class="strip backpath"></div>
      <div class="strip groundband" style="background-image:url(${SPR.ground.under})"></div></div>`;}
 function laneCol(r){const me=S.me,R=ROUTES[r];
@@ -2155,6 +2194,52 @@ renderPick();
   window.addEventListener('resize',fit);
   setInterval(fit,800); fit();
 })();
+/* ===== v4.4: Scale2x — hand-drawn sprites rendered as smooth HD ===== */
+function scale2x(img){
+  const w=img.width,h=img.height;
+  const src=document.createElement('canvas');src.width=w;src.height=h;
+  const sx=src.getContext('2d',{willReadFrequently:true});sx.drawImage(img,0,0);
+  const sd=new Uint32Array(sx.getImageData(0,0,w,h).data.buffer);
+  const out=new Uint32Array(w*2*h*2);
+  const at=(x,y)=>sd[Math.min(h-1,Math.max(0,y))*w+Math.min(w-1,Math.max(0,x))];
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const E=at(x,y),B=at(x,y-1),D=at(x-1,y),F=at(x+1,y),H=at(x,y+1);
+    let E0=E,E1=E,E2=E,E3=E;
+    if(B!==H&&D!==F){E0=D===B?D:E;E1=B===F?F:E;E2=D===H?D:E;E3=H===F?F:E;}
+    const o=(y*2)*(w*2)+(x*2);
+    out[o]=E0;out[o+1]=E1;out[o+w*2]=E2;out[o+w*2+1]=E3;
+  }
+  const dst=document.createElement('canvas');dst.width=w*2;dst.height=h*2;
+  const dimg=dst.getContext('2d').createImageData(w*2,h*2);
+  new Uint32Array(dimg.data.buffer).set(out);
+  dst.getContext('2d').putImageData(dimg,0,0);
+  return dst;
+}
+window.__smoothReady=(async()=>{try{
+  const load=u=>new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=u;});
+  const memo=new Map();
+  async function smoothURL(u){
+    if(memo.has(u))return memo.get(u);
+    let c=scale2x(await load(u));c=scale2x(c);
+    const out=c.toDataURL();memo.set(u,out);return out;
+  }
+  async function smooth(entry){if(!entry||!entry.u)return entry;return {u:await smoothURL(entry.u),n:entry.n};}
+  for(const k of Object.keys(SPR.hero))SPR.hero[k]={ghost:await smooth(SPR.hero[k].ghost),sand:await smooth(SPR.hero[k].sand)};
+  SPR.creep={ghost:await smooth(SPR.creep.ghost),sand:await smooth(SPR.creep.sand)};
+  SPR.tower={ghost:await smooth(SPR.tower.ghost),sand:await smooth(SPR.tower.sand)};
+  SPR.special={ghost:await smooth(SPR.special.ghost),sand:await smooth(SPR.special.sand)};
+  SPR.heart={ghost:await smooth(SPR.heart.ghost),sand:await smooth(SPR.heart.sand),ghostLow:await smooth(SPR.heart.ghostLow),sandLow:await smooth(SPR.heart.sandLow)};
+  SPR.grave={ghost:await smoothURL(SPR.grave.ghost),sand:await smoothURL(SPR.grave.sand)};
+  // refresh whatever is already on screen (splash armies render before smoothing finishes)
+  const l=document.getElementById('spL'),r=document.getElementById('spR');
+  if(l&&l.innerHTML){l.innerHTML=anim(SPR.hero.knight.ghost,'')+anim(SPR.hero.archer.ghost,'')+anim(SPR.hero.frost.ghost,'');
+    r.innerHTML=anim(SPR.hero.knight.sand,'')+anim(SPR.hero.archer.sand,'')+anim(SPR.hero.frost.sand,'');
+    document.getElementById('spCL').innerHTML=anim(SPR.heart.ghost,'');
+    document.getElementById('spCR').innerHTML=anim(SPR.heart.sand,'');}
+  if(typeof renderPick==='function'&&document.getElementById('startOverlay').style.display!=='none')renderPick();
+  if(window.S&&S.heroes)render();
+  return true;
+}catch(e){return false;}})();
 document.addEventListener('pointerdown',e=>{if(e.target.closest('button,.hcard,.sidebtn'))sfx('click');},true);
 if(location.hash&&location.hash.startsWith('#g='))setTimeout(()=>loadLinkGame(location.hash),60);
 document.addEventListener('keydown',e=>{
