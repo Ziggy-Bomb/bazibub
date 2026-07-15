@@ -736,9 +736,11 @@
   .twrpin.edge-l{left:2px}
 
   /* ===== v5.0 patch: Earth vs Mars ===== */
-  .p-tree,.p-cact{position:absolute;bottom:31%;width:34px;height:46px;z-index:1;pointer-events:none;opacity:.95}
+  .p-tree,.p-cact{position:absolute;bottom:44px;width:34px;height:46px;z-index:1;pointer-events:none;opacity:.95;transform-origin:50% 100%}
+  .p-tree::after,.p-cact::after{content:'';position:absolute;left:12%;right:12%;bottom:-3px;height:7px;background:rgba(0,0,0,.38);border-radius:50%;filter:blur(1px)}
   .p-tree svg,.p-cact svg{width:100%;height:100%}
   .pt1{left:2%}.pt2{left:7.5%;transform:scale(.8)}.pt3{left:13%;transform:scale(.62)}
+  @media(max-width:640px){.p-tree,.p-cact{bottom:26px;width:26px;height:36px}}
   .pc1{right:3%}.pc2{right:9%;transform:scale(.75)}
   .sp-title{background:linear-gradient(180deg,#f2fbff 0%,#9fd8ff 34%,#35608f 50%,#e8f7ff 56%,#4d82b5 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;transform:skewX(-8deg);letter-spacing:5px;filter:drop-shadow(0 4px 0 rgba(0,0,0,.65)) drop-shadow(0 0 18px rgba(90,200,255,.8))}
   .sp-title::after{content:'\2699 EARTH vs MARS \2699';display:block;font-size:12px;letter-spacing:5px;background:linear-gradient(90deg,#6fd0f7,#fff,#ff9a66);-webkit-background-clip:text;background-clip:text;color:transparent;transform:skewX(8deg);margin-top:12px}
@@ -763,6 +765,12 @@
   .sidebtn.on[data-side=ghost]{background:linear-gradient(180deg,#ffb066,#c2521e)!important;color:#2a0d04!important;box-shadow:0 0 14px rgba(255,120,60,.8)!important}
   .sidebtn.on[data-side=sand]{background:linear-gradient(180deg,#9fe0ff,#2f86b8)!important;color:#06121e!important;box-shadow:0 0 14px rgba(90,190,245,.8)!important}
   .hdr h1 .g{background:linear-gradient(180deg,#f2fbff,#b8e4ff 40%,#5f92c8 52%,#eef9ff 58%,#7fb4e8)!important;-webkit-background-clip:text!important;background-clip:text!important}
+
+  /* v5.0c: teleport beam-up / beam-down + grounded props */
+  .tok.warpout .asp{animation:wout .75s ease-in forwards}
+  @keyframes wout{0%{transform:scale(1)}45%{transform:scale(1.07,.88);filter:brightness(1.8) saturate(1.4)}100%{transform:scale(.06,1.7) translateY(-26px);opacity:0;filter:brightness(3)}}
+  .tok.warpin .asp{animation:winb .75s ease-out}
+  @keyframes winb{0%{transform:scale(.06,1.7) translateY(-26px);opacity:0;filter:brightness(3)}55%{transform:scale(1.07,.88);opacity:1;filter:brightness(1.8)}100%{transform:scale(1)}}
 </style>
 </head>
 <body>
@@ -843,7 +851,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.0.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.0.1 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1040,6 +1048,7 @@ function sfx(name,delay){const D=delay||0;switch(name){
   case 'pop':tone({f:420,f2:660,t:'triangle',v:.07,d:.07,delay:D});break;
   case 'step':tone({f:300,f2:380,t:'triangle',v:.06,d:.07,delay:D});break;
   case 'turn':tone({f:523,t:'triangle',v:.06,d:.09,delay:D});tone({f:784,t:'triangle',v:.06,d:.12,delay:D+.09});break;
+  case 'warpout':tone({f:1200,f2:180,v:.08,d:.55,delay:D});tone({f:900,f2:300,v:.05,d:.4,delay:D+.08});noiz({d:.35,v:.04,fq:7000,delay:D});break;
   case 'warp':tone({f:220,f2:980,v:.1,d:.28,delay:D});tone({f:660,f2:1400,v:.06,d:.22,delay:D+.05});noiz({d:.12,v:.05,fq:6000,delay:D});break;
   case 'slash':noiz({d:.08,v:.12,fq:2600,delay:D});tone({f:170,f2:80,v:.07,d:.08,delay:D});tone({f:1900,f2:300,v:.05,d:.05,delay:D});break;
   case 'arrow':tone({f:950,f2:280,t:'sawtooth',v:.07,d:.11,delay:D});break;
@@ -1065,7 +1074,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='5.0.0';
+const GAME_VER='5.0.1';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1685,7 +1694,7 @@ function deploySpecial(lane){
 function aiSpecialLane(){const c=[0,0];S.heroes.filter(h=>h.controller==='enemy').forEach(h=>c[h.preferredLane]++);return c[1]>c[0]?1:c[0]>c[1]?0:(Math.random()<.5?0:1);}
 function spend(n){const me=S.me;S.apAnim={hi:me.ap,lo:me.ap-n,at:Date.now()};me.ap-=n;}
 function onUnitClick(u){
-  if(!S||S.over) return;
+  if(!S||S.over||S.walking) return;
   const me=S.me;
   if(S.phase!=='player'||!me.alive||S.mode==='idle'){
     if(u===me&&S.phase==='player'&&me.alive&&!CLASSIC_UI){openActPop();return;}
@@ -1698,15 +1707,32 @@ function onUnitClick(u){
     if(me.ap<COST.attack||attackTargets(me).length===0)S.mode='idle';
     render(); }
 }
-function onTileClick(r,t){
-  if(!S||S.phase!=='player'||S.over) return; const me=S.me;
+async function onTileClick(r,t){
+  if(!S||S.phase!=='player'||S.over||S.walking) return; const me=S.me;
   if(S.mode==='attack'||S.mode==='spell'||S.mode==='ability'){S.mode='idle';render();return;}
   if(S.mode!=='move'||!me.alive||me.snared) return;
   const cell=reachableTiles(me,me.ap).find(x=>x.r===r&&x.t===t);
   if(!cell){S.mode='idle';render();return;}
-  const _pr=me.pos.r; me.pos={r,t}; spend(cell.d); S.mode='idle'; render();
-  for(let _i=0;_i<cell.d;_i++)setTimeout(()=>sfx('step'),_i*110);
-  if(r!==_pr){sfx('warp');burst(uid(me),'#b7f3ff',14);burst(uid(me),'#ffffff',8);}
+  const d=bfs(me.side,heroNode(me));
+  let cur=tk(r,t); const path=[cur];
+  while(d[cur]>1){for(const n of tileNeighbors(me.side,cur)){if(d[n]===d[cur]-1){cur=n;break;}}path.unshift(cur);}
+  spend(cell.d); S.mode='idle'; S.walking=true;
+  try{
+    for(const node of path){
+      const[nr,nt]=node.split(':').map(Number);
+      if(nr!==me.pos.r){
+        sfx('warpout'); S.warpU=uid(me); S.warpPh='out'; render(); await wait(750);
+        if(!S||S.over)break;
+        me.pos={r:nr,t:nt}; S.warpPh='in'; sfx('warp'); render();
+        burst(uid(me),'#b7f3ff',14); burst(uid(me),'#ffffff',8);
+        await wait(750); S.warpU=null; S.warpPh=null;
+      } else {
+        me.pos={r:nr,t:nt}; sfx('step'); render(); await wait(200);
+      }
+      if(!S||S.over)break;
+    }
+  } finally { if(S){S.walking=false;S.warpU=null;S.warpPh=null;} }
+  if(S&&!S.over)render();
 }
 function spellTargets(){const me=S.me,sp=me.spell;if(!sp.target)return[];
   return enemyUnits(me.side).filter(u=>{if(u.type==='heart'){if(towerAlive(u.side,me.pos.r))return false;return dist(me.side,heroNode(me),unitNode(u))<=sp.range;}return inRange(me,u,sp.range);});}
@@ -1739,7 +1765,7 @@ function clickAct(kind){
   render();
 }
 async function endTurn(){
-  if(S.phase!=='player'||S.over) return; sfx('click'); S.me.snared=false; S.mode='idle';S.phase='enemy';render();
+  if(S.phase!=='player'||S.over||S.walking) return; sfx('click'); S.me.snared=false; S.mode='idle';S.phase='enemy';render();
   const gen=GEN, stale=()=>GEN!==gen||!S||S.over;
   if(S.twoP&&S.coop){
     if(S.half===1){
@@ -1919,7 +1945,7 @@ function heroTokenHTML(hh,me,hits,stg){const tg=hits.includes(hh)||stg.includes(
   const rel=hh===me?'me':hh.side===me.side?'friend':'foe', relTxt=hh===me?'★YOU':rel==='friend'?'ALLY':'FOE';
   if(!hh.alive) return `<div class="tok grave-tok ${rel}" data-fx="hero:${idx}"><div class="rel ${rel}">${relTxt}</div>${img(SPR.grave[hh.side],'')}<div class="nm" style="color:var(--bad)">back ${hh.respawnIn}</div></div>`;
   const ready=hh===me&&S.phase==='player'&&me.alive&&me.ap>0&&S.mode==='idle'&&!S.over;
-  return `<div class="tok ${rel} ${hh.side} ${ready?'ready':''} ${hh.shield>0?'shielded':''} ${S.actingId===uid(hh)?'acting':''} ${hh.stunned?'stunned':''} ${tg?'target':''}" data-unit="hero:${idx}" data-fx="hero:${idx}" title="${hh.name} — HP ${hh.hp}/${hh.maxhp}${hh.shield>0?' +shield '+hh.shield:''}">${ready&&S.round<=4?'<span class="taptag">TAP!</span>':''}
+  return `<div class="tok ${rel} ${hh.side} ${S.warpU===uid(hh)&&S.warpPh?('warp'+S.warpPh):''} ${ready?'ready':''} ${hh.shield>0?'shielded':''} ${S.actingId===uid(hh)?'acting':''} ${hh.stunned?'stunned':''} ${tg?'target':''}" data-unit="hero:${idx}" data-fx="hero:${idx}" title="${hh.name} — HP ${hh.hp}/${hh.maxhp}${hh.shield>0?' +shield '+hh.shield:''}">${ready&&S.round<=4?'<span class="taptag">TAP!</span>':''}
     <div class="rel ${rel}">${relTxt}</div>${anim(SPR.hero[hh.key][hh.side],'u')}<div class="nm">${hh.name}${hh.stunned?'❄':''}${hh.snared?'⛓':''}</div>
     <div class="hpbar"><i style="width:${100*hh.hp/hh.maxhp}%;background:${hpColor(hh.hp/hh.maxhp)}"></i></div></div>`;}
 function creepTokenHTML(c,hits,stg){const tg=hits.includes(c)||stg.includes(c);
