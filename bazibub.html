@@ -842,6 +842,22 @@
   @keyframes batfloat2{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
   .endscene .asp.endbat.lost{left:72%;animation:batlost 4s ease forwards;filter:grayscale(.75) drop-shadow(0 0 6px rgba(255,217,84,.3))}
   @keyframes batlost{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-52px) scale(.72);opacity:.35}}
+
+  /* v5.6: menu screens get the space treatment; mobile titan size fixed */
+  #modeOverlay,#startOverlay{background:radial-gradient(130% 90% at 50% -10%,#1c3060 0%,#0d1530 46%,#060912 100%)}
+  #modeOverlay::after,#startOverlay::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:radial-gradient(rgba(255,255,255,.9) 1px,transparent 1.5px),radial-gradient(rgba(150,200,255,.6) 1px,transparent 1.5px),radial-gradient(rgba(255,200,150,.5) 1.3px,transparent 1.9px);
+    background-size:110px 90px,70px 55px,170px 140px;background-position:0 0,35px 28px,80px 60px;opacity:.5}
+  #modeOverlay .card,#startOverlay .card{position:relative;z-index:2}
+  .ovpl{position:fixed;bottom:3.5%;font-size:64px;z-index:1;pointer-events:none;animation:pfloat 5s ease-in-out infinite}
+  .ovpm{left:4%;filter:drop-shadow(0 0 18px rgba(255,90,40,.8))}
+  .ovpe{right:4%;filter:drop-shadow(0 0 18px rgba(80,180,255,.8));animation-delay:2.5s}
+  @media(max-width:640px){.ovpl{font-size:40px;bottom:2%}}
+  #modeBat{display:flex;justify-content:center;margin:4px 0 2px}
+  #modeBat .asp{width:60px;height:66px;filter:drop-shadow(0 0 12px rgba(255,217,84,.7));animation:batfloat2 3s ease-in-out infinite}
+  #startArt .asp.pickbat{width:42px;height:46px;filter:drop-shadow(0 0 10px rgba(255,217,84,.85))}
+  .tok .asp.big{width:88px;height:88px}
+  @media(max-width:640px){.tok .asp.big{width:56px;height:56px}}
 </style>
 </head>
 <body>
@@ -884,12 +900,15 @@
 <div id="actPop" onclick="closeActPop()"><div class="apopin" onclick="event.stopPropagation()" id="actPopIn"></div></div>
 
 <div class="overlay" id="modeOverlay" style="display:none;z-index:65">
+  <div class="ovpl ovpm">🔴</div><div class="ovpl ovpe">🌍</div>
   <div class="card" style="max-width:360px;text-align:center">
     <h1 style="margin-bottom:4px">BAZIBUB</h1>
+    <div id="modeBat"></div>
     <div class="hint" style="margin-bottom:4px">Earth Bots vs Mars Bots</div>
     <div class="hint" style="margin-bottom:14px;font-size:13px;opacity:.8">🔋 One battery. Two worlds. Winner takes the charge.</div>
     <div id="nameRow" style="display:none;margin-bottom:12px"><div class="hint" style="margin-bottom:6px">What shall we call you, commander?</div><input id="cmdName" maxlength="12" placeholder="YOUR NAME"></div>
     <div id="newchip" class="hint" style="display:none;margin-bottom:10px;color:#8a5c12">✨ NEW in v5.0 — EARTH vs MARS! New colours, robot names, teleport pads &amp; more!</div>
+    <div class="hint" style="color:#8a5c12;font-family:var(--disp);font-size:10px;margin-bottom:10px">⚡ THE RECHARGE GAMES ARE ON — CHOOSE YOUR MISSION ⚡</div>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('play')">🤖 1 PLAYER — vs bots</button>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickTeam('2p','coop')">🤝 2 PLAYER CO-OP — same device</button>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickTeam('2p','vs')">⚔ 2 PLAYER VS — same device</button>
@@ -910,9 +929,11 @@
   </div>
 </div>
 <div class="overlay" id="startOverlay">
+  <div class="ovpl ovpm">🔴</div><div class="ovpl ovpe">🌍</div>
   <div class="card"><div id="startArt"></div>
     <div class="tag1" id="tag1">🌍 EARTH vs MARS 🔴 — defend your base, destroy theirs!</div>
     <div class="tag2">Pick a side · pick a hero · battle in 5–10 minutes</div>
+    <div class="tag2" style="color:#8a5c12;font-family:var(--disp);font-size:10px;margin-top:4px">⚡ YEAR 3047 — WHO TAKES BAZIBUB HOME THIS YEAR? ⚡</div>
     <h2 style="margin-top:22px" id="sideH2">CHOOSE YOUR SIDE</h2>
     <div class="sidepick">
       <button class="sidebtn on" data-side="ghost" onclick="setSide('ghost')">🔴 MARS BOTS<br><span style="font-size:9px">red · left · 2× creeps bottom</span></button>
@@ -921,7 +942,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.5.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.6.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1149,7 +1170,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='5.5.0';
+const GAME_VER='5.6.0';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1287,7 +1308,7 @@ let selectedSide='ghost';
 function themeSide(sd){document.body.classList.toggle('side-ghost',sd==='ghost');document.body.classList.toggle('side-sand',sd==='sand');document.body.style.setProperty('--reach',sd==='ghost'?'#ff9a66':'#6fd0f7');}
 function setSide(s){selectedSide=s;sfx('click');document.querySelectorAll('.sidebtn').forEach(b=>b.classList.toggle('on',b.dataset.side===s));themeSide(s);renderPick();}
 function renderPick(){
-  document.getElementById('startArt').innerHTML=`${anim(SPR.heart.ghost,'')}<span class="vs">VS</span>${anim(SPR.heart.sand,'')}`;
+  document.getElementById('startArt').innerHTML=`${anim(SPR.heart.ghost,'')}${SPR.battery?anim(SPR.battery,'pickbat'):'<span class="vs">VS</span>'}${anim(SPR.heart.sand,'')}`;
   const _card=([k,a])=>`
   <div class="hcard" onclick="newGame('${k}')"><div class="row" style="gap:9px"><div class="pbox">${anim(SPR.hero[k][selectedSide],'')}</div>
     <div><div class="t">${(selectedSide==='ghost'?GNAME:SNAME)[k]}</div><small>${a.kind}</small></div></div>
@@ -2771,6 +2792,7 @@ document.addEventListener('keydown',e=>{
       document.getElementById('spTR').innerHTML=anim(SPR.tower.sand,'');}catch(e){}
   const bat=document.createElement('div'); bat.className='sp-bat'; sp.appendChild(bat);
   try{bat.innerHTML=anim(SPR.battery,'');}catch(e){}
+  try{const mb=document.getElementById('modeBat');if(mb)mb.innerHTML=anim(SPR.battery,'');}catch(e){}
   const sndOK=()=>SND.on&&SND.ctx&&SND.ctx.state==='running'&&!sp.classList.contains('off');
   let played=false,mus=null;
   function bar(){
