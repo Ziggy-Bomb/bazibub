@@ -749,10 +749,10 @@
   .sp-pe{right:5%;filter:drop-shadow(0 0 14px rgba(80,180,255,.9))}
   .sp-pm{left:5%;animation-delay:2s;filter:drop-shadow(0 0 14px rgba(255,90,40,.9))}
   @keyframes pfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
-  .sp-story{position:absolute;left:0;right:0;top:31%;height:22px;text-align:center;z-index:4;font-family:var(--disp);font-size:11px;color:#fff}
-  .sp-story .stx{position:absolute;left:0;right:0;opacity:0;text-shadow:2px 2px 0 #000,0 0 12px rgba(120,220,255,.6);animation:stcyc 12s linear infinite}
-  .sp-story .st2{animation-delay:3s}.sp-story .st3{animation-delay:6s}.sp-story .st4{animation-delay:9s}
-  @keyframes stcyc{0%{opacity:0}3%{opacity:1}21%{opacity:1}25%{opacity:0}100%{opacity:0}}
+  .sp-story{position:absolute;left:0;right:0;top:24%;height:40%;z-index:4;perspective:300px;perspective-origin:50% 0%;overflow:hidden;pointer-events:none;-webkit-mask-image:linear-gradient(180deg,transparent 3%,rgba(0,0,0,.9) 30%,#000 65%);mask-image:linear-gradient(180deg,transparent 3%,rgba(0,0,0,.9) 30%,#000 65%)}
+  .sp-story .crawl{position:absolute;left:5%;right:5%;top:0;font-family:var(--disp);font-size:14px;line-height:1.95;letter-spacing:1px;text-align:center;color:var(--gold);text-shadow:2px 2px 0 #000,0 0 14px rgba(255,217,84,.4);transform-origin:50% 100%;animation:crawlup 26s linear infinite}
+  .sp-story .crawl p{margin:0 0 30px}
+  @keyframes crawlup{0%{transform:rotateX(40deg) translateY(112%)}100%{transform:rotateX(40deg) translateY(-150%)}}
   .flashfx{position:fixed;inset:0;z-index:200;pointer-events:none;background:#fff;opacity:0;animation:flfx 1.4s ease-out}
   @keyframes flfx{0%{opacity:0}6%{opacity:.95}18%{opacity:.15}30%{opacity:.55}44%{opacity:.1}56%{opacity:.35}100%{opacity:0}}
   .smokecol{position:absolute;bottom:38%;width:16px;height:16px;border-radius:50%;background:rgba(95,95,108,.55);animation:smk 2.6s linear infinite;filter:blur(2px)}
@@ -796,7 +796,6 @@
   @keyframes shotlt{0%{transform:translateX(0);opacity:0}6%{opacity:1}100%{transform:translateX(-52vw);opacity:.9}}
   .sp-boomfx.big{width:170px;height:170px;bottom:11%}
   .sp-planet{font-size:72px}
-  .sp-story{font-size:14px}
   .sp-title::after{font-size:15px}
   .sp-tap{font-size:16px}
   @media(min-width:641px){
@@ -814,7 +813,6 @@
 
   /* v5.3: bigger splash text/planets/title */
   .sp-title::after{font-size:20px;letter-spacing:6px}
-  .sp-story{font-size:17px;height:28px}
   .sp-cred{font-size:19px}
   .sp-tap{font-size:22px;padding:13px 26px}
   .sp-planet{font-size:96px}
@@ -824,13 +822,16 @@
     .sp-title::after{font-size:14px;letter-spacing:4px}
     .sp-planet{font-size:68px}
     .sp-tap{font-size:16px;padding:11px 20px}
-    .sp-story{font-size:12px}
     .sp-cred{font-size:16px}
   }
 
   /* v5.3.1: spell reminders */
   .aphint{font-size:15px;line-height:1.5;margin-top:9px;text-align:left;color:#4a3820}
   .spellhint{font-size:14px;line-height:1.4;color:#6b5636;margin-top:3px}
+
+  /* v5.4.1: star-wars crawl sizes */
+  @media(min-width:641px){.sp-story .crawl{font-size:19px}}
+  @media(max-width:640px){.sp-story .crawl{font-size:12px;line-height:1.9}}
 </style>
 </head>
 <body>
@@ -865,7 +866,7 @@
   <div class="sp-water"></div>
   <div class="sp-title">BAZIBUB</div>
   <div class="sp-planet sp-pm">🔴</div><div class="sp-planet sp-pe">🌍</div>
-  <div class="sp-story"><span class="stx st1">LONG AFTER THE HUMANS… THE ROBOTS SPLIT</span><span class="stx st2">🌍 EARTH BOTS STAYED · MARS BOTS SETTLED MARS 🔴</span><span class="stx st3">ONE ANCIENT BATTERY — CHARGE FOR ONLY ONE WORLD</span><span class="stx st4">⚡ THE RECHARGE GAMES DECIDE — WINNER TAKES THE CHARGE! ⚡</span></div>
+  <div class="sp-story"><div class="crawl"><p>LONG AFTER THE HUMANS LEFT…<br>THE ROBOTS SPLIT IN TWO</p><p>🌍 THE EARTH BOTS STAYED HOME<br>THE MARS BOTS SETTLED THE RED PLANET 🔴</p><p>BOTH WORLDS RUN OFF ONE ANCIENT BATTERY —<br>WITH CHARGE FOR ONLY ONE WORLD</p><p>⚡ SO EVERY YEAR, THE RECHARGE GAMES DECIDE:<br>WINNER TAKES THE CHARGE HOME! ⚡</p><p>DEFEND YOUR BASE.<br>DESTROY THEIRS.</p></div></div>
   <div class="sp-tap">▶ TAP TO BEGIN</div>
   <div class="sp-cred" id="spCred"></div>
 </div>
@@ -910,7 +911,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.4.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.4.1 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1138,7 +1139,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='5.4.0';
+const GAME_VER='5.4.1';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
