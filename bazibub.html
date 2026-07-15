@@ -832,6 +832,16 @@
   /* v5.4.1: star-wars crawl sizes */
   @media(min-width:641px){.sp-story .crawl{font-size:19px}}
   @media(max-width:640px){.sp-story .crawl{font-size:12px;line-height:1.9}}
+
+  /* v5.5: Bazibub the battery */
+  .sp-bat{position:absolute;left:50%;bottom:23%;z-index:3;pointer-events:none;animation:batfloat 3.5s ease-in-out infinite}
+  .sp-bat .asp{width:86px;height:95px;filter:drop-shadow(0 0 18px rgba(255,217,84,.75))}
+  @keyframes batfloat{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-9px)}}
+  @media(max-width:640px){.sp-bat .asp{width:62px;height:68px}.sp-bat{bottom:25%}}
+  .endscene .asp.endbat{position:absolute;left:15%;bottom:10px;width:62px;height:68px;z-index:2;filter:drop-shadow(0 0 14px rgba(255,217,84,.85));animation:batfloat2 3s ease-in-out infinite}
+  @keyframes batfloat2{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  .endscene .asp.endbat.lost{left:72%;animation:batlost 4s ease forwards;filter:grayscale(.75) drop-shadow(0 0 6px rgba(255,217,84,.3))}
+  @keyframes batlost{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-52px) scale(.72);opacity:.35}}
 </style>
 </head>
 <body>
@@ -866,7 +876,7 @@
   <div class="sp-water"></div>
   <div class="sp-title">BAZIBUB</div>
   <div class="sp-planet sp-pm">🔴</div><div class="sp-planet sp-pe">🌍</div>
-  <div class="sp-story"><div class="crawl"><p>LONG AFTER THE HUMANS LEFT…<br>THE ROBOTS SPLIT IN TWO</p><p>🌍 THE EARTH BOTS STAYED HOME<br>THE MARS BOTS SETTLED THE RED PLANET 🔴</p><p>BOTH WORLDS RUN OFF ONE ANCIENT BATTERY —<br>WITH CHARGE FOR ONLY ONE WORLD</p><p>⚡ SO EVERY YEAR, THE RECHARGE GAMES DECIDE:<br>WINNER TAKES THE CHARGE HOME! ⚡</p><p>DEFEND YOUR BASE.<br>DESTROY THEIRS.</p></div></div>
+  <div class="sp-story"><div class="crawl"><p>LONG AFTER THE HUMANS LEFT…<br>THE ROBOTS SPLIT IN TWO</p><p>🌍 THE EARTH BOTS STAYED HOME<br>THE MARS BOTS SETTLED THE RED PLANET 🔴</p><p>BOTH WORLDS RUN OFF ONE ANCIENT BATTERY —<br>★ BAZIBUB ★ — CHARGE FOR ONLY ONE WORLD</p><p>⚡ SO EVERY YEAR, THE RECHARGE GAMES DECIDE:<br>WINNER TAKES THE CHARGE HOME! ⚡</p><p>DEFEND YOUR BASE.<br>DESTROY THEIRS.</p></div></div>
   <div class="sp-tap">▶ TAP TO BEGIN</div>
   <div class="sp-cred" id="spCred"></div>
 </div>
@@ -911,7 +921,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.4.1 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.5.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1139,7 +1149,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='5.4.1';
+const GAME_VER='5.5.0';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1176,7 +1186,7 @@ function dismissSplash(){const s=document.getElementById('splash');if(!s||s.clas
 let howI=0;
 function howSlideList(){const viz=h=>`<div class="howviz">${h}</div>`;
  return [
- {t:'THE STORY',h:viz(anim(SPR.heart.ghost,'hv')+'<span class="howvs">🔋</span>'+anim(SPR.heart.sand,'hv'))+'<p>Long after the humans left, the robots split into two families — the <b>Earth Bots</b> stayed home, the <b>Mars Bots</b> settled the red planet. Both worlds run off <b>one ancient battery</b>… with charge for only ONE world at a time. So every year they hold the <b>RECHARGE GAMES</b>: winner takes the charge home! Don\'t worry — nobody really gets hurt. Losing bots are simply <b>rebuilt</b> for next year\'s Games.</p>'},
+ {t:'THE STORY',h:viz(anim(SPR.heart.ghost,'hv')+anim(SPR.battery,'hv')+anim(SPR.heart.sand,'hv'))+'<p>Long after the humans left, the robots split into two families — the <b>Earth Bots</b> stayed home, the <b>Mars Bots</b> settled the red planet. Both worlds run off <b>one ancient battery</b>… with charge for only ONE world at a time. Its worn label once read <b>BAsic Zero-Ion Backup Unit B</b> — only the big letters survived, so the robots named it… <b>BAZIBUB</b>! Every year the <b>RECHARGE GAMES</b> decide who takes Bazibub home. Don\'t worry — nobody really gets hurt. Losing bots are simply <b>rebuilt</b> for next year\'s Games.</p>'},
  {t:'THE GOAL',h:viz(anim(SPR.heart.ghost,'hv')+'<span class="howvs">VS</span>'+anim(SPR.heart.sand,'hv'))+'<p>Two robot armies: the <b>Mars Bots</b> (red, left) and the <b>Earth Bots</b> (blue, right). Each has a <b>Base</b>. Destroy the enemy Base before they destroy yours — the first Base to fall loses!</p>'},
  {t:'TAKE YOUR TURN',h:`<div class="howviz demoviz"><div class="dm-hero">${anim(SPR.hero.knight.ghost,'uv')}</div><span class="dm-finger">👆</span><div class="dm-pop"><b>🦶 MOVE</b><b class="b2">⚔ ATTACK</b><b>✨ SPELL</b></div></div><p>Tap your <b>glowing hero</b> and an action menu pops up — tap an action, then tap a glowing tile or target. Everything costs ⚡: <b>MOVE 1 · ATTACK 2 · SPELL 3 · ABILITY 2</b>. You get <b>4⚡ every turn</b>, then press END.</p>`},
  {t:'TWO ROADS — YOUR PLAN',h:viz(anim(SPR.hero.archer.ghost,'uv')+'<span class="howvs dmx">⇅</span>'+anim(SPR.hero.tank.ghost,'uv'))+'<p>The sunny <b>Earth Road</b> runs on top, the cave <b>Mars Road</b> below. You can only fight enemies on <b>your own road</b> — and the roads connect only at <b>your home corner</b> (look for the ⇅ CROSS mark on the board). March everyone together, or split your team 2–1 — your call, general. (The ⇅ pads? Leftover cargo teleporters from the old mining days.)</p>'},
@@ -2173,8 +2183,8 @@ function showEnd(win){
     document.getElementById('againBtn').textContent=win?'▶ PLAY AGAIN':'⚔ REMATCH';
     const conf3=win?Array.from({length:18},(_,i)=>`<i class="conf" style="left:${4+i*5}%;animation-delay:${(i%6)*.32}s;background:${['#ffd24a','#46c8ff','#5fe39a','#ff5d6c','#fff'][i%5]}"></i>`).join(''):'';
     const hs=S.heroes.filter(isHuman);
-    document.getElementById('endArt').innerHTML=win?`<div class="endscene">${conf3}<div class="rays"></div><img class="crown" src="${SPR.crown}">${anim(SPR.hero[hs[0].key][hs[0].side],'endhero')}</div>`:`<div class="endscene">${anim(SPR.heart[S.playerSide+'Low'],'endheart')}<div class="smokecol sm1"></div><div class="smokecol sm2"></div><div class="smokecol sm3"></div></div>`;
-    document.getElementById('endText').innerHTML=(win?`Side by side, <b>${nm}</b> destroyed the enemy Base in ${S.round} rounds! 🔋 The charge is yours this year!`:`The ${enemyName()} held their base — this time. 🔋 The charge is lost this year — rebuild and return!`)+(S.linkP?`<div style="margin-top:10px"><button class="big" onclick="showShare()">📤 SEND THE RESULT</button></div>`:'');
+    document.getElementById('endArt').innerHTML=win?`<div class="endscene">${conf3}<div class="rays"></div><img class="crown" src="${SPR.crown}">${anim(SPR.battery,'endbat')}${anim(SPR.hero[hs[0].key][hs[0].side],'endhero')}</div>`:`<div class="endscene">${anim(SPR.heart[S.playerSide+'Low'],'endheart')}${anim(SPR.battery,'endbat lost')}<div class="smokecol sm1"></div><div class="smokecol sm2"></div><div class="smokecol sm3"></div></div>`;
+    document.getElementById('endText').innerHTML=(win?`Side by side, <b>${nm}</b> destroyed the enemy Base in ${S.round} rounds! 🔋 BAZIBUB goes home with your team this year!`:`The ${enemyName()} held their base — this time. 🔋 Bazibub goes to the enemy this year — rebuild and return!`)+(S.linkP?`<div style="margin-top:10px"><button class="big" onclick="showShare()">📤 SEND THE RESULT</button></div>`:'');
     document.getElementById('endOverlay').style.display='flex';
     return;}
   if(S.twoP){sfx('victory');
@@ -2185,8 +2195,8 @@ function showEnd(win){
     document.getElementById('endTitle').style.color='';
     document.getElementById('againBtn').textContent='⚔ REMATCH';
     const conf2=Array.from({length:18},(_,i)=>`<i class="conf" style="left:${4+i*5}%;animation-delay:${(i%6)*.32}s;background:${['#ffd24a','#46c8ff','#5fe39a','#ff5d6c','#fff'][i%5]}"></i>`).join('');
-    document.getElementById('endArt').innerHTML=`<div class="endscene">${conf2}<div class="rays"></div><img class="crown" src="${SPR.crown}">${anim(SPR.hero[wHero.key][wHero.side],'endhero')}</div>`;
-    document.getElementById('endText').innerHTML=`The ${sideFolk(winSide)} base stands — the ${sideFolk(S.fallSide)} have fallen! <b>${wName}</b> takes the crown in ${S.round} rounds — 🔋 the charge goes home with the ${sideFolk(winSide)}!<div class="earned">☆ ${wName} the Base-Buster ☆</div>`+(S.linkP?`<div style="margin-top:10px"><button class="big" onclick="showShare()">📤 SEND THE RESULT</button></div>`:'');
+    document.getElementById('endArt').innerHTML=`<div class="endscene">${conf2}<div class="rays"></div><img class="crown" src="${SPR.crown}">${anim(SPR.battery,'endbat')}${anim(SPR.hero[wHero.key][wHero.side],'endhero')}</div>`;
+    document.getElementById('endText').innerHTML=`The ${sideFolk(winSide)} base stands — the ${sideFolk(S.fallSide)} have fallen! <b>${wName}</b> takes the crown in ${S.round} rounds — 🔋 BAZIBUB goes home with the ${sideFolk(winSide)}!<div class="earned">☆ ${wName} the Base-Buster ☆</div>`+(S.linkP?`<div style="margin-top:10px"><button class="big" onclick="showShare()">📤 SEND THE RESULT</button></div>`:'');
     document.getElementById('endOverlay').style.display='flex';
     return;}
   sfx(win?'victory':'defeat');
@@ -2198,8 +2208,8 @@ function showEnd(win){
   const conf=win?Array.from({length:18},(_,i)=>`<i class="conf" style="left:${4+i*5}%;animation-delay:${(i%6)*.32}s;background:${['#ffd24a','#46c8ff','#5fe39a','#ff5d6c','#fff'][i%5]}"></i>`).join('')
               :Array.from({length:12},(_,i)=>`<i class="conf ash" style="left:${6+i*8}%;animation-delay:${(i%6)*.55}s"></i>`).join('');
   document.getElementById('endArt').innerHTML=win
-    ?`<div class="endscene">${conf}<div class="rays"></div><img class="crown" src="${SPR.crown}">${anim(SPR.hero[S.me.key][S.playerSide],'endhero')}</div>`
-    :`<div class="endscene">${conf}${anim(SPR.heart[S.playerSide+'Low'],'endheart')}<img class="spr egrave" src="${SPR.grave[S.playerSide]}"></div>`;
+    ?`<div class="endscene">${conf}<div class="rays"></div><img class="crown" src="${SPR.crown}">${anim(SPR.battery,'endbat')}${anim(SPR.hero[S.me.key][S.playerSide],'endhero')}</div>`
+    :`<div class="endscene">${conf}${anim(SPR.heart[S.playerSide+'Low'],'endheart')}${anim(SPR.battery,'endbat lost')}<img class="spr egrave" src="${SPR.grave[S.playerSide]}"></div>`;
   const st=S.stats;
   const speed=win?Math.max(0,(SUDDEN_ROUND-S.round))*25:0;
   const lossPts=st.lostHeroes*25+st.lostCreeps*5+st.lostTowers*50;
@@ -2215,7 +2225,7 @@ function showEnd(win){
   const total=Math.max(0,rows.reduce((a,r)=>a+r.pts,0));
   const best=+(localStorage.getItem('bzb_best')||0), isBest=total>best;
   if(isBest)localStorage.setItem('bzb_best',String(total));
-  document.getElementById('endText').innerHTML=((win?'You destroyed the enemy Base — 🔋 the charge is yours this year!':`The ${enemyName()} held their base — this time. 🔋 The charge is lost this year — rebuild and return!`)+
+  document.getElementById('endText').innerHTML=((win?'You destroyed the enemy Base — 🔋 BAZIBUB goes home with you this year!':`The ${enemyName()} held their base — this time. 🔋 Bazibub goes to the enemy this year — rebuild and return!`)+
     `<div class="earned">☆ ${CMD()} the ${st.towers>=3?'Tower Toppler':st.boss>=1&&win?'Monster Slayer':win&&S.round<=10?'Lightning General':st.kills>=4?'Fearless Duelist':win?'Base-Buster':'Brave Defender'} ☆</div>`)+
     `<div class="scorebox">${rows.map((r,i)=>`<div class="srow" style="animation-delay:${(.3+i*.4).toFixed(1)}s"><span>${r.ic} ${r.lb}</span><b class="${r.pts<0?'neg':''}">${r.pts<0?'−':'+'}<span class="cnt0" data-t="${Math.abs(r.pts)}">0</span></b></div>`).join('')}
      <div class="srow total" style="animation-delay:${(.3+rows.length*.4).toFixed(1)}s"><span>SCORE</span><b>+<span class="cnt0" data-t="${total}">0</span></b></div>
@@ -2662,6 +2672,41 @@ function castleLow(side){const p=pal(side),id='hl'+side;
   <rect x="28" y="48" width="64" height="54" rx="7" fill="#000" opacity=".28"/>
   <path d="M20 26 q4 -12 1 -18 M100 26 q-4 -12 -1 -18" stroke="#5a5a5a" stroke-width="4" fill="none" opacity=".7" stroke-linecap="round"/>
  </svg>`);}
+function batterySVG(){return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 132" preserveAspectRatio="xMidYMax meet">
+<defs>
+ <linearGradient id="batmG" x1="0" y1="0" x2="0" y2="1">
+   <stop offset="0" stop-color="#94a6bd"/><stop offset=".5" stop-color="#5b6b80"/><stop offset="1" stop-color="#3a4454"/>
+ </linearGradient>
+ <radialGradient id="batcG" cx=".35" cy=".3" r=".95">
+   <stop offset="0" stop-color="#fff6dc"/><stop offset=".45" stop-color="#ffd954"/><stop offset="1" stop-color="#8a5c12"/>
+ </radialGradient>
+ <filter id="batgG" x="-60%" y="-60%" width="220%" height="220%">
+   <feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+ </filter>
+</defs>
+<ellipse cx="60" cy="126" rx="36" ry="5" fill="#000" opacity=".25"/>
+<rect x="54" y="0" width="12" height="10" rx="3" fill="#ffd954" stroke="#141a22" stroke-width="2.4" filter="url(#batgG)"/>
+<rect x="42" y="7" width="36" height="12" rx="4" fill="url(#batmG)" stroke="#141a22" stroke-width="2.6"/>
+<rect x="30" y="17" width="60" height="106" rx="12" fill="url(#batmG)" stroke="#141a22" stroke-width="3"/>
+<rect x="36" y="22" width="9" height="96" rx="4.5" fill="#fff" opacity=".14"/>
+<rect x="42" y="26" width="36" height="42" rx="7" fill="#1a1408" stroke="#141a22" stroke-width="2.4"/>
+<rect x="46" y="48" width="28" height="16" rx="4" fill="url(#batcG)" filter="url(#batgG)"/>
+<rect x="46" y="40" width="28" height="6" rx="3" fill="#ffd954" opacity=".55"/>
+<rect x="46" y="32" width="28" height="5" rx="2.5" fill="#ffd954" opacity=".28"/>
+<path d="M64 30 l-9 13 h6 l-5 12 11 -14 h-6 l7 -11 Z" fill="#fff6dc" opacity=".85" filter="url(#batgG)" transform="translate(-2 2) scale(.62)" transform-origin="60 40"/>
+<g transform="rotate(-2 60 86)">
+ <rect x="34" y="74" width="52" height="24" rx="3" fill="#e8dbb8" stroke="#141a22" stroke-width="2.4"/>
+ <text x="60" y="83" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="5" fill="#8a7a58">BAsic Zero-Ion</text>
+ <text x="60" y="89" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="5" fill="#8a7a58">Backup Unit B</text>
+ <text x="60" y="96" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="8.6" font-weight="bold" fill="#3d2c15">BAZIBUB</text>
+</g>
+<path d="M84 30 q4 7 -1 12" stroke="#7a5c2e" stroke-width="2.2" fill="none" opacity=".6" stroke-linecap="round"/>
+<path d="M35 104 q5 5 11 3" stroke="#7a5c2e" stroke-width="2" fill="none" opacity=".5" stroke-linecap="round"/>
+<circle cx="36" cy="21" r="1.7" fill="#141a22" opacity=".55"/><circle cx="84" cy="21" r="1.7" fill="#141a22" opacity=".55"/>
+<circle cx="36" cy="117" r="1.7" fill="#141a22" opacity=".55"/><circle cx="84" cy="117" r="1.7" fill="#141a22" opacity=".55"/>
+<rect x="24" y="114" width="14" height="11" rx="3" fill="url(#batmG)" stroke="#141a22" stroke-width="2.4"/>
+<rect x="82" y="114" width="14" height="11" rx="3" fill="url(#batmG)" stroke="#141a22" stroke-width="2.4"/>
+</svg>`;}
 function svgEntry(sv){return {u:'data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(sv))),n:1};}
 (function(){
  const H={knight,archer,ember,frost,tank,summoner};
@@ -2670,6 +2715,7 @@ function svgEntry(sv){return {u:'data:image/svg+xml;base64,'+btoa(unescape(encod
  SPR.tower={ghost:svgEntry(towerB('ghost')),sand:svgEntry(towerB('sand'))};
  SPR.special={ghost:svgEntry(boss('ghost')),sand:svgEntry(boss('sand'))};
  SPR.heart={ghost:svgEntry(castle('ghost')),sand:svgEntry(castle('sand')),ghostLow:svgEntry(castleLow('ghost')),sandLow:svgEntry(castleLow('sand'))};
+ SPR.battery=svgEntry(batterySVG());
 })();
 
 window.__smoothReady=(async()=>{try{
@@ -2723,6 +2769,8 @@ document.addEventListener('keydown',e=>{
   tw.innerHTML='<span id="spTL"></span><span id="spTR"></span>'; sp.appendChild(tw);
   try{document.getElementById('spTL').innerHTML=anim(SPR.tower.ghost,'');
       document.getElementById('spTR').innerHTML=anim(SPR.tower.sand,'');}catch(e){}
+  const bat=document.createElement('div'); bat.className='sp-bat'; sp.appendChild(bat);
+  try{bat.innerHTML=anim(SPR.battery,'');}catch(e){}
   const sndOK=()=>SND.on&&SND.ctx&&SND.ctx.state==='running'&&!sp.classList.contains('off');
   let played=false,mus=null;
   function bar(){
