@@ -775,14 +775,42 @@
   /* v5.1: splash battle loop */
   #spWar{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
   .sp-shot{position:absolute;height:4px;width:30px;border-radius:4px;opacity:0}
-  .sp-shot.sr{left:13%;background:linear-gradient(90deg,transparent,#ff9a3c,#fff);box-shadow:0 0 9px #ff7a2c;animation:shotr 1.05s linear forwards}
-  .sp-shot.sl{right:13%;background:linear-gradient(270deg,transparent,#5fd2ff,#fff);box-shadow:0 0 9px #4ac2ff;animation:shotl 1.05s linear forwards}
-  @keyframes shotr{0%{transform:translateX(0);opacity:0}8%{opacity:1}100%{transform:translateX(70vw);opacity:.9}}
-  @keyframes shotl{0%{transform:translateX(0);opacity:0}8%{opacity:1}100%{transform:translateX(-70vw);opacity:.9}}
+  .sp-shot.sr{left:36%;background:linear-gradient(90deg,transparent,#ff9a3c,#fff);box-shadow:0 0 9px #ff7a2c;animation:shotr 1.05s linear forwards}
+  .sp-shot.sl{right:36%;background:linear-gradient(270deg,transparent,#5fd2ff,#fff);box-shadow:0 0 9px #4ac2ff;animation:shotl 1.05s linear forwards}
+  @keyframes shotr{0%{transform:translateX(0);opacity:0}8%{opacity:1}100%{transform:translateX(56vw);opacity:.9}}
+  @keyframes shotl{0%{transform:translateX(0);opacity:0}8%{opacity:1}100%{transform:translateX(-56vw);opacity:.9}}
   .sp-boomfx{position:absolute;bottom:13%;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,#fff 0%,#ffd954 26%,#ff7a2c 54%,rgba(255,60,20,0) 72%);animation:spboom 1.15s ease-out forwards;z-index:4}
   @keyframes spboom{0%{transform:scale(.1);opacity:0}12%{opacity:1}55%{transform:scale(1.3);opacity:.9}100%{transform:scale(1.9);opacity:0}}
-  .sp-castles span.sp-hitfall{animation:sphit 2.6s ease-in}
+  #splash span.sp-hitfall{animation:sphit 2.6s ease-in}
   @keyframes sphit{0%{transform:translateY(0) rotate(0);filter:brightness(3)}15%{transform:translateY(4px) rotate(-4deg);filter:brightness(1.8)}45%{transform:translateY(11px) rotate(5deg);opacity:.55;filter:brightness(.6) saturate(.35)}70%{transform:translateY(11px) rotate(5deg);opacity:.25;filter:brightness(.5) saturate(.3)}100%{transform:translateY(0);opacity:1;filter:none}}
+
+  /* v5.2: splash sizes + towers */
+  .sp-towers{position:absolute;left:0;right:0;bottom:13.5%;z-index:2;pointer-events:none}
+  .sp-towers span{position:absolute;bottom:0}
+  #spTL{left:31%}#spTR{right:31%}
+  .sp-towers .asp{width:76px;height:76px;filter:drop-shadow(2px 4px 0 rgba(0,0,0,.3))}
+  .sp-shot.tws{width:38px;height:5px}
+  .sp-shot.sr.tws{left:35%;animation-name:shotrt}
+  .sp-shot.sl.tws{right:35%;animation-name:shotlt}
+  @keyframes shotrt{0%{transform:translateX(0);opacity:0}6%{opacity:1}100%{transform:translateX(52vw);opacity:.9}}
+  @keyframes shotlt{0%{transform:translateX(0);opacity:0}6%{opacity:1}100%{transform:translateX(-52vw);opacity:.9}}
+  .sp-boomfx.big{width:170px;height:170px;bottom:11%}
+  .sp-planet{font-size:72px}
+  .sp-story{font-size:14px}
+  .sp-title::after{font-size:15px}
+  .sp-tap{font-size:16px}
+  @media(min-width:641px){
+    .sp-title{font-size:96px}
+    .sp-castles .asp{width:190px;height:190px}
+    .sp-armies .asp{width:96px;height:96px}
+  }
+  @media(max-width:640px){
+    .sp-title{font-size:36px}
+    .sp-castles .asp{width:118px;height:118px}
+    .sp-armies .asp{width:62px;height:62px}
+    .sp-planet{font-size:54px}
+    .sp-towers .asp{width:52px;height:52px}
+  }
 </style>
 </head>
 <body>
@@ -863,7 +891,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.1.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.2.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1060,6 +1088,11 @@ function sfx(name,delay){const D=delay||0;switch(name){
   case 'pop':tone({f:420,f2:660,t:'triangle',v:.07,d:.07,delay:D});break;
   case 'step':tone({f:300,f2:380,t:'triangle',v:.06,d:.07,delay:D});break;
   case 'turn':tone({f:523,t:'triangle',v:.06,d:.09,delay:D});tone({f:784,t:'triangle',v:.06,d:.12,delay:D+.09});break;
+  case 'welcome':[262,330,392,523].forEach((f,i)=>tone({f,v:.07,d:.3,delay:D+i*.22}));
+    [392,523,659,784,1047].forEach((f,i)=>tone({f,v:.08,d:.34,delay:D+1.05+i*.24}));
+    [131,165,196].forEach((f,i)=>tone({f,v:.05,d:.8,delay:D+i*.7}));
+    tone({f:1568,v:.05,d:.7,delay:D+2.3});break;
+  case 'spew':tone({f:1500,f2:420,v:.028,d:.08,delay:D});break;
   case 'warpout':tone({f:1200,f2:180,v:.08,d:.55,delay:D});tone({f:900,f2:300,v:.05,d:.4,delay:D+.08});noiz({d:.35,v:.04,fq:7000,delay:D});break;
   case 'warp':tone({f:220,f2:980,v:.1,d:.28,delay:D});tone({f:660,f2:1400,v:.06,d:.22,delay:D+.05});noiz({d:.12,v:.05,fq:6000,delay:D});break;
   case 'slash':noiz({d:.08,v:.12,fq:2600,delay:D});tone({f:170,f2:80,v:.07,d:.08,delay:D});tone({f:1900,f2:300,v:.05,d:.05,delay:D});break;
@@ -1086,7 +1119,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='5.1.0';
+const GAME_VER='5.2.0';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -2660,31 +2693,52 @@ document.addEventListener('keydown',e=>{
 </script>
 
 <script>
-/* v5.1: splash battle loop — armies trade fire until one base blows up, then it rebuilds and the fight restarts */
+/* v5.2: splash battle loop — armies + towers trade fire; each go, one side's tower falls, then its base; sides alternate */
 (function(){
   const sp=document.getElementById('splash'); if(!sp) return;
-  let lay=document.createElement('div'); lay.id='spWar'; sp.appendChild(lay);
-  function volley(){
-    if(sp.classList.contains('off')){clearInterval(tick);return;}
-    for(let i=0;i<6;i++){
-      const s=document.createElement('i');
-      s.className='sp-shot '+(i%2?'sl':'sr');
-      s.style.bottom=(12.5+(i%3)*2.6)+'%';
-      s.style.animationDelay=(i*.28)+'s';
-      lay.appendChild(s); setTimeout(()=>s.remove(),3200);
-    }
-    const left=Math.random()<.5, id=left?'spCL':'spCR';
-    setTimeout(()=>{
-      if(sp.classList.contains('off'))return;
-      const c=document.getElementById(id); if(!c||!c.firstChild)return;
-      const b=document.createElement('i'); b.className='sp-boomfx';
-      if(left)b.style.left='2%'; else b.style.right='2%';
-      lay.appendChild(b); setTimeout(()=>b.remove(),1300);
-      c.classList.add('sp-hitfall'); setTimeout(()=>c.classList.remove('sp-hitfall'),2650);
-    },2100);
+  const lay=document.createElement('div'); lay.id='spWar'; sp.appendChild(lay);
+  const tw=document.createElement('div'); tw.className='sp-towers';
+  tw.innerHTML='<span id="spTL"></span><span id="spTR"></span>'; sp.appendChild(tw);
+  try{document.getElementById('spTL').innerHTML=anim(SPR.tower.ghost,'');
+      document.getElementById('spTR').innerHTML=anim(SPR.tower.sand,'');}catch(e){}
+  const sndOK=()=>SND.on&&SND.ctx&&SND.ctx.state==='running'&&!sp.classList.contains('off');
+  let played=false;
+  function welcome(){if(played||!sndOK())return;played=true;sfx('welcome');}
+  try{audioInit();}catch(e){}
+  setTimeout(welcome,200);
+  document.addEventListener('pointerdown',()=>{setTimeout(welcome,80);},{once:true,capture:true});
+  function shot(cls,bot,delay){
+    const s=document.createElement('i'); s.className='sp-shot '+cls;
+    s.style.bottom=bot+'%'; s.style.animationDelay=delay+'s';
+    lay.appendChild(s); setTimeout(()=>s.remove(),delay*1000+1400);
+    setTimeout(()=>{if(sndOK())sfx('spew');},delay*1000+80);
   }
-  const tick=setInterval(volley,6200);
-  setTimeout(volley,1200);
+  function boomFx(x,fromRight,big){
+    const b=document.createElement('i'); b.className='sp-boomfx'+(big?' big':'');
+    if(fromRight)b.style.right=x; else b.style.left=x;
+    lay.appendChild(b); setTimeout(()=>b.remove(),1500);
+    if(sndOK())sfx('explode');
+  }
+  let n=0;
+  function cycle(){
+    if(sp.classList.contains('off')){clearInterval(tick);return;}
+    n++;
+    const leftVictim=n%2===1;
+    for(let i=0;i<6;i++)shot(i%2?'sl':'sr',13+(i%3)*2.6,i*.3);
+    shot('sr tws',19,.9); shot('sl tws',19,1.8);
+    setTimeout(()=>{ if(sp.classList.contains('off'))return;
+      const t=document.getElementById(leftVictim?'spTL':'spTR');
+      boomFx('30%',!leftVictim,false);
+      if(t){t.classList.add('sp-hitfall');setTimeout(()=>t.classList.remove('sp-hitfall'),2650);}
+    },2400);
+    setTimeout(()=>{ if(sp.classList.contains('off'))return;
+      const c=document.getElementById(leftVictim?'spCL':'spCR');
+      boomFx('1.5%',!leftVictim,true);
+      if(c){c.classList.add('sp-hitfall');setTimeout(()=>c.classList.remove('sp-hitfall'),2650);}
+    },4800);
+  }
+  const tick=setInterval(cycle,9800);
+  setTimeout(cycle,4500);
 })();
 </script>
 </body>
