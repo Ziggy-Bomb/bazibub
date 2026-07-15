@@ -1,9 +1,16 @@
 # Bazibub — Earth Bots vs Mars Bots
 
 A kid-friendly, turn-based lane battle game that runs entirely in the browser.
-The blue Earth Bots face the red Mars Bots across two roads
-(the sunny **Earth Road** and the underground **Mars Road**) — defend your base,
-destroy theirs! Play solo vs bots, pass-and-play, or take turns over WhatsApp.
+
+**The story:** long after the humans left, the robots split into two families —
+the blue **Earth Bots** stayed home, the red **Mars Bots** settled the red planet.
+Both worlds run off one ancient battery… with charge for only ONE world at a time.
+So every year they hold the **Recharge Games**: a friendly(ish) war across two roads
+(the sunny **Earth Road** and the underground **Mars Road**). Destroy the enemy base
+and the charge goes home with you — and don't worry, losing bots are simply rebuilt
+for next year's Games.
+
+Play solo vs bots, pass-and-play, or take turns over WhatsApp.
 
 - **Play it:** https://bazibub.pages.dev
 - **itch.io page:** (add your itch.io link here)

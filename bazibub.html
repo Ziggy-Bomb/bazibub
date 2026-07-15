@@ -750,9 +750,9 @@
   .sp-pm{left:5%;animation-delay:2s;filter:drop-shadow(0 0 14px rgba(255,90,40,.9))}
   @keyframes pfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
   .sp-story{position:absolute;left:0;right:0;top:31%;height:22px;text-align:center;z-index:4;font-family:var(--disp);font-size:11px;color:#fff}
-  .sp-story .stx{position:absolute;left:0;right:0;opacity:0;text-shadow:2px 2px 0 #000,0 0 12px rgba(120,220,255,.6);animation:stcyc 9s linear infinite}
-  .sp-story .st2{animation-delay:3s}.sp-story .st3{animation-delay:6s}
-  @keyframes stcyc{0%{opacity:0}4%{opacity:1}29%{opacity:1}33%{opacity:0}100%{opacity:0}}
+  .sp-story .stx{position:absolute;left:0;right:0;opacity:0;text-shadow:2px 2px 0 #000,0 0 12px rgba(120,220,255,.6);animation:stcyc 12s linear infinite}
+  .sp-story .st2{animation-delay:3s}.sp-story .st3{animation-delay:6s}.sp-story .st4{animation-delay:9s}
+  @keyframes stcyc{0%{opacity:0}3%{opacity:1}21%{opacity:1}25%{opacity:0}100%{opacity:0}}
   .flashfx{position:fixed;inset:0;z-index:200;pointer-events:none;background:#fff;opacity:0;animation:flfx 1.4s ease-out}
   @keyframes flfx{0%{opacity:0}6%{opacity:.95}18%{opacity:.15}30%{opacity:.55}44%{opacity:.1}56%{opacity:.35}100%{opacity:0}}
   .smokecol{position:absolute;bottom:38%;width:16px;height:16px;border-radius:50%;background:rgba(95,95,108,.55);animation:smk 2.6s linear infinite;filter:blur(2px)}
@@ -865,7 +865,7 @@
   <div class="sp-water"></div>
   <div class="sp-title">BAZIBUB</div>
   <div class="sp-planet sp-pm">🔴</div><div class="sp-planet sp-pe">🌍</div>
-  <div class="sp-story"><span class="stx st1">TWO PLANETS. ONE BATTLE.</span><span class="stx st2">🌍 EARTH BOTS&nbsp; vs &nbsp;MARS BOTS 🔴</span><span class="stx st3">DEFEND YOUR BASE — DESTROY THEIRS!</span></div>
+  <div class="sp-story"><span class="stx st1">LONG AFTER THE HUMANS… THE ROBOTS SPLIT</span><span class="stx st2">🌍 EARTH BOTS STAYED · MARS BOTS SETTLED MARS 🔴</span><span class="stx st3">ONE ANCIENT BATTERY — CHARGE FOR ONLY ONE WORLD</span><span class="stx st4">⚡ THE RECHARGE GAMES DECIDE — WINNER TAKES THE CHARGE! ⚡</span></div>
   <div class="sp-tap">▶ TAP TO BEGIN</div>
   <div class="sp-cred" id="spCred"></div>
 </div>
@@ -875,7 +875,8 @@
 <div class="overlay" id="modeOverlay" style="display:none;z-index:65">
   <div class="card" style="max-width:360px;text-align:center">
     <h1 style="margin-bottom:4px">BAZIBUB</h1>
-    <div class="hint" style="margin-bottom:14px">Earth Bots vs Mars Bots</div>
+    <div class="hint" style="margin-bottom:4px">Earth Bots vs Mars Bots</div>
+    <div class="hint" style="margin-bottom:14px;font-size:13px;opacity:.8">🔋 One battery. Two worlds. Winner takes the charge.</div>
     <div id="nameRow" style="display:none;margin-bottom:12px"><div class="hint" style="margin-bottom:6px">What shall we call you, commander?</div><input id="cmdName" maxlength="12" placeholder="YOUR NAME"></div>
     <div id="newchip" class="hint" style="display:none;margin-bottom:10px;color:#8a5c12">✨ NEW in v5.0 — EARTH vs MARS! New colours, robot names, teleport pads &amp; more!</div>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('play')">🤖 1 PLAYER — vs bots</button>
@@ -909,7 +910,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.3.1 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.4.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1137,7 +1138,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='5.3.1';
+const GAME_VER='5.4.0';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1174,9 +1175,10 @@ function dismissSplash(){const s=document.getElementById('splash');if(!s||s.clas
 let howI=0;
 function howSlideList(){const viz=h=>`<div class="howviz">${h}</div>`;
  return [
+ {t:'THE STORY',h:viz(anim(SPR.heart.ghost,'hv')+'<span class="howvs">🔋</span>'+anim(SPR.heart.sand,'hv'))+'<p>Long after the humans left, the robots split into two families — the <b>Earth Bots</b> stayed home, the <b>Mars Bots</b> settled the red planet. Both worlds run off <b>one ancient battery</b>… with charge for only ONE world at a time. So every year they hold the <b>RECHARGE GAMES</b>: winner takes the charge home! Don\'t worry — nobody really gets hurt. Losing bots are simply <b>rebuilt</b> for next year\'s Games.</p>'},
  {t:'THE GOAL',h:viz(anim(SPR.heart.ghost,'hv')+'<span class="howvs">VS</span>'+anim(SPR.heart.sand,'hv'))+'<p>Two robot armies: the <b>Mars Bots</b> (red, left) and the <b>Earth Bots</b> (blue, right). Each has a <b>Base</b>. Destroy the enemy Base before they destroy yours — the first Base to fall loses!</p>'},
  {t:'TAKE YOUR TURN',h:`<div class="howviz demoviz"><div class="dm-hero">${anim(SPR.hero.knight.ghost,'uv')}</div><span class="dm-finger">👆</span><div class="dm-pop"><b>🦶 MOVE</b><b class="b2">⚔ ATTACK</b><b>✨ SPELL</b></div></div><p>Tap your <b>glowing hero</b> and an action menu pops up — tap an action, then tap a glowing tile or target. Everything costs ⚡: <b>MOVE 1 · ATTACK 2 · SPELL 3 · ABILITY 2</b>. You get <b>4⚡ every turn</b>, then press END.</p>`},
- {t:'TWO ROADS — YOUR PLAN',h:viz(anim(SPR.hero.archer.ghost,'uv')+'<span class="howvs dmx">⇅</span>'+anim(SPR.hero.tank.ghost,'uv'))+'<p>The sunny <b>Earth Road</b> runs on top, the cave <b>Mars Road</b> below. You can only fight enemies on <b>your own road</b> — and the roads connect only at <b>your home corner</b> (look for the ⇅ CROSS mark on the board). March everyone together, or split your team 2–1 — your call, general.</p>'},
+ {t:'TWO ROADS — YOUR PLAN',h:viz(anim(SPR.hero.archer.ghost,'uv')+'<span class="howvs dmx">⇅</span>'+anim(SPR.hero.tank.ghost,'uv'))+'<p>The sunny <b>Earth Road</b> runs on top, the cave <b>Mars Road</b> below. You can only fight enemies on <b>your own road</b> — and the roads connect only at <b>your home corner</b> (look for the ⇅ CROSS mark on the board). March everyone together, or split your team 2–1 — your call, general. (The ⇅ pads? Leftover cargo teleporters from the old mining days.)</p>'},
  {t:'TOWERS GUARD BASES',h:viz(anim(SPR.tower.sand,'wv')+anim(SPR.heart.sand,'hv'))+'<p>A Base can\'t be hurt while <b>that road\'s tower</b> stands — each side has one tower per road, so watch <b>both</b> roads! Bonus: <b>stand beside your own tower and it heals you +4</b> every round.</p>'},
  {t:'THE CREEP WAVES',h:viz(anim(SPR.creep.ghost,'uv')+'<span class="howvs">⚔️</span>'+anim(SPR.creep.sand,'uv fl')+anim(SPR.creep.sand,'uv fl'))+'<p>Every 3 rounds little <b>creeps</b> march out and fight for you. The roads aren\'t fair: the top road sends <b>2 Earth creeps vs 1 Mars creep</b>, the bottom road the reverse. Push where you\'re strong — defend where you\'re outnumbered.</p>'},
  {t:'DAY & NIGHT',h:viz(anim(SPR.creep.sand,'uv fl')+'<span class="howvs">☀️🌙</span>'+anim(SPR.creep.ghost,'uv'))+'<p>The sky flips every 4 rounds. At <b>sunrise the whole Earth Bot army recharges 15 Health</b>; at <b>nightfall the Mars Bots</b> do. Time your big pushes for when YOUR heal is coming!</p>'},
@@ -1664,8 +1666,8 @@ function dealDamage(attackerSide,u,amt,lane){
       if(mine)S.stats.kills++; else if(u.side===S.playerSide)S.stats.lostHeroes++;
       if(S.phase==='player'&&attackerSide===S.playerSide){S.turnKills=(S.turnKills||0)+1;if(S.turnKills===2)toast('💥 DOUBLE KO!',S.playerSide);else if(S.turnKills>=3)toast('🔥 TRIPLE KO!!!',S.playerSide);}
       burst(uid(u),'#ffffff',10); shake(); sfx('death');
-      log(`💀 ${u.name} is destroyed! (back in ${u.respawnIn})`,u.side,true);recap(`💀 ${u.name} fell (back in ${u.respawnIn})`);
-      if(u===S.me)toast(`YOU ARE DOWN — back in ${u.respawnIn}`,foeSide(S.playerSide)); else toast(`${u.name} FALLS`,u.side);}
+      log(`💀 ${u.name} is wrecked! (rebuilt in ${u.respawnIn})`,u.side,true);recap(`💀 ${u.name} fell (rebuilt in ${u.respawnIn})`);
+      if(u===S.me)toast(`YOU ARE WRECKED — rebuilt in ${u.respawnIn}`,foeSide(S.playerSide)); else toast(`${u.name} FALLS`,u.side);}
     else if(u.type==='tower'){u.alive=false;u.hp=0;S.towerFell=true;if(mine)S.stats.towers++; else if(u.side===S.playerSide)S.stats.lostTowers++;
       burst('tower:'+u.side+':'+u.r,'#ffd954',14); boomAt('tower:'+u.side+':'+u.r,130); shake(11); sfx('explode');
       log(`💥 The ${u.label} on ${ROUTES[u.r].nm} shatters!`,'sys',true);recap(`💥 ${sideFolk(u.side)} tower on ${ROUTES[u.r].nm} destroyed!`);toast(`${u.label} DOWN`,'sys');
@@ -1720,8 +1722,8 @@ function beginPlayerPhase(){document.body.classList.add('ingame');const me=S.me;
   render();
   showDeploy();
 }
-const SPECIAL={ghost:{name:'Mars Titan',emoji:'🔴',desc:'A colossal Mars siege mech — its shielding soaks up huge damage (100 HP), but it strikes softly.'},
-               sand:{name:'Earth Titan',emoji:'🌍',desc:'A slim, vicious blade mech — easier to break (40 HP), but its blades hit like a hammer.'}};
+const SPECIAL={ghost:{name:'Mars Titan',emoji:'🔴',desc:'An ancient terraforming mech, woken for the Games — its shielding soaks up huge damage (100 HP), but it strikes softly.'},
+               sand:{name:'Earth Titan',emoji:'🌍',desc:'Rebuilt from an old harvester mech — easier to break (40 HP), but its blades hit like a hammer.'}};
 function showDeploy(){
   if(S.round!==SPECIAL_ROUND) return;
   if(S.twoP&&!S.coop){
@@ -2007,7 +2009,7 @@ function heartCell(side){const ht=S.heart[side],frac=ht.hp/ht.maxhp,low=frac<.35
      <div class="warnH">${mine?'If it shatters, you lose.':'Shatter it to win!'}</div>${pen}</div>`;}
 function heroTokenHTML(hh,me,hits,stg){const tg=hits.includes(hh)||stg.includes(hh),idx=S.heroes.indexOf(hh);
   const rel=hh===me?'me':hh.side===me.side?'friend':'foe', relTxt=hh===me?'★YOU':rel==='friend'?'ALLY':'FOE';
-  if(!hh.alive) return `<div class="tok grave-tok ${rel}" data-fx="hero:${idx}"><div class="rel ${rel}">${relTxt}</div>${img(SPR.grave[hh.side],'')}<div class="nm" style="color:var(--bad)">back ${hh.respawnIn}</div></div>`;
+  if(!hh.alive) return `<div class="tok grave-tok ${rel}" data-fx="hero:${idx}"><div class="rel ${rel}">${relTxt}</div>${img(SPR.grave[hh.side],'')}<div class="nm" style="color:var(--bad)">🔧 ${hh.respawnIn}</div></div>`;
   const ready=hh===me&&S.phase==='player'&&me.alive&&me.ap>0&&S.mode==='idle'&&!S.over;
   return `<div class="tok ${rel} ${hh.side} ${S.warpU===uid(hh)&&S.warpPh?('warp'+S.warpPh):''} ${ready?'ready':''} ${hh.shield>0?'shielded':''} ${S.actingId===uid(hh)?'acting':''} ${hh.stunned?'stunned':''} ${tg?'target':''}" data-unit="hero:${idx}" data-fx="hero:${idx}" title="${hh.name} — HP ${hh.hp}/${hh.maxhp}${hh.shield>0?' +shield '+hh.shield:''}">${ready&&S.round<=4?'<span class="taptag">TAP!</span>':''}
     <div class="rel ${rel}">${relTxt}</div>${anim(SPR.hero[hh.key][hh.side],'u')}<div class="nm">${hh.name}${hh.stunned?'❄':''}${hh.snared?'⛓':''}</div>
@@ -2087,7 +2089,7 @@ function actCard(kind,cls,title,cost,desc,on,dis){return `<div class="act ${cls}
     <div class="top"><span class="ttl">${title}</span><span class="cost">${cost}</span></div><div class="d">${desc}</div></div>`;}
 function renderControls(){const me=S.me,sp=me.spell,ab=me.abil,p=document.getElementById('ctrlPanel'),busy=S.phase!=='player'||S.over;
   const pr=document.getElementById('playRow'); if(pr) pr.classList.toggle('ctrl-left', S.playerSide==='ghost');
-  const dead=!me.alive?`<div class="deadnote">💀 YOU ARE DOWN — respawning in ${me.respawnIn} round(s)</div>`:'';
+  const dead=!me.alive?`<div class="deadnote">🔧 YOU ARE WRECKED — rebuilt in ${me.respawnIn} round(s)</div>`:'';
   const mid=busy?'<span class="minhint2">…</span>'
     :S.mode==='idle'?'<span class="minhint2 tapme" onclick="openActPop()">👆 tap your glowing hero</span>'
     :`<span class="minhint2">${S.mode==='move'?'🦶 tap a glowing tile':'🎯 tap a target'}</span><button class="cancelmini" onclick="cancelMode()">✖</button>`;
@@ -2171,7 +2173,7 @@ function showEnd(win){
     const conf3=win?Array.from({length:18},(_,i)=>`<i class="conf" style="left:${4+i*5}%;animation-delay:${(i%6)*.32}s;background:${['#ffd24a','#46c8ff','#5fe39a','#ff5d6c','#fff'][i%5]}"></i>`).join(''):'';
     const hs=S.heroes.filter(isHuman);
     document.getElementById('endArt').innerHTML=win?`<div class="endscene">${conf3}<div class="rays"></div><img class="crown" src="${SPR.crown}">${anim(SPR.hero[hs[0].key][hs[0].side],'endhero')}</div>`:`<div class="endscene">${anim(SPR.heart[S.playerSide+'Low'],'endheart')}<div class="smokecol sm1"></div><div class="smokecol sm2"></div><div class="smokecol sm3"></div></div>`;
-    document.getElementById('endText').innerHTML=(win?`Side by side, <b>${nm}</b> destroyed the enemy Base in ${S.round} rounds!`:`The ${enemyName()} held their base — this time. Rally together and strike back!`)+(S.linkP?`<div style="margin-top:10px"><button class="big" onclick="showShare()">📤 SEND THE RESULT</button></div>`:'');
+    document.getElementById('endText').innerHTML=(win?`Side by side, <b>${nm}</b> destroyed the enemy Base in ${S.round} rounds! 🔋 The charge is yours this year!`:`The ${enemyName()} held their base — this time. 🔋 The charge is lost this year — rebuild and return!`)+(S.linkP?`<div style="margin-top:10px"><button class="big" onclick="showShare()">📤 SEND THE RESULT</button></div>`:'');
     document.getElementById('endOverlay').style.display='flex';
     return;}
   if(S.twoP){sfx('victory');
@@ -2183,7 +2185,7 @@ function showEnd(win){
     document.getElementById('againBtn').textContent='⚔ REMATCH';
     const conf2=Array.from({length:18},(_,i)=>`<i class="conf" style="left:${4+i*5}%;animation-delay:${(i%6)*.32}s;background:${['#ffd24a','#46c8ff','#5fe39a','#ff5d6c','#fff'][i%5]}"></i>`).join('');
     document.getElementById('endArt').innerHTML=`<div class="endscene">${conf2}<div class="rays"></div><img class="crown" src="${SPR.crown}">${anim(SPR.hero[wHero.key][wHero.side],'endhero')}</div>`;
-    document.getElementById('endText').innerHTML=`The ${sideFolk(winSide)} base stands — the ${sideFolk(S.fallSide)} have fallen! <b>${wName}</b> takes the crown in ${S.round} rounds.<div class="earned">☆ ${wName} the Base-Buster ☆</div>`+(S.linkP?`<div style="margin-top:10px"><button class="big" onclick="showShare()">📤 SEND THE RESULT</button></div>`:'');
+    document.getElementById('endText').innerHTML=`The ${sideFolk(winSide)} base stands — the ${sideFolk(S.fallSide)} have fallen! <b>${wName}</b> takes the crown in ${S.round} rounds — 🔋 the charge goes home with the ${sideFolk(winSide)}!<div class="earned">☆ ${wName} the Base-Buster ☆</div>`+(S.linkP?`<div style="margin-top:10px"><button class="big" onclick="showShare()">📤 SEND THE RESULT</button></div>`:'');
     document.getElementById('endOverlay').style.display='flex';
     return;}
   sfx(win?'victory':'defeat');
@@ -2212,7 +2214,7 @@ function showEnd(win){
   const total=Math.max(0,rows.reduce((a,r)=>a+r.pts,0));
   const best=+(localStorage.getItem('bzb_best')||0), isBest=total>best;
   if(isBest)localStorage.setItem('bzb_best',String(total));
-  document.getElementById('endText').innerHTML=((win?'You destroyed the enemy Base. Well commanded!':`The ${enemyName()} held their base — this time. Rally your heroes and strike back!`)+
+  document.getElementById('endText').innerHTML=((win?'You destroyed the enemy Base — 🔋 the charge is yours this year!':`The ${enemyName()} held their base — this time. 🔋 The charge is lost this year — rebuild and return!`)+
     `<div class="earned">☆ ${CMD()} the ${st.towers>=3?'Tower Toppler':st.boss>=1&&win?'Monster Slayer':win&&S.round<=10?'Lightning General':st.kills>=4?'Fearless Duelist':win?'Base-Buster':'Brave Defender'} ☆</div>`)+
     `<div class="scorebox">${rows.map((r,i)=>`<div class="srow" style="animation-delay:${(.3+i*.4).toFixed(1)}s"><span>${r.ic} ${r.lb}</span><b class="${r.pts<0?'neg':''}">${r.pts<0?'−':'+'}<span class="cnt0" data-t="${Math.abs(r.pts)}">0</span></b></div>`).join('')}
      <div class="srow total" style="animation-delay:${(.3+rows.length*.4).toFixed(1)}s"><span>SCORE</span><b>+<span class="cnt0" data-t="${total}">0</span></b></div>
