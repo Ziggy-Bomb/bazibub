@@ -921,6 +921,12 @@
   /* v6.0.1: on-rails tutorial — dim non-prescribed squares */
   body.tut-only .tile.reach{box-shadow:none;background:none;cursor:default}
   body.tut-only .tile.reach.tut-glow{cursor:pointer;background:rgba(255,217,84,.16);box-shadow:inset 0 0 0 3px var(--gold)}
+
+  /* v6.0.2: bigger coach text, flashing END */
+  #tutBar .tutin{font-size:18px}
+  @media(max-width:640px){#tutBar .tutin{font-size:15px}}
+  .endbig.tut-glow{animation:endflash .55s ease-in-out infinite alternate!important;outline-width:4px!important}
+  @keyframes endflash{0%{transform:scale(1);box-shadow:0 0 10px rgba(255,217,84,.8);filter:brightness(1)}100%{transform:scale(1.14);box-shadow:0 0 32px rgba(255,217,84,1);filter:brightness(1.6)}}
 </style>
 </head>
 <body>
@@ -1015,7 +1021,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v6.0.1 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v6.0.2 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1243,7 +1249,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='6.0.1';
+const GAME_VER='6.0.2';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -2956,13 +2962,13 @@ const TUT_BASIC=[
  {txt:"This menu is everything your robot can do this turn. <b>Tap MOVE.</b>",need:'act:move',tgt:'.pbtn.move2'},
  {txt:"You have <b>4⚡ Action Points</b> each turn, and each square costs 1⚡ to walk. <b>March 2 squares ahead — tap the glowing square.</b>",need:'move',
   setup:function(){S.me.pos={r:0,t:0};},only:function(){return {r:0,t:2};}},
- {txt:"Perfect — that used 2⚡, so you have 2⚡ left. An attack costs exactly 2⚡… how convenient!",need:'btn'},
+ {txt:"Perfect — that used 2⚡, so you have 2⚡ left. An attack costs exactly 2⚡… how convenient!",need:'btn',ap:2},
  {txt:"An enemy creep has appeared! ⚔ <b>Tap your robot → tap STRIKE → tap the creep.</b> (Attacks cost 2⚡.)",need:'attack',tgt:'.tok.creepsand',
   setup:function(){S.creeps.push(mkCreep('sand',S.me.pos.r,Math.min(NT-1,S.me.pos.t+1),{hp:7,maxhp:7}));}},
- {txt:"💥 Smashed! Creeps are small, but they matter: <b>enemy towers always shoot creeps before robots</b> — so creeps are your shield.",need:'btn'},
- {txt:"🎯 THE GOAL: destroy the far <b>enemy BASE</b>. It is <b>shielded while its two towers stand</b> — smash the tower on your road first, then hit the base!",need:'btn',tgt:'[data-fx="heart:sand"]'},
- {txt:"When your ⚡ is spent, <b>tap ⏭ END</b> — creeps march, towers zap, then it's your turn again. <b>Tap END now.</b>",need:'end',tgt:'.endbig'},
- {txt:"🎉 That's the basics, commander! Ready for battle?",done:true,
+ {txt:"💥 Smashed! Creeps are small, but they matter: <b>enemy towers always shoot creeps before robots</b> — so creeps are your shield.",need:'btn',ap:0},
+ {txt:"🎯 THE GOAL: destroy the far <b>enemy BASE</b>. It is <b>shielded while its two towers stand</b> — smash the tower on your road first, then hit the base!",need:'btn',ap:0,tgt:'[data-fx="heart:sand"]'},
+ {txt:"When your ⚡ is spent, <b>tap ⏭ END</b> — creeps march, towers zap, then it's your turn again. <b>Tap END now.</b>",need:'end',ap:0,tgt:'.endbig'},
+ {txt:"🎉 That's the basics, commander! Ready for battle?",done:true,ap:0,
   btns:'<button class="tutbtn" onclick="tutExit(\'adv\')">🔵 ADVANCED</button><button class="tutbtn" onclick="tutExit(\'play\')">▶ PLAY</button>'}
 ];
 const TUT_ADV=[
@@ -2970,12 +2976,12 @@ const TUT_ADV=[
  {txt:"🪖 DEPLOY TACTICS: at the start you choose each robot's road. <b>All 3 together</b> = one unstoppable push. <b>Split 2–1</b> = hold both roads. Read the creep numbers and choose!",need:'btn'},
  {txt:"⇅ TELEPORT: the glowing pads on your <b>first column</b> connect the two roads. <b>Try it: tap your robot → MOVE → tap the glowing pad square on the OTHER road.</b>",need:'warp',
   setup:function(){S.me.pos={r:0,t:0};},only:function(){return {r:1,t:0};}},
- {txt:"⚡ TOWERS zap anything within <b>2 squares</b> of them — but they <b>always shoot creeps first</b>. The danger zone is glowing red: march in WITH creeps, or stay out of it!",need:'btn',tgt:'.tok.towersand',
+ {txt:"⚡ TOWERS zap anything within <b>2 squares</b> of them — but they <b>always shoot creeps first</b>. The danger zone is glowing red: march in WITH creeps, or stay out of it!",need:'btn',ap:0,tgt:'.tok.towersand',
   deco:function(){document.querySelectorAll('[data-tile]').forEach(function(el){var p=el.dataset.tile.split(','),t=+p[1];if(Math.abs(t-4)<=2)el.classList.add('tut-range');});}},
- {txt:"☀🌙 DAY & NIGHT flip every 4 rounds: <b>sunrise recharges ALL Earth Bots +15❤</b>, <b>nightfall recharges the Mars Bots</b>. Time your big push for right after YOUR recharge!",need:'btn'},
+ {txt:"☀🌙 DAY & NIGHT flip every 4 rounds: <b>sunrise recharges ALL Earth Bots +15❤</b>, <b>nightfall recharges the Mars Bots</b>. Time your big push for right after YOUR recharge!",need:'btn',ap:0},
  {txt:"✨ SPELLS: every robot has a unique SPELL and ⬢ ABILITY — stuns, volleys, heals, shields (read them in the action menu). <b>Try yours: tap robot → tap ✨ → tap the creep.</b>",need:'spell',tgt:'.tok.creepsand',
   setup:function(){S.creeps.push(mkCreep('sand',S.me.pos.r,Math.min(NT-1,S.me.pos.t+2),{hp:14,maxhp:14}));}},
- {txt:"🏆 Tactics mastered! Go win the B.A.Z.I.B.U.B.!",done:true,
+ {txt:"🏆 Tactics mastered! Go win the B.A.Z.I.B.U.B.!",done:true,ap:0,
   btns:'<button class="tutbtn" onclick="tutExit(\'basic\')">🟢 BASICS</button><button class="tutbtn" onclick="tutExit(\'play\')">▶ PLAY</button>'}
 ];
 function tutSteps(){return S.tut.kind==='adv'?TUT_ADV:TUT_BASIC;}
@@ -2996,7 +3002,7 @@ function tutNext(){
   if(st.setup)st.setup();
   S.tut.only=st.only?st.only():null;
   document.body.classList.toggle('tut-only',!!S.tut.only);
-  S.me.ap=AP_MAX;
+  S.me.ap=(st.ap!==undefined?st.ap:AP_MAX);
   render(); tutShow(); tutDecorate();
 }
 function tutShow(){
@@ -3039,8 +3045,8 @@ function tutNotify(kind,data){
 }
 function tutEndPress(){
   if(!S||!S.tut)return; const st=tutCur();
-  if(st&&st.need==='end'){sfx('click');S.me.ap=AP_MAX;render();tutAdvance();return;}
-  S.me.ap=AP_MAX;render();tutDecorate();
+  if(st&&st.need==='end'){sfx('click');render();tutAdvance();return;}
+  render();tutDecorate();
 }
 function tutExit(to){
   S.tut=null;
