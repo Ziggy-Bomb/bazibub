@@ -917,6 +917,10 @@
   @keyframes tutpulse{0%,100%{box-shadow:0 0 8px rgba(255,217,84,.75)}50%{box-shadow:0 0 26px rgba(255,217,84,1)}}
   .tile.tut-range{background:rgba(255,80,60,.22);box-shadow:inset 0 0 0 2px rgba(255,90,60,.55)}
   @media(max-width:640px){#tutBar .tutin{font-size:13px;padding:9px 10px}.tutbtn{font-size:9px;padding:9px 11px}}
+
+  /* v6.0.1: on-rails tutorial — dim non-prescribed squares */
+  body.tut-only .tile.reach{box-shadow:none;background:none;cursor:default}
+  body.tut-only .tile.reach.tut-glow{cursor:pointer;background:rgba(255,217,84,.16);box-shadow:inset 0 0 0 3px var(--gold)}
 </style>
 </head>
 <body>
@@ -1011,7 +1015,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v6.0.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v6.0.1 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1239,7 +1243,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='6.0.0';
+const GAME_VER='6.0.1';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1877,6 +1881,7 @@ function onUnitClick(u){
 }
 async function onTileClick(r,t){
   if(!S||S.phase!=='player'||S.over||S.walking) return; const me=S.me;
+  if(S.tut&&window.tutAllowTile&&!tutAllowTile(r,t))return;
   if(S.mode==='attack'||S.mode==='spell'||S.mode==='ability'){S.mode='idle';render();return;}
   if(S.mode!=='move'||!me.alive||me.snared) return;
   const cell=reachableTiles(me,me.ap).find(x=>x.r===r&&x.t===t);
@@ -2949,8 +2954,9 @@ function closeTutChoice(){document.getElementById('tutChoice').style.display='no
 const TUT_BASIC=[
  {txt:"Welcome, commander! 🤖 The robot with the <b>★YOU</b> tag is yours. <b>Tap your robot</b> to open its action menu.",need:'pop',tgt:'.tok.me'},
  {txt:"This menu is everything your robot can do this turn. <b>Tap MOVE.</b>",need:'act:move',tgt:'.pbtn.move2'},
- {txt:"The glowing squares are where you can walk — each square costs 1⚡. <b>Tap any glowing square.</b>",need:'move',tgt:'.tile.reach'},
- {txt:"Nice moving! You get <b>4⚡ every turn</b> — spend them on moving, attacking and spells.",need:'btn'},
+ {txt:"You have <b>4⚡ Action Points</b> each turn, and each square costs 1⚡ to walk. <b>March 2 squares ahead — tap the glowing square.</b>",need:'move',
+  setup:function(){S.me.pos={r:0,t:0};},only:function(){return {r:0,t:2};}},
+ {txt:"Perfect — that used 2⚡, so you have 2⚡ left. An attack costs exactly 2⚡… how convenient!",need:'btn'},
  {txt:"An enemy creep has appeared! ⚔ <b>Tap your robot → tap STRIKE → tap the creep.</b> (Attacks cost 2⚡.)",need:'attack',tgt:'.tok.creepsand',
   setup:function(){S.creeps.push(mkCreep('sand',S.me.pos.r,Math.min(NT-1,S.me.pos.t+1),{hp:7,maxhp:7}));}},
  {txt:"💥 Smashed! Creeps are small, but they matter: <b>enemy towers always shoot creeps before robots</b> — so creeps are your shield.",need:'btn'},
@@ -2962,8 +2968,8 @@ const TUT_BASIC=[
 const TUT_ADV=[
  {txt:"📊 CREEP WAVES march every 3 rounds — but the roads aren't fair! <b>TOP road: 2 Earth vs 1 Mars creep. BOTTOM road: 2 Mars vs 1 Earth.</b> Attack where YOU have the extra creep; defend the other road.",need:'btn',tgt:'.lanewrap.overground'},
  {txt:"🪖 DEPLOY TACTICS: at the start you choose each robot's road. <b>All 3 together</b> = one unstoppable push. <b>Split 2–1</b> = hold both roads. Read the creep numbers and choose!",need:'btn'},
- {txt:"⇅ TELEPORT: the glowing pads on your <b>first column</b> connect the two roads. <b>Try it: tap your robot → MOVE → tap the pad square on the OTHER road.</b>",need:'warp',tgt:'.tpad',
-  setup:function(){S.me.pos={r:0,t:0};}},
+ {txt:"⇅ TELEPORT: the glowing pads on your <b>first column</b> connect the two roads. <b>Try it: tap your robot → MOVE → tap the glowing pad square on the OTHER road.</b>",need:'warp',
+  setup:function(){S.me.pos={r:0,t:0};},only:function(){return {r:1,t:0};}},
  {txt:"⚡ TOWERS zap anything within <b>2 squares</b> of them — but they <b>always shoot creeps first</b>. The danger zone is glowing red: march in WITH creeps, or stay out of it!",need:'btn',tgt:'.tok.towersand',
   deco:function(){document.querySelectorAll('[data-tile]').forEach(function(el){var p=el.dataset.tile.split(','),t=+p[1];if(Math.abs(t-4)<=2)el.classList.add('tut-range');});}},
  {txt:"☀🌙 DAY & NIGHT flip every 4 rounds: <b>sunrise recharges ALL Earth Bots +15❤</b>, <b>nightfall recharges the Mars Bots</b>. Time your big push for right after YOUR recharge!",need:'btn'},
@@ -2988,6 +2994,8 @@ function tutNext(){
   S.tut.lock=false; S.tut.step++;
   const st=tutCur(); if(!st){tutExit('play');return;}
   if(st.setup)st.setup();
+  S.tut.only=st.only?st.only():null;
+  document.body.classList.toggle('tut-only',!!S.tut.only);
   S.me.ap=AP_MAX;
   render(); tutShow(); tutDecorate();
 }
@@ -3002,8 +3010,16 @@ function tutDecorate(){
   document.querySelectorAll('.tut-glow').forEach(function(e){e.classList.remove('tut-glow');});
   document.querySelectorAll('.tut-range').forEach(function(e){e.classList.remove('tut-range');});
   if(!S||!S.tut)return; const st=tutCur(); if(!st)return;
+  if(S.tut.only){const el=document.querySelector('[data-tile="'+S.tut.only.r+','+S.tut.only.t+'"]');if(el)el.classList.add('tut-glow');}
   if(st.tgt)document.querySelectorAll(st.tgt).forEach(function(e){e.classList.add('tut-glow');});
   if(st.deco)st.deco();
+}
+function tutAllowTile(r,t){
+  if(!S||!S.tut||!S.tut.only)return true;
+  if(r===S.tut.only.r&&t===S.tut.only.t)return true;
+  const b=document.getElementById('tutBar'),sp=b&&b.querySelector('span');
+  if(sp)sp.innerHTML="Not that square — <b>tap the glowing one!</b>";
+  return false;
 }
 function tutAdvance(){ if(S.tut.lock)return; S.tut.lock=true; setTimeout(function(){if(S&&S.tut)tutNext();},750); }
 function tutNotify(kind,data){
@@ -3028,6 +3044,7 @@ function tutEndPress(){
 }
 function tutExit(to){
   S.tut=null;
+  document.body.classList.remove('tut-only');
   const b=document.getElementById('tutBar'); b.style.display='none'; b.innerHTML='';
   document.querySelectorAll('.tut-glow,.tut-range').forEach(function(e){e.classList.remove('tut-glow');e.classList.remove('tut-range');});
   if(to==='adv')startTut('adv');
