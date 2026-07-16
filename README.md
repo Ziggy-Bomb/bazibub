@@ -21,7 +21,8 @@ The whole game is **one file: `bazibub.html`** — all the code, artwork and
 sound are inside it. To change the game, edit that file. To play a local
 copy, just open it in any browser.
 
-© 2026 Bazibub. All rights reserved.
+© 2026 Christopher Burton. All rights reserved.
+Game code, story, characters and original artwork may not be copied or redistributed without permission.
 Artwork credits (thank you all!):
 - All robot characters, titans, towers and bases drawn in-code by Claude (SVG)
 - ["Tiny Swords" by Pixel Frog](https://pixelfrog-assets.itch.io/tiny-swords) — UI panels & scenery
