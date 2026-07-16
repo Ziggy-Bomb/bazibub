@@ -897,6 +897,15 @@
   .stage .sp-charge2{position:relative}
   .stage .sp-charge2 .asp{animation:chgpulse2 .9s ease-in-out infinite}
   .stage .sp-charge2::before{content:'';position:absolute;left:50%;top:50%;width:230px;height:230px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,217,84,.55) 0%,rgba(255,217,84,.2) 40%,transparent 68%);animation:halop 1s ease-in-out infinite;pointer-events:none;z-index:5}
+
+  /* v5.9.2: charging HP bar on the winning base */
+  .stage .sp-charge2 .vbar{position:relative;border-color:var(--gold)!important;transform:scaleX(1.55);transition:transform .9s ease;animation:vbglow .8s ease-in-out infinite;overflow:visible}
+  @keyframes vbglow{0%,100%{box-shadow:0 0 16px rgba(255,217,84,.8),inset 0 0 0 1px var(--gold)}50%{box-shadow:0 0 38px rgba(255,217,84,1),inset 0 0 0 1px #fff}}
+  .stage .sp-charge2 .vbar i{height:100%!important;transition:height 1.4s ease;background:linear-gradient(180deg,#fff6dc,#ffd954 30%,#ff9a3c)!important}
+  .stage .sp-charge2 .vbar::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,0) 0 7px,rgba(255,255,255,.5) 7px 10px);animation:risest .55s linear infinite;pointer-events:none}
+  @keyframes risest{0%{background-position:0 0}100%{background-position:0 -17px}}
+  .stage .sp-charge2 small{color:var(--gold);text-shadow:0 0 9px rgba(255,217,84,.95);font-weight:bold}
+  .stage .sp-charge2 .hpl{color:var(--gold)}
 </style>
 </head>
 <body>
@@ -981,7 +990,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.9.1 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.9.2 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1209,7 +1218,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='5.9.1';
+const GAME_VER='5.9.2';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
