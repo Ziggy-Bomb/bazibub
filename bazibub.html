@@ -931,7 +931,7 @@
   <div class="sp-water"></div>
   <div class="sp-title">BAZIBUB<span class="sp-acro"><b>B</b>asic. <b>Z</b>ero-<b>I</b>on. <b>B</b>ackup. <b>U</b>nit. <b>B</b>attery.</span></div>
   <div class="sp-planet sp-pm"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="mrsG" cx=".35" cy=".32" r=".95"><stop offset="0" stop-color="#ffb27a"/><stop offset=".45" stop-color="#e0603a"/><stop offset=".8" stop-color="#9a3420"/><stop offset="1" stop-color="#5e2010"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#mrsG)"/><ellipse cx="38" cy="60" rx="15" ry="8" fill="#8a3018" opacity=".55"/><ellipse cx="63" cy="38" rx="10" ry="6" fill="#8a3018" opacity=".42"/><ellipse cx="56" cy="72" rx="8" ry="4" fill="#7a2810" opacity=".5"/><circle cx="29" cy="36" r="5" fill="#b8542e" opacity=".65"/><circle cx="70" cy="58" r="3.4" fill="#b8542e" opacity=".5"/><ellipse cx="50" cy="11" rx="13" ry="4.6" fill="#ffffff" opacity=".8"/><path d="M13 36 A46 46 0 0 1 44 5" stroke="#ffd0a8" stroke-width="3" fill="none" opacity=".45" stroke-linecap="round"/></svg></div><div class="sp-planet sp-pe">🌍</div>
-  <div class="sp-story"><div class="crawl"><p>LONG AFTER THE HUMANS LEFT…<br>THE ROBOTS SPLIT IN TWO</p><p>🌍 THE EARTH BOTS STAYED HOME<br>THE MARS BOTS SETTLED THE RED PLANET 🔴</p><p>BOTH WORLDS RUN OFF ONE ANCIENT BATTERY —<br>★ BAZIBUB ★ — CHARGE FOR ONLY ONE WORLD</p><p>⚡ SO EVERY YEAR, THE RECHARGE GAMES DECIDE:<br>WINNER TAKES THE CHARGE HOME! ⚡</p><p>DEFEND YOUR BASE.<br>DESTROY THEIRS.</p><p>WIN THE B.A.Z.I.B.U.B.</p><p>⚡ POWER YOUR WORLD ⚡</p></div></div>
+  <div class="sp-story"><div class="crawl"><p>LONG AFTER THE HUMANS LEFT…<br>THE ROBOTS SPLIT IN TWO</p><p>🌍 THE EARTH BOTS STAYED HOME<br>THE MARS BOTS SETTLED THE RED PLANET 🔴</p><p>BOTH WORLDS RUN OFF ONE ANCIENT BATTERY —<br>★ BAZIBUB ★ — CHARGE FOR ONLY ONE WORLD</p><p>⚡ THIS GAME DECIDES WHO GETS THE POWER.<br>WINNER TAKES THE BATTERY HOME! ⚡</p><p>DEFEND YOUR BASE.<br>DESTROY THEIRS.</p><p>WIN THE B.A.Z.I.B.U.B.</p><p>⚡ POWER YOUR WORLD ⚡</p></div></div>
   <div class="sp-tap">▶ TAP TO BEGIN</div>
   <div class="sp-cred" id="spCred"></div>
 </div>
@@ -981,7 +981,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.9.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.9.1 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1209,7 +1209,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='5.9.0';
+const GAME_VER='5.9.1';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -2873,7 +2873,7 @@ document.addEventListener('keydown',e=>{
   }
   let n=0;
   function cycle(){
-    if(sp.classList.contains('off')){clearInterval(tick);return;}
+    if(sp.classList.contains('off'))return;
     n++;
     const leftVictim=n%2===1;
     const volley=()=>{for(let i=0;i<6;i++)shot(i%2?'sl':'sr',13+(i%3)*2.6,i*.3);shot('sr tws',19,.9);shot('sl tws',19,1.6);};
@@ -2900,8 +2900,8 @@ document.addEventListener('keydown',e=>{
         document.querySelectorAll('#splash .sp-dead').forEach(e=>e.classList.remove('sp-dead')); },4300);
     },6600);
   }
-  const tick=setInterval(cycle,12600);
-  setTimeout(cycle,4500);
+  function loop(){ if(sp.classList.contains('off'))return; cycle(); setTimeout(loop,12600); }
+  setTimeout(loop,4500);
 })();
 </script>
 </body>
