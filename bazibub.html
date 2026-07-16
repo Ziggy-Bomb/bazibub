@@ -749,7 +749,7 @@
   .sp-pe{right:5%;filter:drop-shadow(0 0 14px rgba(80,180,255,.9))}
   .sp-pm{left:5%;animation-delay:2s;filter:drop-shadow(0 0 14px rgba(255,90,40,.9))}
   @keyframes pfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
-  .sp-story{position:absolute;left:0;right:0;top:24%;height:40%;z-index:4;perspective:300px;perspective-origin:50% 0%;overflow:hidden;pointer-events:none;-webkit-mask-image:linear-gradient(180deg,transparent 3%,rgba(0,0,0,.9) 30%,#000 65%);mask-image:linear-gradient(180deg,transparent 3%,rgba(0,0,0,.9) 30%,#000 65%)}
+  .sp-story{position:absolute;left:49%;right:2%;top:20%;height:48%;z-index:4;perspective:300px;perspective-origin:50% 0%;overflow:hidden;pointer-events:none;-webkit-mask-image:linear-gradient(180deg,transparent 3%,rgba(0,0,0,.9) 30%,#000 65%);mask-image:linear-gradient(180deg,transparent 3%,rgba(0,0,0,.9) 30%,#000 65%)}
   .sp-story .crawl{position:absolute;left:5%;right:5%;top:0;font-family:var(--disp);font-size:14px;line-height:1.95;letter-spacing:1px;text-align:center;color:var(--gold);text-shadow:2px 2px 0 #000,0 0 14px rgba(255,217,84,.4);transform-origin:50% 100%;animation:crawlup 32s linear infinite}
   .sp-story .crawl p{margin:0 0 30px}
   @keyframes crawlup{0%{transform:rotateX(40deg) translateY(112%)}100%{transform:rotateX(40deg) translateY(-150%)}}
@@ -794,7 +794,7 @@
   .sp-shot.sl.tws{right:35%;animation-name:shotlt}
   @keyframes shotrt{0%{transform:translateX(0);opacity:0}6%{opacity:1}100%{transform:translateX(52vw);opacity:.9}}
   @keyframes shotlt{0%{transform:translateX(0);opacity:0}6%{opacity:1}100%{transform:translateX(-52vw);opacity:.9}}
-  .sp-boomfx.big{width:170px;height:170px;bottom:11%}
+  .sp-boomfx.big{width:340px;height:340px;bottom:3%}
   .sp-planet{font-size:72px}
   .sp-title::after{font-size:15px}
   .sp-tap{font-size:16px}
@@ -834,10 +834,10 @@
   @media(max-width:640px){.sp-story .crawl{font-size:12px;line-height:1.9}}
 
   /* v5.5: Bazibub the battery */
-  .sp-bat{position:absolute;left:50%;bottom:7%;z-index:2;pointer-events:none;transform:translateX(-50%);transition:transform 1.5s ease-in-out}
+  .sp-bat{position:absolute;left:24%;bottom:30%;z-index:2;pointer-events:none;transform:translateX(-50%);transition:transform 1.5s ease-in-out}
   .sp-bat .asp{width:400px;height:440px;filter:drop-shadow(0 0 34px rgba(255,217,84,.7));animation:batfloat2 4s ease-in-out infinite}
   @keyframes batfloat{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-9px)}}
-  @media(max-width:640px){.sp-bat .asp{width:270px;height:297px}.sp-bat{bottom:9%}}
+  @media(max-width:640px){.sp-bat .asp{width:225px;height:248px}.sp-bat{bottom:27%;left:25%}}
   .endscene .asp.endbat{position:absolute;left:15%;bottom:10px;width:62px;height:68px;z-index:2;filter:drop-shadow(0 0 14px rgba(255,217,84,.85));animation:batfloat2 3s ease-in-out infinite}
   @keyframes batfloat2{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
   .endscene .asp.endbat.lost{left:72%;animation:batlost 4s ease forwards;filter:grayscale(.75) drop-shadow(0 0 6px rgba(255,217,84,.3))}
@@ -872,6 +872,22 @@
   .sp-castles span.sp-charge .asp{animation:chgpulse .9s ease-in-out infinite}
   .sp-castles span.sp-charge::after{color:var(--gold)}
   @keyframes chgpulse{0%,100%{filter:brightness(1.15) drop-shadow(0 0 14px rgba(255,217,84,.9))}50%{filter:brightness(1.6) drop-shadow(0 0 34px rgba(255,217,84,1))}}
+
+  /* v5.8: big planets, loser fade, mega charge halo, layout shuffle */
+  .sp-planet{font-size:192px;top:1.5%;z-index:3}
+  .sp-pm svg{width:190px;height:190px;display:block}
+  @media(max-width:640px){.sp-planet{font-size:118px}.sp-pm svg{width:116px;height:116px}}
+  .ovpm svg{width:64px;height:64px;display:block}
+  @media(max-width:640px){.ovpm svg{width:42px;height:42px}}
+  .sp-castles span,.sp-armies span{transition:opacity 1.4s ease,filter 1.4s ease}
+  #splash .sp-dead{opacity:.05;filter:grayscale(.95)}
+  .sp-castles span.sp-charge::before{content:'';position:absolute;left:50%;top:38%;width:560px;height:560px;transform:translate(-50%,-50%);border-radius:50%;
+    background:radial-gradient(circle,rgba(255,217,84,.6) 0%,rgba(255,217,84,.24) 38%,transparent 68%);animation:halop 1s ease-in-out infinite;pointer-events:none}
+  @keyframes halop{0%,100%{transform:translate(-50%,-50%) scale(.82);opacity:.75}50%{transform:translate(-50%,-50%) scale(1.12);opacity:1}}
+  .sp-castles span.sp-charge .asp{animation:chgpulse2 .9s ease-in-out infinite}
+  @keyframes chgpulse2{0%,100%{filter:brightness(1.25) drop-shadow(0 0 45px rgba(255,217,84,1))}50%{filter:brightness(1.85) drop-shadow(0 0 90px rgba(255,217,84,1))}}
+  @media(max-width:640px){.sp-castles span.sp-charge::before{width:320px;height:320px}}
+  @media(max-width:640px){.sp-story .crawl{font-size:10px;line-height:1.85}}
 </style>
 </head>
 <body>
@@ -904,8 +920,8 @@
   <div class="sp-castles"><span id="spCL"></span><span id="spCR"></span></div>
   <div class="sp-armies"><span id="spL"></span><span id="spR"></span></div>
   <div class="sp-water"></div>
-  <div class="sp-title">BAZIBUB<span class="sp-acro"><b>BA</b>sic. <b>Z</b>ero-<b>I</b>on. <b>B</b>ackup. <b>U</b>nit. <b>B</b>.</span></div>
-  <div class="sp-planet sp-pm">🔴</div><div class="sp-planet sp-pe">🌍</div>
+  <div class="sp-title">BAZIBUB<span class="sp-acro"><b>B</b>asic. <b>Z</b>ero-<b>I</b>on. <b>B</b>ackup. <b>U</b>nit. <b>B</b>.</span></div>
+  <div class="sp-planet sp-pm"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="mrsG" cx=".35" cy=".32" r=".95"><stop offset="0" stop-color="#ffb27a"/><stop offset=".45" stop-color="#e0603a"/><stop offset=".8" stop-color="#9a3420"/><stop offset="1" stop-color="#5e2010"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#mrsG)"/><ellipse cx="38" cy="60" rx="15" ry="8" fill="#8a3018" opacity=".55"/><ellipse cx="63" cy="38" rx="10" ry="6" fill="#8a3018" opacity=".42"/><ellipse cx="56" cy="72" rx="8" ry="4" fill="#7a2810" opacity=".5"/><circle cx="29" cy="36" r="5" fill="#b8542e" opacity=".65"/><circle cx="70" cy="58" r="3.4" fill="#b8542e" opacity=".5"/><ellipse cx="50" cy="11" rx="13" ry="4.6" fill="#ffffff" opacity=".8"/><path d="M13 36 A46 46 0 0 1 44 5" stroke="#ffd0a8" stroke-width="3" fill="none" opacity=".45" stroke-linecap="round"/></svg></div><div class="sp-planet sp-pe">🌍</div>
   <div class="sp-story"><div class="crawl"><p>LONG AFTER THE HUMANS LEFT…<br>THE ROBOTS SPLIT IN TWO</p><p>🌍 THE EARTH BOTS STAYED HOME<br>THE MARS BOTS SETTLED THE RED PLANET 🔴</p><p>BOTH WORLDS RUN OFF ONE ANCIENT BATTERY —<br>★ BAZIBUB ★ — CHARGE FOR ONLY ONE WORLD</p><p>⚡ SO EVERY YEAR, THE RECHARGE GAMES DECIDE:<br>WINNER TAKES THE CHARGE HOME! ⚡</p><p>DEFEND YOUR BASE.<br>DESTROY THEIRS.</p><p>WIN THE B.A.Z.I.B.U.B.</p><p>⚡ POWER YOUR WORLD ⚡</p></div></div>
   <div class="sp-tap">▶ TAP TO BEGIN</div>
   <div class="sp-cred" id="spCred"></div>
@@ -914,7 +930,7 @@
 <div id="actPop" onclick="closeActPop()"><div class="apopin" onclick="event.stopPropagation()" id="actPopIn"></div></div>
 
 <div class="overlay" id="modeOverlay" style="display:none;z-index:65">
-  <div class="ovpl ovpm">🔴</div><div class="ovpl ovpe">🌍</div>
+  <div class="ovpl ovpm"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="mrsG" cx=".35" cy=".32" r=".95"><stop offset="0" stop-color="#ffb27a"/><stop offset=".45" stop-color="#e0603a"/><stop offset=".8" stop-color="#9a3420"/><stop offset="1" stop-color="#5e2010"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#mrsG)"/><ellipse cx="38" cy="60" rx="15" ry="8" fill="#8a3018" opacity=".55"/><ellipse cx="63" cy="38" rx="10" ry="6" fill="#8a3018" opacity=".42"/><ellipse cx="56" cy="72" rx="8" ry="4" fill="#7a2810" opacity=".5"/><circle cx="29" cy="36" r="5" fill="#b8542e" opacity=".65"/><circle cx="70" cy="58" r="3.4" fill="#b8542e" opacity=".5"/><ellipse cx="50" cy="11" rx="13" ry="4.6" fill="#ffffff" opacity=".8"/><path d="M13 36 A46 46 0 0 1 44 5" stroke="#ffd0a8" stroke-width="3" fill="none" opacity=".45" stroke-linecap="round"/></svg></div><div class="ovpl ovpe">🌍</div>
   <div class="card" style="max-width:360px;text-align:center">
     <h1 style="margin-bottom:4px">BAZIBUB</h1>
     <div id="modeBat"></div>
@@ -943,7 +959,7 @@
   </div>
 </div>
 <div class="overlay" id="startOverlay">
-  <div class="ovpl ovpm">🔴</div><div class="ovpl ovpe">🌍</div>
+  <div class="ovpl ovpm"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="mrsG" cx=".35" cy=".32" r=".95"><stop offset="0" stop-color="#ffb27a"/><stop offset=".45" stop-color="#e0603a"/><stop offset=".8" stop-color="#9a3420"/><stop offset="1" stop-color="#5e2010"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#mrsG)"/><ellipse cx="38" cy="60" rx="15" ry="8" fill="#8a3018" opacity=".55"/><ellipse cx="63" cy="38" rx="10" ry="6" fill="#8a3018" opacity=".42"/><ellipse cx="56" cy="72" rx="8" ry="4" fill="#7a2810" opacity=".5"/><circle cx="29" cy="36" r="5" fill="#b8542e" opacity=".65"/><circle cx="70" cy="58" r="3.4" fill="#b8542e" opacity=".5"/><ellipse cx="50" cy="11" rx="13" ry="4.6" fill="#ffffff" opacity=".8"/><path d="M13 36 A46 46 0 0 1 44 5" stroke="#ffd0a8" stroke-width="3" fill="none" opacity=".45" stroke-linecap="round"/></svg></div><div class="ovpl ovpe">🌍</div>
   <div class="card"><div id="startArt"></div>
     <div class="tag1" id="tag1">🌍 EARTH vs MARS 🔴 — defend your base, destroy theirs!</div>
     <div class="tag2">Pick a side · pick a hero · battle in 5–10 minutes</div>
@@ -956,7 +972,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.7.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.8.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1184,7 +1200,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='5.7.0';
+const GAME_VER='5.8.0';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1221,7 +1237,7 @@ function dismissSplash(){const s=document.getElementById('splash');if(!s||s.clas
 let howI=0;
 function howSlideList(){const viz=h=>`<div class="howviz">${h}</div>`;
  return [
- {t:'THE STORY',h:viz(anim(SPR.heart.ghost,'hv')+anim(SPR.battery,'hv')+anim(SPR.heart.sand,'hv'))+'<p>Long after the humans left, the robots split into two families — the <b>Earth Bots</b> stayed home, the <b>Mars Bots</b> settled the red planet. Both worlds run off <b>one ancient battery</b>… with charge for only ONE world at a time. Its worn label once read <b>BAsic Zero-Ion Backup Unit B</b> — only the big letters survived, so the robots named it… <b>BAZIBUB</b>! Every year the <b>RECHARGE GAMES</b> decide who takes Bazibub home. Don\'t worry — nobody really gets hurt. Losing bots are simply <b>rebuilt</b> for next year\'s Games.</p>'},
+ {t:'THE STORY',h:viz(anim(SPR.heart.ghost,'hv')+anim(SPR.battery,'hv')+anim(SPR.heart.sand,'hv'))+'<p>Long after the humans left, the robots split into two families — the <b>Earth Bots</b> stayed home, the <b>Mars Bots</b> settled the red planet. Both worlds run off <b>one ancient battery</b>… with charge for only ONE world at a time. Its worn label once read <b>Basic Zero-Ion Backup Unit B</b> — only the big letters survived, so the robots named it… <b>BAZIBUB</b>! Every year the <b>RECHARGE GAMES</b> decide who takes Bazibub home. Don\'t worry — nobody really gets hurt. Losing bots are simply <b>rebuilt</b> for next year\'s Games.</p>'},
  {t:'THE GOAL',h:viz(anim(SPR.heart.ghost,'hv')+'<span class="howvs">VS</span>'+anim(SPR.heart.sand,'hv'))+'<p>Two robot armies: the <b>Mars Bots</b> (red, left) and the <b>Earth Bots</b> (blue, right). Each has a <b>Base</b>. Destroy the enemy Base before they destroy yours — the first Base to fall loses!</p>'},
  {t:'TAKE YOUR TURN',h:`<div class="howviz demoviz"><div class="dm-hero">${anim(SPR.hero.knight.ghost,'uv')}</div><span class="dm-finger">👆</span><div class="dm-pop"><b>🦶 MOVE</b><b class="b2">⚔ ATTACK</b><b>✨ SPELL</b></div></div><p>Tap your <b>glowing hero</b> and an action menu pops up — tap an action, then tap a glowing tile or target. Everything costs ⚡: <b>MOVE 1 · ATTACK 2 · SPELL 3 · ABILITY 2</b>. You get <b>4⚡ every turn</b>, then press END.</p>`},
  {t:'TWO ROADS — YOUR PLAN',h:viz(anim(SPR.hero.archer.ghost,'uv')+'<span class="howvs dmx">⇅</span>'+anim(SPR.hero.tank.ghost,'uv'))+'<p>The sunny <b>Earth Road</b> runs on top, the cave <b>Mars Road</b> below. You can only fight enemies on <b>your own road</b> — and the roads connect only at <b>your home corner</b> (look for the ⇅ CROSS mark on the board). March everyone together, or split your team 2–1 — your call, general. (The ⇅ pads? Leftover cargo teleporters from the old mining days.)</p>'},
@@ -2731,7 +2747,7 @@ function batterySVG(){return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0
 <path d="M64 30 l-9 13 h6 l-5 12 11 -14 h-6 l7 -11 Z" fill="#fff6dc" opacity=".85" filter="url(#batgG)" transform="translate(-2 2) scale(.62)" transform-origin="60 40"/>
 <g transform="rotate(-2 60 86)">
  <rect x="34" y="74" width="52" height="24" rx="3" fill="#e8dbb8" stroke="#141a22" stroke-width="2.4"/>
- <text x="60" y="83" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="5" fill="#8a7a58">BAsic Zero-Ion</text>
+ <text x="60" y="83" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="5" fill="#8a7a58">Basic Zero-Ion</text>
  <text x="60" y="89" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="5" fill="#8a7a58">Backup Unit B</text>
  <text x="60" y="96" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="8.6" font-weight="bold" fill="#3d2c15">BAZIBUB</text>
 </g>
@@ -2851,15 +2867,18 @@ document.addEventListener('keydown',e=>{
     },2400);
     setTimeout(()=>{ if(sp.classList.contains('off'))return;
       const c=document.getElementById(leftVictim?'spCL':'spCR');
+      const army=document.getElementById(leftVictim?'spL':'spR');
       boomFx('1.5%',!leftVictim,true);
-      if(c){c.classList.add('sp-hitfall');setTimeout(()=>c.classList.remove('sp-hitfall'),2650);}
+      if(c)c.classList.add('sp-dead');
+      if(army)army.classList.add('sp-dead');
     },4800);
     setTimeout(()=>{ if(sp.classList.contains('off'))return;
       const winner=document.getElementById(leftVictim?'spCR':'spCL');
-      bat.style.transform='translateX(calc(-50% '+(leftVictim?'+':'-')+' 37vw)) translateY(4vh) scale(.22)';
+      bat.style.transform='translateX(calc(-50% + '+(leftVictim?'66vw':'-14vw')+')) translateY(17vh) scale(.2)';
       if(sndOK())sfx('warp');
       setTimeout(()=>{ if(winner&&!sp.classList.contains('off')){winner.classList.add('sp-charge');if(sndOK())sfx('ding');} },1400);
-      setTimeout(()=>{ if(winner)winner.classList.remove('sp-charge'); bat.style.transform=''; },4300);
+      setTimeout(()=>{ if(winner)winner.classList.remove('sp-charge'); bat.style.transform='';
+        document.querySelectorAll('#splash .sp-dead').forEach(e=>e.classList.remove('sp-dead')); },4300);
     },5900);
   }
   const tick=setInterval(cycle,11800);
