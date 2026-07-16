@@ -978,13 +978,13 @@
     <div id="nameRow" style="display:none;margin-bottom:12px"><div class="hint" style="margin-bottom:6px">What shall we call you, commander?</div><input id="cmdName" maxlength="12" placeholder="YOUR NAME"></div>
     <div id="newchip" class="hint" style="display:none;margin-bottom:10px;color:#8a5c12">✨ NEW in v5.0 — EARTH vs MARS! New colours, robot names, teleport pads &amp; more!</div>
     <div class="hint" style="color:#8a5c12;font-family:var(--disp);font-size:10px;margin-bottom:10px">⚡ THE RECHARGE GAMES ARE ON — CHOOSE YOUR MISSION ⚡</div>
+    <button class="big" style="width:100%;margin-bottom:10px;background:#2e5d3a" onclick="openTutChoice()">🎓 TUTORIAL — how to play</button>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('play')">🤖 1 PLAYER — vs bots</button>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickTeam('2p','coop')">🤝 2 PLAYER CO-OP — same device</button>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickTeam('2p','vs')">⚔ 2 PLAYER VS — same device</button>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('link')">💬 2 PLAYERS VIA WHATSAPP — turns by link</button>
     <button class="big" id="resendBtn" style="width:100%;margin-bottom:10px;background:#333a55;display:none" onclick="resendLast()">📤 RESEND MY LAST TURN</button>
-    <button class="big" style="width:100%;margin-bottom:10px;background:#2e5d3a" onclick="openTutChoice()">🎓 TUTORIAL — learn by playing</button>
-    <button class="big" style="width:100%;background:#333a55" onclick="pickMode('how')">❓ HOW TO PLAY</button>
+
   </div>
 </div>
 <div class="overlay" id="tutChoice" style="display:none;z-index:66">
@@ -1021,7 +1021,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v6.0.2 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v6.0.3 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1249,7 +1249,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='6.0.2';
+const GAME_VER='6.0.3';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
