@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Bazibub — © 2026 Christopher Burton. All rights reserved.
+  Bazibub — © 2026 Andswarian Ltd. All rights reserved.
   Game code, story, characters and original artwork may not be copied,
   modified or redistributed without permission.
   Third-party assets used under their own licences:
@@ -9,7 +9,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="copyright" content="© 2026 Christopher Burton"/>
+<meta name="copyright" content="© 2026 Andswarian Ltd"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Bazibub — Earth Bots vs Mars Bots</title>
 <!-- Bazibub © 2026. All rights reserved. -->
@@ -1029,7 +1029,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v6.0.4 · © 2026 Christopher Burton · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v6.0.5 · © 2026 Andswarian Ltd · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1257,8 +1257,8 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='6.0.4';
-const CREDIT_LINE='A family-made game · © 2026 Christopher Burton'; // reword me!
+const GAME_VER='6.0.5';
+const CREDIT_LINE='A family-made game · © 2026 Andswarian Ltd'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
 /* minimal UI: action buttons live in a tap-your-hero popup; classic panel is opt-in via Help */
