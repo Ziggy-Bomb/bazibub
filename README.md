@@ -12,8 +12,8 @@ for next year's Games.
 
 Play solo vs bots, pass-and-play, or take turns over WhatsApp.
 
-- **Play it:** https://bazibub.pages.dev
-- **itch.io page:** (add your itch.io link here)
+- **Play it:** https://bazibub.com
+- **itch.io page:** https://bazibub.itch.io/bazibub
 
 ## How this project works
 
