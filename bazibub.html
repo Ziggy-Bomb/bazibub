@@ -906,6 +906,17 @@
   @keyframes risest{0%{background-position:0 0}100%{background-position:0 -17px}}
   .stage .sp-charge2 small{color:var(--gold);text-shadow:0 0 9px rgba(255,217,84,.95);font-weight:bold}
   .stage .sp-charge2 .hpl{color:var(--gold)}
+
+  /* v6.0: interactive tutorial */
+  #tutBar{position:fixed;left:50%;top:6px;transform:translateX(-50%);z-index:58;width:min(520px,94vw)}
+  #tutBar .tutin{background:#10142a;border:3px solid var(--gold);border-radius:8px;padding:11px 13px;color:#eef3ff;font-size:16px;line-height:1.45;box-shadow:0 4px 18px rgba(0,0,0,.6),0 0 14px rgba(255,217,84,.35)}
+  #tutBar b{color:var(--gold)}
+  .tutrow{margin-top:9px;display:flex;gap:8px;justify-content:center}
+  .tutbtn{font-family:var(--disp);font-size:11px;padding:10px 14px;background:var(--gold);color:#2a1d05;border:2px solid #000;border-radius:5px;cursor:pointer}
+  .tut-glow{outline:3px solid var(--gold)!important;outline-offset:2px;border-radius:6px;animation:tutpulse .9s ease-in-out infinite;position:relative;z-index:7}
+  @keyframes tutpulse{0%,100%{box-shadow:0 0 8px rgba(255,217,84,.75)}50%{box-shadow:0 0 26px rgba(255,217,84,1)}}
+  .tile.tut-range{background:rgba(255,80,60,.22);box-shadow:inset 0 0 0 2px rgba(255,90,60,.55)}
+  @media(max-width:640px){#tutBar .tutin{font-size:13px;padding:9px 10px}.tutbtn{font-size:9px;padding:9px 11px}}
 </style>
 </head>
 <body>
@@ -962,9 +973,19 @@
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickTeam('2p','vs')">⚔ 2 PLAYER VS — same device</button>
     <button class="big" style="width:100%;margin-bottom:10px" onclick="pickMode('link')">💬 2 PLAYERS VIA WHATSAPP — turns by link</button>
     <button class="big" id="resendBtn" style="width:100%;margin-bottom:10px;background:#333a55;display:none" onclick="resendLast()">📤 RESEND MY LAST TURN</button>
+    <button class="big" style="width:100%;margin-bottom:10px;background:#2e5d3a" onclick="openTutChoice()">🎓 TUTORIAL — learn by playing</button>
     <button class="big" style="width:100%;background:#333a55" onclick="pickMode('how')">❓ HOW TO PLAY</button>
   </div>
 </div>
+<div class="overlay" id="tutChoice" style="display:none;z-index:66">
+  <div class="card" style="max-width:380px;text-align:center"><h2>🎓 TUTORIAL</h2>
+    <div class="hint" style="margin-bottom:12px">Learn by playing — the coach tells you exactly what to tap.</div>
+    <button class="big" style="width:100%;margin-bottom:10px" onclick="startTut('basic')">🟢 BASICS — move, attack &amp; how to win</button>
+    <button class="big" style="width:100%;margin-bottom:10px" onclick="startTut('adv')">🔵 ADVANCED — tactics &amp; tricks</button>
+    <button class="big" style="width:100%;background:#333a55" onclick="closeTutChoice()">◀ BACK</button>
+  </div>
+</div>
+<div id="tutBar" style="display:none"></div>
 <div class="overlay" id="howOverlay" style="display:none;z-index:66">
   <div class="card" style="max-width:540px">
     <div id="howBody"></div>
@@ -990,7 +1011,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.9.2 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v6.0.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1218,14 +1239,14 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='5.9.2';
+const GAME_VER='6.0.0';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
 /* minimal UI: action buttons live in a tap-your-hero popup; classic panel is opt-in via Help */
 let CLASSIC_UI=(function(){try{return localStorage.getItem('bzb_classic')==='on'}catch(e){return false}})();
 function toggleClassicUI(){CLASSIC_UI=!CLASSIC_UI;try{localStorage.setItem('bzb_classic',CLASSIC_UI?'on':'off')}catch(e){}sfx('click');hideHelp();if(S)render();}
-function openActPop(){if(!S||S.phase!=='player'||S.over||!S.me.alive)return;sfx('pop');const me=S.me;
+function openActPop(){if(!S||S.phase!=='player'||S.over||!S.me.alive)return;sfx('pop');if(window.tutNotify)tutNotify('pop');const me=S.me;
   const mv=!(me.ap<COST.move||me.snared), at=!(me.ap<COST.attack||attackTargets(me).length===0), spU=spellUsable(), abU=abilityUsable();
   const btn=(k,cls,ic,lb,cost,en)=>`<button class="pbtn ${cls} ${en?'':'dis'}" ${en?`onclick="popPick('${k}')"`:''}><span class="ic">${ic}</span><span class="lb2">${lb}</span><span class="cost2">${cost}</span></button>`;
   document.getElementById('actPopIn').innerHTML=`
@@ -1684,7 +1705,7 @@ function queueFx(fromId,toId,kind){fxQueue.push({fromId,toId,kind});}
 
 /* ===================== CREEPS ===================== */
 function mkCreep(side,lane,t,o){return Object.assign({type:'creep',id:creepSeq++,side,lane,t,hp:14,maxhp:14,atk:3,bonusAtk:0,alive:true},o||{});}
-function spawnWave(){
+function spawnWave(){ if(S&&S.tut)return;
   // the Earth Bots mass on the TOP road; the Mars Bots mass in the caves below
   const plan={ghost:[1,2],sand:[2,1]}; // creeps per [top,bottom] lane
   for(const side of ['ghost','sand']){const base=side==='ghost'?0:NT-1;
@@ -1763,7 +1784,7 @@ function basicAttack(att,u){
   if((att.multi||1)>1) attackTargets(att).forEach(x=>{if(targets.length<att.multi&&x!==u&&x.type!=='heart')targets.push(x);});
   targets.forEach(t2=>{queueFx(uid(att),uid(t2),att.atkfx||'slash');dealDamage(att.side,t2,att.atk);});
   log(`${att.name} ${att.range>1?'shoots':'strikes'} ${targets.length>1?targets.length+' foes':tname(u)} for ${att.atk}.`,att.side);}
-function castSpell(h,target){const sp=h.spell;sp.cur=sp.cd;
+function castSpell(h,target){const sp=h.spell;sp.cur=sp.cd;if(S&&h===S.me&&window.tutNotify)tutNotify('spell');
   if(h.key==='knight'){queueFx(uid(h),uid(target),'charge');if(target.type!=='heart')h.pos={r:laneOf(target),t:tileOfUnit(target)};
     const amt=h.atk+5;log(`${h.name} ⚡SHIELD CHARGES ${tname(target)} for ${amt} & stuns it!`,h.side,true);if(target.type==='hero')target.stunned=true;dealDamage(h.side,target,amt);}
   else if(h.key==='archer'){const lane=h.pos.r;log(`${h.name} ⚡VOLLEYS ${ROUTES[lane].nm}!`,h.side,true);
@@ -1850,6 +1871,7 @@ function onUnitClick(u){
   if(u===me){S.mode='idle';render();if(!CLASSIC_UI)openActPop();return;}
   if(S.mode==='attack'&&u.side!==me.side&&me.ap>=COST.attack&&canHit(me,u)){
     basicAttack(me,u);spend(COST.attack);
+    if(window.tutNotify)tutNotify('attack',u);
     if(me.ap<COST.attack||attackTargets(me).length===0)S.mode='idle';
     render(); }
 }
@@ -1863,10 +1885,12 @@ async function onTileClick(r,t){
   let cur=tk(r,t); const path=[cur];
   while(d[cur]>1){for(const n of tileNeighbors(me.side,cur)){if(d[n]===d[cur]-1){cur=n;break;}}path.unshift(cur);}
   spend(cell.d); S.mode='idle'; S.walking=true;
+  let _warped=false;
   try{
     for(const node of path){
       const[nr,nt]=node.split(':').map(Number);
       if(nr!==me.pos.r){
+        _warped=true;
         sfx('warpout'); S.warpU=uid(me); S.warpPh='out'; render(); await wait(750);
         if(!S||S.over)break;
         me.pos={r:nr,t:nt}; S.warpPh='in'; sfx('warp'); render();
@@ -1879,6 +1903,7 @@ async function onTileClick(r,t){
     }
   } finally { if(S){S.walking=false;S.warpU=null;S.warpPh=null;} }
   if(S&&!S.over)render();
+  if(S&&window.tutNotify)tutNotify('move',{warp:_warped});
 }
 function spellTargets(){const me=S.me,sp=me.spell;if(!sp.target)return[];
   return enemyUnits(me.side).filter(u=>{if(u.type==='heart'){if(towerAlive(u.side,me.pos.r))return false;return dist(me.side,heroNode(me),unitNode(u))<=sp.range;}return inRange(me,u,sp.range);});}
@@ -1902,6 +1927,7 @@ function clickAct(kind){
   else if(kind==='attack'){ if(me.ap<COST.attack||attackTargets(me).length===0) return; S.mode=S.mode==='attack'?'idle':'attack'; }
   else if(kind==='spell'){ if(!spellUsable())return; if(!me.spell.target){castSpell(me,null);spend(COST.spell);S.mode='idle';} else S.mode=S.mode==='spell'?'idle':'spell'; }
   else if(kind==='ability'){ if(!abilityUsable())return; if(me.abil.target==='none'){castAbility(me,null);spend(COST.ability);S.mode='idle';} else S.mode=S.mode==='ability'?'idle':'ability'; }
+  if(window.tutNotify)tutNotify('act',kind);
   const eh=S.heart[foeSide(S.playerSide)];
   S.heartHint=S.heartHint||{};
   if(!S.heartHint[S.playerSide]&&((S.mode==='attack'&&canHit(me,eh))||(S.mode==='spell'&&spellTargets().includes(eh)))){
@@ -1911,7 +1937,8 @@ function clickAct(kind){
   render();
 }
 async function endTurn(){
-  if(S.phase!=='player'||S.over||S.walking) return; sfx('click'); S.me.snared=false; S.mode='idle';S.phase='enemy';render();
+  if(S.phase!=='player'||S.over||S.walking) return;
+  if(S.tut){if(window.tutEndPress)tutEndPress();return;} sfx('click'); S.me.snared=false; S.mode='idle';S.phase='enemy';render();
   const gen=GEN, stale=()=>GEN!==gen||!S||S.over;
   if(S.twoP&&S.coop){
     if(S.half===1){
@@ -2912,6 +2939,102 @@ document.addEventListener('keydown',e=>{
   function loop(){ if(sp.classList.contains('off'))return; cycle(); setTimeout(loop,12600); }
   setTimeout(loop,4500);
 })();
+</script>
+
+<script>
+/* ===== v6.0: interactive tutorial — a guided game with a coach ===== */
+function openTutChoice(){document.getElementById('modeOverlay').style.display='none';document.getElementById('tutChoice').style.display='flex';}
+function closeTutChoice(){document.getElementById('tutChoice').style.display='none';document.getElementById('modeOverlay').style.display='flex';}
+
+const TUT_BASIC=[
+ {txt:"Welcome, commander! 🤖 The robot with the <b>★YOU</b> tag is yours. <b>Tap your robot</b> to open its action menu.",need:'pop',tgt:'.tok.me'},
+ {txt:"This menu is everything your robot can do this turn. <b>Tap MOVE.</b>",need:'act:move',tgt:'.pbtn.move2'},
+ {txt:"The glowing squares are where you can walk — each square costs 1⚡. <b>Tap any glowing square.</b>",need:'move',tgt:'.tile.reach'},
+ {txt:"Nice moving! You get <b>4⚡ every turn</b> — spend them on moving, attacking and spells.",need:'btn'},
+ {txt:"An enemy creep has appeared! ⚔ <b>Tap your robot → tap STRIKE → tap the creep.</b> (Attacks cost 2⚡.)",need:'attack',tgt:'.tok.creepsand',
+  setup:function(){S.creeps.push(mkCreep('sand',S.me.pos.r,Math.min(NT-1,S.me.pos.t+1),{hp:7,maxhp:7}));}},
+ {txt:"💥 Smashed! Creeps are small, but they matter: <b>enemy towers always shoot creeps before robots</b> — so creeps are your shield.",need:'btn'},
+ {txt:"🎯 THE GOAL: destroy the far <b>enemy BASE</b>. It is <b>shielded while its two towers stand</b> — smash the tower on your road first, then hit the base!",need:'btn',tgt:'[data-fx="heart:sand"]'},
+ {txt:"When your ⚡ is spent, <b>tap ⏭ END</b> — creeps march, towers zap, then it's your turn again. <b>Tap END now.</b>",need:'end',tgt:'.endbig'},
+ {txt:"🎉 That's the basics, commander! Ready for battle?",done:true,
+  btns:'<button class="tutbtn" onclick="tutExit(\'adv\')">🔵 ADVANCED</button><button class="tutbtn" onclick="tutExit(\'play\')">▶ PLAY</button>'}
+];
+const TUT_ADV=[
+ {txt:"📊 CREEP WAVES march every 3 rounds — but the roads aren't fair! <b>TOP road: 2 Earth vs 1 Mars creep. BOTTOM road: 2 Mars vs 1 Earth.</b> Attack where YOU have the extra creep; defend the other road.",need:'btn',tgt:'.lanewrap.overground'},
+ {txt:"🪖 DEPLOY TACTICS: at the start you choose each robot's road. <b>All 3 together</b> = one unstoppable push. <b>Split 2–1</b> = hold both roads. Read the creep numbers and choose!",need:'btn'},
+ {txt:"⇅ TELEPORT: the glowing pads on your <b>first column</b> connect the two roads. <b>Try it: tap your robot → MOVE → tap the pad square on the OTHER road.</b>",need:'warp',tgt:'.tpad',
+  setup:function(){S.me.pos={r:0,t:0};}},
+ {txt:"⚡ TOWERS zap anything within <b>2 squares</b> of them — but they <b>always shoot creeps first</b>. The danger zone is glowing red: march in WITH creeps, or stay out of it!",need:'btn',tgt:'.tok.towersand',
+  deco:function(){document.querySelectorAll('[data-tile]').forEach(function(el){var p=el.dataset.tile.split(','),t=+p[1];if(Math.abs(t-4)<=2)el.classList.add('tut-range');});}},
+ {txt:"☀🌙 DAY & NIGHT flip every 4 rounds: <b>sunrise recharges ALL Earth Bots +15❤</b>, <b>nightfall recharges the Mars Bots</b>. Time your big push for right after YOUR recharge!",need:'btn'},
+ {txt:"✨ SPELLS: every robot has a unique SPELL and ⬢ ABILITY — stuns, volleys, heals, shields (read them in the action menu). <b>Try yours: tap robot → tap ✨ → tap the creep.</b>",need:'spell',tgt:'.tok.creepsand',
+  setup:function(){S.creeps.push(mkCreep('sand',S.me.pos.r,Math.min(NT-1,S.me.pos.t+2),{hp:14,maxhp:14}));}},
+ {txt:"🏆 Tactics mastered! Go win the B.A.Z.I.B.U.B.!",done:true,
+  btns:'<button class="tutbtn" onclick="tutExit(\'basic\')">🟢 BASICS</button><button class="tutbtn" onclick="tutExit(\'play\')">▶ PLAY</button>'}
+];
+function tutSteps(){return S.tut.kind==='adv'?TUT_ADV:TUT_BASIC;}
+function startTut(kind){
+  document.getElementById('tutChoice').style.display='none';
+  document.getElementById('modeOverlay').style.display='none';
+  PENDING_2P=false;PENDING_LINK=false;PENDING_COOP=false;selectedSide='ghost';themeSide('ghost');
+  newGame('knight'); confirmLanes(); skipIntro();
+  S.tut={kind:kind,step:-1,lock:false};
+  S.creeps.length=0;
+  tutNext();
+}
+function tutCur(){return tutSteps()[S.tut.step];}
+function tutNext(){
+  if(!S||!S.tut)return;
+  S.tut.lock=false; S.tut.step++;
+  const st=tutCur(); if(!st){tutExit('play');return;}
+  if(st.setup)st.setup();
+  S.me.ap=AP_MAX;
+  render(); tutShow(); tutDecorate();
+}
+function tutShow(){
+  const st=tutCur(),b=document.getElementById('tutBar');
+  b.style.display='block';
+  b.innerHTML='<div class="tutin">🤖 <span>'+st.txt+'</span>'+
+    (st.need==='btn'?'<div class="tutrow"><button class="tutbtn" onclick="tutNext()">➡ CONTINUE</button></div>':'')+
+    (st.done?'<div class="tutrow">'+st.btns+'</div>':'')+'</div>';
+}
+function tutDecorate(){
+  document.querySelectorAll('.tut-glow').forEach(function(e){e.classList.remove('tut-glow');});
+  document.querySelectorAll('.tut-range').forEach(function(e){e.classList.remove('tut-range');});
+  if(!S||!S.tut)return; const st=tutCur(); if(!st)return;
+  if(st.tgt)document.querySelectorAll(st.tgt).forEach(function(e){e.classList.add('tut-glow');});
+  if(st.deco)st.deco();
+}
+function tutAdvance(){ if(S.tut.lock)return; S.tut.lock=true; setTimeout(function(){if(S&&S.tut)tutNext();},750); }
+function tutNotify(kind,data){
+  if(!S||!S.tut||S.tut.lock)return; const st=tutCur(); if(!st||st.done)return;
+  if(st.need==='pop'&&kind==='pop')return tutAdvance();
+  if(st.need&&st.need.indexOf('act:')===0&&kind==='act'&&data===st.need.slice(4))return tutAdvance();
+  if(st.need==='move'&&kind==='move')return tutAdvance();
+  if(st.need==='warp'&&kind==='move'){
+    if(data&&data.warp)return tutAdvance();
+    S.me.ap=AP_MAX;S.me.pos={r:0,t:0};render();tutDecorate();
+    const b=document.getElementById('tutBar');
+    b.querySelector('span').innerHTML="Almost! That move stayed on the same road. <b>Stand on the ⇅ pad column and tap the pad square on the OTHER road</b> — watch the teleport!";
+    return;
+  }
+  if(st.need==='attack'&&kind==='attack')return tutAdvance();
+  if(st.need==='spell'&&kind==='spell')return tutAdvance();
+}
+function tutEndPress(){
+  if(!S||!S.tut)return; const st=tutCur();
+  if(st&&st.need==='end'){sfx('click');S.me.ap=AP_MAX;render();tutAdvance();return;}
+  S.me.ap=AP_MAX;render();tutDecorate();
+}
+function tutExit(to){
+  S.tut=null;
+  const b=document.getElementById('tutBar'); b.style.display='none'; b.innerHTML='';
+  document.querySelectorAll('.tut-glow,.tut-range').forEach(function(e){e.classList.remove('tut-glow');e.classList.remove('tut-range');});
+  if(to==='adv')startTut('adv');
+  else if(to==='basic')startTut('basic');
+  else restartGame();
+}
+(function(){const _R=render;render=function(){_R.apply(this,arguments);if(S&&S.tut){tutDecorate();}};})();
 </script>
 </body>
 </html>
