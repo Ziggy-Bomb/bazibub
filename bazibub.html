@@ -888,6 +888,15 @@
   @keyframes chgpulse2{0%,100%{filter:brightness(1.25) drop-shadow(0 0 45px rgba(255,217,84,1))}50%{filter:brightness(1.85) drop-shadow(0 0 90px rgba(255,217,84,1))}}
   @media(max-width:640px){.sp-castles span.sp-charge::before{width:320px;height:320px}}
   @media(max-width:640px){.sp-story .crawl{font-size:10px;line-height:1.85}}
+
+  /* v5.9: tower fades on splash; board endgame drama */
+  .sp-towers span{transition:opacity 1.4s ease,filter 1.4s ease}
+  .stage.fell-ghost .tok.ghost,.stage.fell-ghost .tok.creepghost,.stage.fell-ghost .tok.towerghost,.stage.fell-ghost [data-fx="heart:ghost"]{opacity:.06;filter:grayscale(.95);transition:opacity 1.4s ease,filter 1.4s ease}
+  .stage.fell-sand .tok.sand,.stage.fell-sand .tok.creepsand,.stage.fell-sand .tok.towersand,.stage.fell-sand [data-fx="heart:sand"]{opacity:.06;filter:grayscale(.95);transition:opacity 1.4s ease,filter 1.4s ease}
+  .batfly{position:absolute;z-index:60;width:56px;height:62px;background-size:contain;background-repeat:no-repeat;background-position:center;transform:translate(-50%,-50%);transition:left 1.45s ease-in-out,top 1.45s ease-in-out;filter:drop-shadow(0 0 15px rgba(255,217,84,.95));pointer-events:none}
+  .stage .sp-charge2{position:relative}
+  .stage .sp-charge2 .asp{animation:chgpulse2 .9s ease-in-out infinite}
+  .stage .sp-charge2::before{content:'';position:absolute;left:50%;top:50%;width:230px;height:230px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,217,84,.55) 0%,rgba(255,217,84,.2) 40%,transparent 68%);animation:halop 1s ease-in-out infinite;pointer-events:none;z-index:5}
 </style>
 </head>
 <body>
@@ -920,7 +929,7 @@
   <div class="sp-castles"><span id="spCL"></span><span id="spCR"></span></div>
   <div class="sp-armies"><span id="spL"></span><span id="spR"></span></div>
   <div class="sp-water"></div>
-  <div class="sp-title">BAZIBUB<span class="sp-acro"><b>B</b>asic. <b>Z</b>ero-<b>I</b>on. <b>B</b>ackup. <b>U</b>nit. <b>B</b>.</span></div>
+  <div class="sp-title">BAZIBUB<span class="sp-acro"><b>B</b>asic. <b>Z</b>ero-<b>I</b>on. <b>B</b>ackup. <b>U</b>nit. <b>B</b>attery.</span></div>
   <div class="sp-planet sp-pm"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="mrsG" cx=".35" cy=".32" r=".95"><stop offset="0" stop-color="#ffb27a"/><stop offset=".45" stop-color="#e0603a"/><stop offset=".8" stop-color="#9a3420"/><stop offset="1" stop-color="#5e2010"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#mrsG)"/><ellipse cx="38" cy="60" rx="15" ry="8" fill="#8a3018" opacity=".55"/><ellipse cx="63" cy="38" rx="10" ry="6" fill="#8a3018" opacity=".42"/><ellipse cx="56" cy="72" rx="8" ry="4" fill="#7a2810" opacity=".5"/><circle cx="29" cy="36" r="5" fill="#b8542e" opacity=".65"/><circle cx="70" cy="58" r="3.4" fill="#b8542e" opacity=".5"/><ellipse cx="50" cy="11" rx="13" ry="4.6" fill="#ffffff" opacity=".8"/><path d="M13 36 A46 46 0 0 1 44 5" stroke="#ffd0a8" stroke-width="3" fill="none" opacity=".45" stroke-linecap="round"/></svg></div><div class="sp-planet sp-pe">🌍</div>
   <div class="sp-story"><div class="crawl"><p>LONG AFTER THE HUMANS LEFT…<br>THE ROBOTS SPLIT IN TWO</p><p>🌍 THE EARTH BOTS STAYED HOME<br>THE MARS BOTS SETTLED THE RED PLANET 🔴</p><p>BOTH WORLDS RUN OFF ONE ANCIENT BATTERY —<br>★ BAZIBUB ★ — CHARGE FOR ONLY ONE WORLD</p><p>⚡ SO EVERY YEAR, THE RECHARGE GAMES DECIDE:<br>WINNER TAKES THE CHARGE HOME! ⚡</p><p>DEFEND YOUR BASE.<br>DESTROY THEIRS.</p><p>WIN THE B.A.Z.I.B.U.B.</p><p>⚡ POWER YOUR WORLD ⚡</p></div></div>
   <div class="sp-tap">▶ TAP TO BEGIN</div>
@@ -972,7 +981,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.8.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v5.9.0 · © 2026 · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1200,7 +1209,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='5.8.0';
+const GAME_VER='5.9.0';
 const CREDIT_LINE='A family-made game'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1237,7 +1246,7 @@ function dismissSplash(){const s=document.getElementById('splash');if(!s||s.clas
 let howI=0;
 function howSlideList(){const viz=h=>`<div class="howviz">${h}</div>`;
  return [
- {t:'THE STORY',h:viz(anim(SPR.heart.ghost,'hv')+anim(SPR.battery,'hv')+anim(SPR.heart.sand,'hv'))+'<p>Long after the humans left, the robots split into two families — the <b>Earth Bots</b> stayed home, the <b>Mars Bots</b> settled the red planet. Both worlds run off <b>one ancient battery</b>… with charge for only ONE world at a time. Its worn label once read <b>Basic Zero-Ion Backup Unit B</b> — only the big letters survived, so the robots named it… <b>BAZIBUB</b>! Every year the <b>RECHARGE GAMES</b> decide who takes Bazibub home. Don\'t worry — nobody really gets hurt. Losing bots are simply <b>rebuilt</b> for next year\'s Games.</p>'},
+ {t:'THE STORY',h:viz(anim(SPR.heart.ghost,'hv')+anim(SPR.battery,'hv')+anim(SPR.heart.sand,'hv'))+'<p>Long after the humans left, the robots split into two families — the <b>Earth Bots</b> stayed home, the <b>Mars Bots</b> settled the red planet. Both worlds run off <b>one ancient battery</b>… with charge for only ONE world at a time. Its worn label once read <b>Basic Zero-Ion Backup Unit Battery</b> — only the big letters survived, so the robots named it… <b>BAZIBUB</b>! Every year the <b>RECHARGE GAMES</b> decide who takes Bazibub home. Don\'t worry — nobody really gets hurt. Losing bots are simply <b>rebuilt</b> for next year\'s Games.</p>'},
  {t:'THE GOAL',h:viz(anim(SPR.heart.ghost,'hv')+'<span class="howvs">VS</span>'+anim(SPR.heart.sand,'hv'))+'<p>Two robot armies: the <b>Mars Bots</b> (red, left) and the <b>Earth Bots</b> (blue, right). Each has a <b>Base</b>. Destroy the enemy Base before they destroy yours — the first Base to fall loses!</p>'},
  {t:'TAKE YOUR TURN',h:`<div class="howviz demoviz"><div class="dm-hero">${anim(SPR.hero.knight.ghost,'uv')}</div><span class="dm-finger">👆</span><div class="dm-pop"><b>🦶 MOVE</b><b class="b2">⚔ ATTACK</b><b>✨ SPELL</b></div></div><p>Tap your <b>glowing hero</b> and an action menu pops up — tap an action, then tap a glowing tile or target. Everything costs ⚡: <b>MOVE 1 · ATTACK 2 · SPELL 3 · ABILITY 2</b>. You get <b>4⚡ every turn</b>, then press END.</p>`},
  {t:'TWO ROADS — YOUR PLAN',h:viz(anim(SPR.hero.archer.ghost,'uv')+'<span class="howvs dmx">⇅</span>'+anim(SPR.hero.tank.ghost,'uv'))+'<p>The sunny <b>Earth Road</b> runs on top, the cave <b>Mars Road</b> below. You can only fight enemies on <b>your own road</b> — and the roads connect only at <b>your home corner</b> (look for the ⇅ CROSS mark on the board). March everyone together, or split your team 2–1 — your call, general. (The ⇅ pads? Leftover cargo teleporters from the old mining days.)</p>'},
@@ -1770,7 +1779,7 @@ function castAbility(h,target){const ab=h.abil;ab.cur=ab.cd;
 /* ===================== PLAYER TURN ===================== */
 const isDay=()=>Math.floor((S.round-1)/4)%2===0;   // rounds 1-4 day, 5-8 night, 9-12 day…
 const cycleLeft=()=>4-((S.round-1)%4);
-function beginPlayerPhase(){document.body.classList.add('ingame');const me=S.me;me.ap=AP_MAX;S.phase='player';S.mode='idle';S.actingId=null;S.turnKills=0;
+function beginPlayerPhase(){document.body.classList.add('ingame');const _sg=document.querySelector('.stage');if(_sg){_sg.classList.remove('fell-ghost');_sg.classList.remove('fell-sand');}const me=S.me;me.ap=AP_MAX;S.phase='player';S.mode='idle';S.actingId=null;S.turnKills=0;
   log(`— Round ${S.round}: your move —`,'sys');
   const day=isDay();
   if(S.cycle!==day){S.cycle=day; const fav=day?'sand':'ghost';
@@ -2221,9 +2230,20 @@ function heartFall(side){if(!S||S.over)return; S.over=true; S.fallSide=side; con
   const _bid='heart:'+side;
   burst(_bid,'#ffd954',24); burst(_bid,'#ffffff',14); boomAt(_bid,180); shake(22); sfx('explode'); sfx('bossdie',0.25);
   const _fl=document.createElement('div');_fl.className='flashfx';document.body.appendChild(_fl);setTimeout(()=>_fl.remove(),1500);
+  const _st=document.querySelector('.stage');
+  setTimeout(()=>{if(GEN!==gen||!S||!_st)return;_st.classList.add('fell-'+side);},350);
+  setTimeout(()=>{if(GEN!==gen||!S||!_st)return;
+    const A=_st.querySelector('[data-fx="heart:'+side+'"]'),B=_st.querySelector('[data-fx="heart:'+foeSide(side)+'"]');
+    if(A&&B&&SPR.battery){const ra=A.getBoundingClientRect(),rb=B.getBoundingClientRect(),rs=_st.getBoundingClientRect();
+      const el=document.createElement('div');el.className='batfly';el.style.backgroundImage='url('+SPR.battery.u+')';
+      el.style.left=(ra.left+ra.width/2-rs.left)+'px';el.style.top=(ra.top+ra.height/2-rs.top)+'px';
+      _st.appendChild(el);
+      requestAnimationFrame(()=>{requestAnimationFrame(()=>{el.style.left=(rb.left+rb.width/2-rs.left)+'px';el.style.top=(rb.top+rb.height/2-rs.top)+'px';});});
+      setTimeout(()=>{el.remove();if(GEN===gen&&S&&B){B.classList.add('sp-charge2');sfx('ding');}},1550);
+    }},1900);
   [420,820,1240,1680].forEach((dl,i)=>setTimeout(()=>{if(GEN!==gen||!S)return;boomAt(_bid,150-i*12);burst(_bid,i%2?'#ff9a3c':'#9df3ff',16);sfx('explode');shake(12);},dl));
   toast(win?'💥 THE ENEMY BASE EXPLODES!':'💔 YOUR BASE EXPLODES!',side);
-  setTimeout(()=>{if(GEN!==gen||!S)return; showEnd(win);},2700);}
+  setTimeout(()=>{if(GEN!==gen||!S)return; showEnd(win);},4400);}
 function showEnd(win){
   if(S.twoP&&S.coop){
     const nm=(S.linkP?(S.n1||'PLAYER 1'):CMD())+' & '+(S.linkP?(S.n2||'PLAYER 2'):P2NAME());
@@ -2235,7 +2255,7 @@ function showEnd(win){
     const conf3=win?Array.from({length:18},(_,i)=>`<i class="conf" style="left:${4+i*5}%;animation-delay:${(i%6)*.32}s;background:${['#ffd24a','#46c8ff','#5fe39a','#ff5d6c','#fff'][i%5]}"></i>`).join(''):'';
     const hs=S.heroes.filter(isHuman);
     document.getElementById('endArt').innerHTML=win?`<div class="endscene">${conf3}<div class="rays"></div><img class="crown" src="${SPR.crown}">${anim(SPR.battery,'endbat')}${anim(SPR.hero[hs[0].key][hs[0].side],'endhero')}</div>`:`<div class="endscene">${anim(SPR.heart[S.playerSide+'Low'],'endheart')}${anim(SPR.battery,'endbat lost')}<div class="smokecol sm1"></div><div class="smokecol sm2"></div><div class="smokecol sm3"></div></div>`;
-    document.getElementById('endText').innerHTML=(win?`Side by side, <b>${nm}</b> destroyed the enemy Base in ${S.round} rounds! 🔋 BAZIBUB goes home with your team this year!`:`The ${enemyName()} held their base — this time. 🔋 Bazibub goes to the enemy this year — rebuild and return!`)+(S.linkP?`<div style="margin-top:10px"><button class="big" onclick="showShare()">📤 SEND THE RESULT</button></div>`:'');
+    document.getElementById('endText').innerHTML=(win?`Side by side, <b>${nm}</b> destroyed the enemy Base in ${S.round} rounds! 🔋 Your base wins the BAZIBUB and keeps the power until the next battle!`:`The ${enemyName()} held their base — this time. 🔋 Their base wins the BAZIBUB this time — the power is theirs until the next battle!`)+(S.linkP?`<div style="margin-top:10px"><button class="big" onclick="showShare()">📤 SEND THE RESULT</button></div>`:'');
     document.getElementById('endOverlay').style.display='flex';
     return;}
   if(S.twoP){sfx('victory');
@@ -2247,7 +2267,7 @@ function showEnd(win){
     document.getElementById('againBtn').textContent='⚔ REMATCH';
     const conf2=Array.from({length:18},(_,i)=>`<i class="conf" style="left:${4+i*5}%;animation-delay:${(i%6)*.32}s;background:${['#ffd24a','#46c8ff','#5fe39a','#ff5d6c','#fff'][i%5]}"></i>`).join('');
     document.getElementById('endArt').innerHTML=`<div class="endscene">${conf2}<div class="rays"></div><img class="crown" src="${SPR.crown}">${anim(SPR.battery,'endbat')}${anim(SPR.hero[wHero.key][wHero.side],'endhero')}</div>`;
-    document.getElementById('endText').innerHTML=`The ${sideFolk(winSide)} base stands — the ${sideFolk(S.fallSide)} have fallen! <b>${wName}</b> takes the crown in ${S.round} rounds — 🔋 BAZIBUB goes home with the ${sideFolk(winSide)}!<div class="earned">☆ ${wName} the Base-Buster ☆</div>`+(S.linkP?`<div style="margin-top:10px"><button class="big" onclick="showShare()">📤 SEND THE RESULT</button></div>`:'');
+    document.getElementById('endText').innerHTML=`The ${sideFolk(winSide)} base stands — the ${sideFolk(S.fallSide)} have fallen! <b>${wName}</b> takes the crown in ${S.round} rounds — 🔋 the ${sideFolk(winSide)} base wins the BAZIBUB and keeps the power until the next battle!<div class="earned">☆ ${wName} the Base-Buster ☆</div>`+(S.linkP?`<div style="margin-top:10px"><button class="big" onclick="showShare()">📤 SEND THE RESULT</button></div>`:'');
     document.getElementById('endOverlay').style.display='flex';
     return;}
   sfx(win?'victory':'defeat');
@@ -2276,7 +2296,7 @@ function showEnd(win){
   const total=Math.max(0,rows.reduce((a,r)=>a+r.pts,0));
   const best=+(localStorage.getItem('bzb_best')||0), isBest=total>best;
   if(isBest)localStorage.setItem('bzb_best',String(total));
-  document.getElementById('endText').innerHTML=((win?'You destroyed the enemy Base — 🔋 BAZIBUB goes home with you this year!':`The ${enemyName()} held their base — this time. 🔋 Bazibub goes to the enemy this year — rebuild and return!`)+
+  document.getElementById('endText').innerHTML=((win?'You destroyed the enemy Base — 🔋 your base wins the BAZIBUB and keeps the power until the next battle!':`The ${enemyName()} held their base — this time. 🔋 Their base wins the BAZIBUB this time — the power is theirs until the next battle!`)+
     `<div class="earned">☆ ${CMD()} the ${st.towers>=3?'Tower Toppler':st.boss>=1&&win?'Monster Slayer':win&&S.round<=10?'Lightning General':st.kills>=4?'Fearless Duelist':win?'Base-Buster':'Brave Defender'} ☆</div>`)+
     `<div class="scorebox">${rows.map((r,i)=>`<div class="srow" style="animation-delay:${(.3+i*.4).toFixed(1)}s"><span>${r.ic} ${r.lb}</span><b class="${r.pts<0?'neg':''}">${r.pts<0?'−':'+'}<span class="cnt0" data-t="${Math.abs(r.pts)}">0</span></b></div>`).join('')}
      <div class="srow total" style="animation-delay:${(.3+rows.length*.4).toFixed(1)}s"><span>SCORE</span><b>+<span class="cnt0" data-t="${total}">0</span></b></div>
@@ -2746,10 +2766,8 @@ function batterySVG(){return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0
 <rect x="46" y="32" width="28" height="5" rx="2.5" fill="#ffd954" opacity=".28"/>
 <path d="M64 30 l-9 13 h6 l-5 12 11 -14 h-6 l7 -11 Z" fill="#fff6dc" opacity=".85" filter="url(#batgG)" transform="translate(-2 2) scale(.62)" transform-origin="60 40"/>
 <g transform="rotate(-2 60 86)">
- <rect x="34" y="74" width="52" height="24" rx="3" fill="#e8dbb8" stroke="#141a22" stroke-width="2.4"/>
- <text x="60" y="83" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="5" fill="#8a7a58">Basic Zero-Ion</text>
- <text x="60" y="89" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="5" fill="#8a7a58">Backup Unit B</text>
- <text x="60" y="96" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="8.6" font-weight="bold" fill="#3d2c15">BAZIBUB</text>
+ <rect x="33" y="77" width="54" height="17" rx="3" fill="#e8dbb8" stroke="#141a22" stroke-width="2.4"/>
+ <text x="60" y="89.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="10.5" font-weight="bold" fill="#3d2c15">BAZIBUB</text>
 </g>
 <path d="M84 30 q4 7 -1 12" stroke="#7a5c2e" stroke-width="2.2" fill="none" opacity=".6" stroke-linecap="round"/>
 <path d="M35 104 q5 5 11 3" stroke="#7a5c2e" stroke-width="2" fill="none" opacity=".5" stroke-linecap="round"/>
@@ -2858,20 +2876,21 @@ document.addEventListener('keydown',e=>{
     if(sp.classList.contains('off')){clearInterval(tick);return;}
     n++;
     const leftVictim=n%2===1;
-    for(let i=0;i<6;i++)shot(i%2?'sl':'sr',13+(i%3)*2.6,i*.3);
-    shot('sr tws',19,.9); shot('sl tws',19,1.8);
+    const volley=()=>{for(let i=0;i<6;i++)shot(i%2?'sl':'sr',13+(i%3)*2.6,i*.3);shot('sr tws',19,.9);shot('sl tws',19,1.6);};
+    volley();
     setTimeout(()=>{ if(sp.classList.contains('off'))return;
       const t=document.getElementById(leftVictim?'spTL':'spTR');
       boomFx('30%',!leftVictim,false);
-      if(t){t.classList.add('sp-hitfall');setTimeout(()=>t.classList.remove('sp-hitfall'),2650);}
-    },2400);
+      if(t)t.classList.add('sp-dead');
+    },2200);
+    setTimeout(()=>{ if(sp.classList.contains('off'))return; volley(); },3300);
     setTimeout(()=>{ if(sp.classList.contains('off'))return;
       const c=document.getElementById(leftVictim?'spCL':'spCR');
       const army=document.getElementById(leftVictim?'spL':'spR');
       boomFx('1.5%',!leftVictim,true);
       if(c)c.classList.add('sp-dead');
       if(army)army.classList.add('sp-dead');
-    },4800);
+    },5500);
     setTimeout(()=>{ if(sp.classList.contains('off'))return;
       const winner=document.getElementById(leftVictim?'spCR':'spCL');
       bat.style.transform='translateX(calc(-50% + '+(leftVictim?'66vw':'-14vw')+')) translateY(17vh) scale(.2)';
@@ -2879,9 +2898,9 @@ document.addEventListener('keydown',e=>{
       setTimeout(()=>{ if(winner&&!sp.classList.contains('off')){winner.classList.add('sp-charge');if(sndOK())sfx('ding');} },1400);
       setTimeout(()=>{ if(winner)winner.classList.remove('sp-charge'); bat.style.transform='';
         document.querySelectorAll('#splash .sp-dead').forEach(e=>e.classList.remove('sp-dead')); },4300);
-    },5900);
+    },6600);
   }
-  const tick=setInterval(cycle,11800);
+  const tick=setInterval(cycle,12600);
   setTimeout(cycle,4500);
 })();
 </script>
