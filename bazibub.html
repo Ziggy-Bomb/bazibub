@@ -1029,7 +1029,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v6.0.8 · © 2026 Andswarian Ltd · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v6.0.9 · © 2026 Andswarian Ltd · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1257,7 +1257,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='6.0.8';
+const GAME_VER='6.0.9';
 /* ---- privacy-friendly play stats (GoatCounter: no cookies, no personal data) ---- */
 const GC_CODE='bazibub'; // <-- put your goatcounter site code here (the bit before .goatcounter.com)
 (function(){ if(!GC_CODE)return; try{
@@ -2198,7 +2198,7 @@ function laneCol(r){const me=S.me,R=ROUTES[r];
   for(let t=0;t<NT;t++){
     const cls=t<gf?'gctrl':t>sf?'sctrl':'', rc=reach.some(x=>x.t===t)?' reach':'';
     const inR=(rngInfo&&r===me.pos.r&&rngInfo.d[tk(r,t)]<=rngInfo.range)?' rng':'';
-    let loc=''; if(t===0)loc='TIDE BASE'; if(t===NT-1)loc='FLAME BASE';
+    let loc=''; if(t===0)loc='MARS BASE'; if(t===NT-1)loc='EARTH BASE';
     if(S.tower.ghost.some(w=>w.r===r&&w.t===t)||S.tower.sand.some(w=>w.r===r&&w.t===t))loc='TOWER';
     let gHero='',sHero='',gCreep='',sCreep='',mid='';
     S.heroes.slice().sort((a,b)=>(a===me)-(b===me)).forEach(hh=>{ if(hh.pos.r===r&&hh.pos.t===t){ const html=heroTokenHTML(hh,me,hits,stg); if(hh.side==='ghost')gHero+=html; else sHero+=html; }});
