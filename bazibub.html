@@ -1029,7 +1029,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v6.0.5 · © 2026 Andswarian Ltd · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v6.0.6 · © 2026 Andswarian Ltd · characters by Claude · UI: Pixel Frog · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1257,7 +1257,17 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='6.0.5';
+const GAME_VER='6.0.6';
+/* ---- privacy-friendly play stats (GoatCounter: no cookies, no personal data) ---- */
+const GC_CODE=''; // <-- put your goatcounter site code here (the bit before .goatcounter.com)
+(function(){ if(!GC_CODE)return; try{
+  const s=document.createElement('script'); s.async=true; s.src='https://gc.zgo.at/count.js';
+  s.setAttribute('data-goatcounter','https://'+GC_CODE+'.goatcounter.com/count');
+  document.head.appendChild(s);
+}catch(e){} })();
+function track(name){ try{ if(!GC_CODE)return;
+  if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:name,title:name,event:true});
+}catch(e){} }
 const CREDIT_LINE='A family-made game · © 2026 Andswarian Ltd'; // reword me!
 function CMD(){try{return localStorage.getItem('bzb_name')||'YOU'}catch(e){return 'YOU'}}
 const FEEDBACK_URL=''; // paste a Google Form (or similar) link here to show 💬 Feedback buttons in-game
@@ -1827,7 +1837,8 @@ function castAbility(h,target){const ab=h.abil;ab.cur=ab.cd;
 /* ===================== PLAYER TURN ===================== */
 const isDay=()=>Math.floor((S.round-1)/4)%2===0;   // rounds 1-4 day, 5-8 night, 9-12 day…
 const cycleLeft=()=>4-((S.round-1)%4);
-function beginPlayerPhase(){document.body.classList.add('ingame');const _sg=document.querySelector('.stage');if(_sg){_sg.classList.remove('fell-ghost');_sg.classList.remove('fell-sand');}const me=S.me;me.ap=AP_MAX;S.phase='player';S.mode='idle';S.actingId=null;S.turnKills=0;
+function beginPlayerPhase(){document.body.classList.add('ingame');
+  if(S&&!S.trk&&!S.tut&&!window.TUT_BOOT){S.trk=1;track('game-started-'+(S.linkP?'link':S.twoP?(S.coop?'2p-coop':'2p-vs'):'1p'));}const _sg=document.querySelector('.stage');if(_sg){_sg.classList.remove('fell-ghost');_sg.classList.remove('fell-sand');}const me=S.me;me.ap=AP_MAX;S.phase='player';S.mode='idle';S.actingId=null;S.turnKills=0;
   log(`— Round ${S.round}: your move —`,'sys');
   const day=isDay();
   if(S.cycle!==day){S.cycle=day; const fav=day?'sand':'ghost';
@@ -2300,6 +2311,7 @@ function heartFall(side){if(!S||S.over)return; S.over=true; S.fallSide=side; con
   toast(win?'💥 THE ENEMY BASE EXPLODES!':'💔 YOUR BASE EXPLODES!',side);
   setTimeout(()=>{if(GEN!==gen||!S)return; showEnd(win);},4400);}
 function showEnd(win){
+  track('game-finished'); track(win?'game-won':'game-lost');
   if(S.twoP&&S.coop){
     const nm=(S.linkP?(S.n1||'PLAYER 1'):CMD())+' & '+(S.linkP?(S.n2||'PLAYER 2'):P2NAME());
     sfx(win?'victory':'defeat');
@@ -2994,11 +3006,12 @@ const TUT_ADV=[
 ];
 function tutSteps(){return S.tut.kind==='adv'?TUT_ADV:TUT_BASIC;}
 function startTut(kind){
+  track('tutorial-started-'+kind); window.TUT_BOOT=true;
   document.getElementById('tutChoice').style.display='none';
   document.getElementById('modeOverlay').style.display='none';
   PENDING_2P=false;PENDING_LINK=false;PENDING_COOP=false;selectedSide='ghost';themeSide('ghost');
   newGame('knight'); confirmLanes(); skipIntro();
-  S.tut={kind:kind,step:-1,lock:false};
+  S.tut={kind:kind,step:-1,lock:false}; window.TUT_BOOT=false;
   S.creeps.length=0;
   tutNext();
 }
@@ -3015,6 +3028,7 @@ function tutNext(){
 }
 function tutShow(){
   const st=tutCur(),b=document.getElementById('tutBar');
+  if(st&&st.done)track('tutorial-finished-'+S.tut.kind);
   b.style.display='block';
   b.innerHTML='<div class="tutin">🤖 <span>'+st.txt+'</span>'+
     (st.need==='btn'?'<div class="tutrow"><button class="tutbtn" onclick="tutNext()">➡ CONTINUE</button></div>':'')+
