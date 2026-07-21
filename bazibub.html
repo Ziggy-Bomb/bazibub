@@ -994,6 +994,24 @@
   #statsPanel{background:linear-gradient(180deg,#16203f,#0d1428)!important;border:2px solid #354c8a!important;border-radius:10px;color:#dbe7ff!important}
   #statsPanel .meta b{color:#eaf2ff}.statline .stat{background:#22305c!important;color:#cfe0ff!important;border-radius:6px}
   .pen{background:rgba(10,16,38,.6)!important;border-radius:8px}.pttl,.alive0{color:#93a7d6!important}
+
+  /* v7.1: charge-cell action points + repair bay list */
+  .appip{image-rendering:auto!important;width:24px!important;height:33px!important;transition:transform .12s}
+  .appip.off{opacity:.85}
+  .appip.on{filter:drop-shadow(0 0 6px rgba(255,217,84,.85))!important}
+  .apoptop .appip{width:17px!important;height:23px!important}
+  @media(max-width:640px){.appip{width:19px!important;height:26px!important}}
+  .fixrow{display:flex;justify-content:space-between;gap:6px;font-size:13px;color:#b9c8ee;padding:1px 2px}
+  .fixn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .fixt{color:var(--gold);font-weight:bold}
+  .alive0{color:#7f8fb8}
+
+  /* v7.1: hero card matches the console skin */
+  .hero-portrait{background:linear-gradient(180deg,#18224a,#0e1630)!important;border:2px solid #35508f!important;
+    border-left:4px solid var(--friend)!important;border-radius:10px!important;color:#dbe7ff!important}
+  .hero-portrait .meta b{color:#eaf2ff!important}
+  .hero-portrait .meta span{color:#93a7d6!important}
+  .hero-portrait .pbox{border-color:#49c98a!important}
 </style>
 </head>
 <body>
@@ -1088,7 +1106,7 @@
     <div class="hint" style="margin-top:9px">🌍 <b>Earth Bots</b> are blue and send 2× creeps on the TOP road · 🔴 <b>Mars Bots</b> are red and send 2× creeps on the BOTTOM road</div>
     <h2 style="margin-top:22px">CHOOSE YOUR HERO</h2>
     <div class="heroes" id="pickHeroes"></div>
-    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v7.0.0 · © 2026 Andswarian Ltd · art by Claude + Higgsfield · FX: Pimen</div></div>
+    <div class="hint" style="font-size:12px;opacity:.55;margin-top:10px">Bazibub v7.1.0 · © 2026 Andswarian Ltd · art by Claude + Higgsfield · FX: Pimen</div></div>
 </div>
 
 <div class="overlay" id="teamOverlay" style="display:none;z-index:65">
@@ -1247,7 +1265,7 @@ function buildApPip(on){return mk(12,12,x=>{
   rows.forEach(r=>{P(x,r[0],r[1],1,1,c.o);P(x,r[0]+r[2]-1,r[1],1,1,c.o);});
   if(on){P(x,4,2,1,1,'#fff');P(x,7,4,1,1,'#fff');}
   else{P(x,5,3,1,4,'#0a0a14');P(x,4,6,3,1,'#0a0a14');P(x,7,2,1,2,'#0a0a14');}});}
-SPR.ap={on:buildApPip(true),off:buildApPip(false)};
+SPR.ap={on:"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 36'><defs><linearGradient id='c' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23fff6dc'/><stop offset='.45' stop-color='%23ffd954'/><stop offset='1' stop-color='%23e09a24'/></linearGradient></defs><rect x='9' y='1.5' width='8' height='5' rx='2' fill='%23c8891c' stroke='%23141a22' stroke-width='2'/><rect x='2.5' y='6' width='21' height='28' rx='5' fill='url%28%23c%29' stroke='%23141a22' stroke-width='2.4'/><rect x='5.5' y='9' width='5' height='21' rx='2.5' fill='%23fff' opacity='.45'/><path d='M15 11 l-6 10 h4.2 l-1.6 8 6.4-11h-4.4z' fill='%236b3d00' stroke='%233a1f00' stroke-width='.8' stroke-linejoin='round'/></svg>",off:"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 36'><rect x='9' y='1.5' width='8' height='5' rx='2' fill='%232b3454' stroke='%23141a22' stroke-width='2'/><rect x='2.5' y='6' width='21' height='28' rx='5' fill='%231b2340' stroke='%23141a22' stroke-width='2.4'/><path d='M15 11 l-6 10 h4.2 l-1.6 8 6.4-11h-4.4z' fill='none' stroke='%2346527a' stroke-width='1.6' stroke-linejoin='round'/></svg>"};
 function buildRockWall(){return mk(32,32,x=>{P(x,0,0,32,32,'#26272e');
   const st=(a,b,w,h)=>{P(x,a,b,w,h,'#303138');P(x,a,b,w,1,'#3f414a');P(x,a,b+h-1,w,1,'#17181d');P(x,a,b,1,h,'#383a42');};
   st(0,0,15,9);st(16,0,16,9);st(0,10,9,10);st(10,10,12,10);st(23,10,9,10);st(0,21,13,11);st(14,21,18,11);
@@ -1316,7 +1334,7 @@ const FXSND={slash:'slash',charge:'slash',arrow:'arrow',bolt:'bolt',fire:'fire',
 function toggleSnd(){SND.on=!SND.on;try{localStorage.setItem('bzb_snd',SND.on?'on':'off')}catch(e){}
   const b=document.getElementById('sndBtn');if(b)b.textContent=SND.on?'🔊':'🔇';if(SND.on){audioInit();sfx('click');}}
 function toggleSpeed(){if(!S)return;S.speed=S.speed===2?1:2;try{localStorage.setItem('bzb_speed',''+S.speed)}catch(e){}sfx('click');renderBanner();}
-const GAME_VER='7.0.0';
+const GAME_VER='7.1.0';
 /* ---- privacy-friendly play stats (GoatCounter: no cookies, no personal data) ---- */
 const GC_CODE='bazibub'; // <-- put your goatcounter site code here (the bit before .goatcounter.com)
 (function(){ if(!GC_CODE)return; try{
@@ -2196,12 +2214,11 @@ function renderBoard(){const host=document.getElementById('boardHost');
 function heartCell(side){const ht=S.heart[side],frac=ht.hp/ht.maxhp,low=frac<.35;
   const tg=S.phase==='player'&&S.me.alive&&((S.mode==='attack'&&canHit(S.me,ht))||(S.mode==='spell'&&spellTargets().includes(ht)));
   const dead=S.heroes.filter(h=>h.side===side&&!h.alive);
-  const pen=`<div class="pen"><div class="pttl">GATEHOUSE</div>${dead.length?dead.map(h=>`<div class="grave">${img(SPR.grave[side],'')}<span class="bk">${h.respawnIn}</span></div>`).join(''):'<div class="alive0">all alive</div>'}</div>`;
+  const pen=`<div class="pen"><div class="pttl">REPAIR BAY</div>${dead.length?dead.map(h=>`<div class="fixrow"><span class="fixn">${h.name}</span><span class="fixt">🔧${h.respawnIn}</span></div>`).join(''):'<div class="alive0">all active</div>'}</div>`;
   const mine=side===S.playerSide;
   return `<div class="heart ${side} ${low?'danger':''} ${tg?'target':''}" data-unit="heart:${side}" data-fx="heart:${side}">
      <div class="role ${mine?'def':'atk2'}">${mine?'🛡 DEFEND!':'⚔ DESTROY!'}</div>
      ${anim(low?SPR.heart[side+'Low']:SPR.heart[side],'h')}
-     <div class="nmh">${side==='ghost'?'MARS':'EARTH'}<br>BASE</div>
      <div class="hpl">BASE HEALTH</div>
      <div class="protec">${towerAlive(side,0)&&towerAlive(side,1)?'🛡 guarded':(!towerAlive(side,0)&&!towerAlive(side,1)?'⚠️ WIDE OPEN':'⚠️ OPEN: '+(towerAlive(side,0)?'MARS ROAD':'EARTH ROAD'))}</div>
      <div class="vbar"><i style="height:${100*frac}%;background:${hpColor(frac)}"></i></div>
@@ -2209,7 +2226,7 @@ function heartCell(side){const ht=S.heart[side],frac=ht.hp/ht.maxhp,low=frac<.35
      <div class="warnH">${mine?'If it shatters, you lose.':'Shatter it to win!'}</div>${pen}</div>`;}
 function heroTokenHTML(hh,me,hits,stg){const tg=hits.includes(hh)||stg.includes(hh),idx=S.heroes.indexOf(hh);
   const rel=hh===me?'me':hh.side===me.side?'friend':'foe', relTxt=hh===me?'★YOU':rel==='friend'?'ALLY':'FOE';
-  if(!hh.alive) return `<div class="tok grave-tok ${rel}" data-fx="hero:${idx}"><div class="rel ${rel}">${relTxt}</div>${img(SPR.grave[hh.side],'')}<div class="nm" style="color:var(--bad)">🔧 ${hh.respawnIn}</div></div>`;
+  if(!hh.alive) return '';
   const ready=hh===me&&S.phase==='player'&&me.alive&&me.ap>0&&S.mode==='idle'&&!S.over;
   return `<div class="tok ${rel} ${hh.side} ${S.warpU===uid(hh)&&S.warpPh?('warp'+S.warpPh):''} ${ready?'ready':''} ${hh.shield>0?'shielded':''} ${S.actingId===uid(hh)?'acting':''} ${hh.stunned?'stunned':''} ${tg?'target':''}" data-unit="hero:${idx}" data-fx="hero:${idx}" title="${hh.name} — HP ${hh.hp}/${hh.maxhp}${hh.shield>0?' +shield '+hh.shield:''}">${ready&&S.round<=4?'<span class="taptag">TAP!</span>':''}
     <div class="rel ${rel}">${relTxt}</div>${anim(SPR.hero[hh.key][hh.side],'u')}<div class="nm">${hh.name}${hh.stunned?'❄':''}${hh.snared?'⛓':''}</div>
@@ -2259,7 +2276,7 @@ function laneCol(r){const me=S.me,R=ROUTES[r];
   for(let t=0;t<NT;t++){
     const _rc=reach.find(x=>x.t===t), cls=t<gf?'gctrl':t>sf?'sctrl':'', rc=_rc?' reach':'';
     const inR=(rngInfo&&r===me.pos.r&&rngInfo.d[tk(r,t)]<=rngInfo.range)?' rng':'';
-    let loc=''; if(t===0)loc='MARS BASE'; if(t===NT-1)loc='EARTH BASE';
+    let loc='';
     if(S.tower.ghost.some(w=>w.r===r&&w.t===t)||S.tower.sand.some(w=>w.r===r&&w.t===t))loc='TOWER';
     let gHero='',sHero='',gCreep='',sCreep='',mid='';
     S.heroes.slice().sort((a,b)=>(a===me)-(b===me)).forEach(hh=>{ if(hh.pos.r===r&&hh.pos.t===t){ const html=heroTokenHTML(hh,me,hits,stg); if(hh.side==='ghost')gHero+=html; else sHero+=html; }});
