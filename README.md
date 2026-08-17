@@ -21,6 +21,17 @@ The whole game is **one file: `bazibub.html`** — all the code, artwork and
 sound are inside it. To change the game, edit that file. To play a local
 copy, just open it in any browser.
 
+## FieldOps — real-world GPS games (new)
+
+A second project lives in this repo: **FieldOps**, a platform for running
+outdoor team games on a fleet of phones — live GPS sharing with per-game
+visibility rules, an *Aliens*-style motion tracker, manhunt / triangulation /
+waypoint-race / clue-hunt / horde-defence modes, and a Game Master console.
+
+- **Prototype (one file, same philosophy):** [`fieldops.html`](fieldops.html)
+- **Design document:** [`FIELDOPS.md`](FIELDOPS.md)
+- **End-to-end tests:** [`test/`](test/)
+
 © 2026 Andswarian Ltd. All rights reserved.
 Game code, story, characters and original artwork may not be copied or redistributed without permission.
 Artwork credits (thank you all!):

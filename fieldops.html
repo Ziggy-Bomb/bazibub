@@ -1,0 +1,1196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#050f14">
+<title>FIELD OPS — Andswarian tactical games (prototype)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{
+  --bg:#050f14; --panel:#081820; --line:#124233; --ink:#b8ffe0;
+  --hot:#35ffb5; --cyan:#39d3ff; --amber:#ffe14d; --red:#ff5a5a; --dim:#4d8a74;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Share Tech Mono","Consolas","Menlo",monospace;
+  font-size:15px;overflow:hidden;user-select:none;-webkit-user-select:none}
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:stretch;
+  padding:max(18px,env(safe-area-inset-top)) 18px 18px;overflow-y:auto;background:
+  radial-gradient(1200px 600px at 50% -100px,#0a2a24 0%,var(--bg) 60%)}
+.screen.on{display:flex}
+.logo{font-size:44px;letter-spacing:6px;color:var(--hot);text-align:center;margin-top:8vh;
+  text-shadow:0 0 18px rgba(53,255,181,.5)}
+.logo span{color:var(--cyan)}
+.tag{text-align:center;color:var(--dim);font-size:11px;letter-spacing:2px;margin:6px 0 26px}
+label{display:block;color:var(--dim);font-size:11px;letter-spacing:2px;margin:14px 0 4px}
+input[type=text],input[type=number],input:not([type]){width:100%;background:#03130d;border:1px solid var(--line);
+  color:var(--hot);font:inherit;font-size:18px;padding:12px;letter-spacing:2px;outline:none;border-radius:4px}
+input::placeholder{color:#1e5b46}
+.btn{display:block;width:100%;background:linear-gradient(180deg,#0d3a2c,#082418);border:1px solid var(--hot);
+  color:var(--hot);font:inherit;font-size:16px;letter-spacing:3px;padding:14px;margin-top:14px;border-radius:4px;cursor:pointer}
+.btn:active{background:#0f5a40}
+.btn.sec{border-color:var(--line);color:var(--ink)}
+.btn.warn{border-color:var(--red);color:var(--red)}
+.row{display:flex;gap:10px;align-items:center}
+.row .btn{margin-top:14px}
+.row input{flex:1}
+.wrap{flex-wrap:wrap}
+details{margin-top:18px;color:var(--dim)}
+summary{letter-spacing:2px;font-size:12px;cursor:pointer}
+.chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);margin-top:10px;letter-spacing:1px}
+.fine{color:#2c6b52;font-size:11px;margin-top:auto;padding-top:20px;text-align:center;letter-spacing:1px}
+h2{color:var(--cyan);letter-spacing:3px;font-size:18px;margin:6px 0 12px;font-weight:normal}
+.mode{border:1px solid var(--line);border-radius:4px;padding:10px 12px;margin-top:10px;cursor:pointer}
+.mode.on{border-color:var(--hot);background:#07231a;box-shadow:0 0 12px rgba(53,255,181,.25)}
+.mode b{color:var(--hot);letter-spacing:2px;font-weight:normal}
+.mode p{color:var(--dim);font-size:12px;margin-top:4px;line-height:1.5}
+.codebig{font-size:56px;letter-spacing:14px;color:var(--amber);text-align:center;margin:10px 0;
+  text-shadow:0 0 20px rgba(255,225,77,.4)}
+.roster{margin-top:10px}
+.rrow{display:flex;gap:8px;align-items:center;border-bottom:1px dashed #0d3328;padding:7px 2px;font-size:14px}
+.dotc{width:10px;height:10px;border-radius:50%;flex:none}
+.rmeta{margin-left:auto;color:var(--dim);font-size:11px;text-align:right;white-space:nowrap}
+.teambtn{border-width:2px}
+/* ------- game screen ------- */
+#scr-game{padding:0}
+#hdr{flex:none;display:flex;align-items:center;gap:10px;background:#04191f;border-bottom:1px solid var(--line);
+  padding:calc(6px + env(safe-area-inset-top)) 10px 6px;font-size:12px;letter-spacing:1px}
+#hdr .hbtn{background:none;border:1px solid var(--line);color:var(--ink);font:inherit;padding:3px 8px;border-radius:3px}
+#hud-mode{color:var(--hot)}
+#hud-timer{color:var(--amber)}
+#hud-net.ok{color:var(--hot)} #hud-net.bad{color:var(--red)}
+#hdr .sp{margin-left:auto}
+#panels{flex:1;position:relative;min-height:0}
+.panel{position:absolute;inset:0;display:none}
+.panel.on{display:block}
+#map{width:100%;height:100%;background:#0a1418}
+.leaflet-container{font:inherit}
+.leaflet-tile{filter:brightness(.72) contrast(1.05) saturate(.65) hue-rotate(160deg)}
+.wpicon,.clueicon,.txicon{display:flex;align-items:center;justify-content:center;border-radius:50%;
+  font:12px "Consolas",monospace;color:#031510;background:var(--amber);border:2px solid #031510}
+.wpicon.done{background:#2c6b52;color:#9fe} .wpicon.next{box-shadow:0 0 12px var(--amber)}
+.txicon{background:var(--red);color:#fff}
+#panel-radar{background:#020b07}
+#radar{width:100%;height:100%;display:block;touch-action:none}
+#radar-ctl{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:8px}
+#radar-ctl button{background:#04231a;border:1px solid var(--line);color:var(--hot);font:inherit;font-size:12px;
+  padding:8px 10px;border-radius:4px;letter-spacing:1px}
+#radar-ctl button.on{border-color:var(--hot);box-shadow:0 0 8px rgba(53,255,181,.4)}
+#panel-comms{display:none;flex-direction:column;padding:10px}
+#panel-comms.on{display:flex}
+#log{flex:1;overflow-y:auto;font-size:13px;line-height:1.7;border:1px solid var(--line);border-radius:4px;
+  padding:8px;background:#03130d}
+#log .ev{color:var(--amber)} #log .sys{color:var(--dim)}
+#log .who{color:var(--cyan)}
+#panel-gm{display:none;flex-direction:column;padding:10px;overflow-y:auto}
+#panel-gm.on{display:flex}
+.gmsec{color:var(--dim);letter-spacing:2px;font-size:11px;margin:14px 0 6px}
+.gmtool,#panel-gm .mini{background:#04231a;border:1px solid var(--line);color:var(--ink);font:inherit;font-size:13px;
+  padding:10px;border-radius:4px;letter-spacing:1px;flex:1 1 40%}
+.gmtool.on{border-color:var(--amber);color:var(--amber)}
+#actionbar{flex:none;display:flex;gap:10px;align-items:center;background:#04191f;border-top:1px solid var(--line);
+  padding:8px 10px;min-height:52px}
+#action-info{flex:1;font-size:14px;letter-spacing:1px;color:var(--amber)}
+#action-btn{background:linear-gradient(180deg,#0d3a2c,#082418);border:1px solid var(--hot);color:var(--hot);
+  font:inherit;font-size:14px;letter-spacing:2px;padding:10px 16px;border-radius:4px}
+#action-btn[hidden]{display:none}
+#tabbar{flex:none;display:flex;background:#03130d;border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom)}
+.tb{flex:1;background:none;border:none;border-top:2px solid transparent;color:var(--dim);font:inherit;
+  font-size:13px;letter-spacing:2px;padding:14px 0}
+.tb.on{color:var(--hot);border-top-color:var(--hot)}
+#toasts{position:fixed;top:64px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:6px;
+  z-index:2000;pointer-events:none}
+.toast{background:#062b1f;border:1px solid var(--hot);color:var(--hot);padding:8px 16px;border-radius:4px;
+  font-size:13px;letter-spacing:1px;max-width:90%;text-align:center;animation:tfade 4s forwards}
+@keyframes tfade{0%{opacity:0;transform:translateY(-8px)}8%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
+#modal,#banner{position:fixed;inset:0;background:rgba(2,10,8,.88);z-index:3000;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+#modal[hidden],#banner[hidden]{display:none}
+.mbox{background:var(--panel);border:1px solid var(--amber);border-radius:6px;padding:22px;max-width:420px;width:100%}
+#modal-title{color:var(--amber);letter-spacing:3px;margin-bottom:12px}
+#modal-body{line-height:1.6;font-size:16px}
+#modal-ok{margin-top:18px;width:100%}
+#banner-text{font-size:30px;letter-spacing:4px;color:var(--hot);text-shadow:0 0 18px rgba(53,255,181,.6);line-height:1.4}
+#banner-sub{color:var(--dim);margin:14px 0 8px;letter-spacing:2px}
+#banner .btn{max-width:300px}
+</style>
+</head>
+<body>
+
+<!-- ============ HOME ============ -->
+<div class="screen on" id="scr-home">
+  <div class="logo">FIELD<span>OPS</span></div>
+  <div class="tag">ANDSWARIAN TACTICAL GAMES // FIELD PROTOTYPE</div>
+  <label>CALL SIGN</label>
+  <input id="in-name" maxlength="14" placeholder="e.g. RIPLEY" autocomplete="off">
+  <button class="btn" id="bt-create">CREATE OP &nbsp;(GAME MASTER)</button>
+  <div class="row">
+    <input id="in-code" maxlength="4" placeholder="OP CODE" autocomplete="off" style="text-transform:uppercase">
+    <button class="btn" id="bt-join" style="width:34%">JOIN</button>
+  </div>
+  <details>
+    <summary>ADVANCED</summary>
+    <label>RELAY (MQTT OVER WSS)</label>
+    <input id="in-broker" placeholder="wss://broker.emqx.io:8084/mqtt">
+    <label class="chk"><input type="checkbox" id="in-test"> desktop test mode — right-click / long-press map to move</label>
+  </details>
+  <div class="fine">Prototype relays position over a PUBLIC broker — no privacy.<br>
+    GPS needs HTTPS. Keep screens awake; take spare batteries.<br>© 2026 Andswarian Ltd — see FIELDOPS.md</div>
+</div>
+
+<!-- ============ CREATE ============ -->
+<div class="screen" id="scr-create">
+  <h2>SELECT OPERATION</h2>
+  <div id="mode-list"></div>
+  <div class="row">
+    <div style="flex:1"><label>TEAMS</label>
+      <select id="cfg-teams" style="width:100%;background:#03130d;border:1px solid var(--line);color:var(--hot);font:inherit;padding:12px;border-radius:4px">
+        <option>1</option><option selected>2</option><option>3</option><option>4</option>
+      </select></div>
+    <div style="flex:1"><label>MINUTES</label><input type="number" id="cfg-dur" value="30" min="0"></div>
+    <div style="flex:1" id="cfg-ping-wrap"><label>PING SEC</label><input type="number" id="cfg-ping" value="60" min="5"></div>
+  </div>
+  <button class="btn" id="bt-launch">LAUNCH OP</button>
+  <button class="btn sec" id="bt-back1">BACK</button>
+</div>
+
+<!-- ============ TEAM PICK ============ -->
+<div class="screen" id="scr-team">
+  <h2>PICK YOUR TEAM</h2>
+  <div id="team-btns"></div>
+  <button class="btn sec" id="bt-auto">AUTO-ASSIGN (BALANCE)</button>
+</div>
+
+<!-- ============ LOBBY ============ -->
+<div class="screen" id="scr-lobby">
+  <h2 id="lb-mode">—</h2>
+  <div style="color:var(--dim);font-size:12px;letter-spacing:2px;text-align:center">OP CODE</div>
+  <div class="codebig" id="lb-code">----</div>
+  <p id="lb-blurb" style="color:var(--dim);font-size:13px;line-height:1.6;text-align:center"></p>
+  <div class="gmsec">UNITS ON THE NET</div>
+  <div class="roster" id="lb-roster"></div>
+  <div id="lb-gmbtns" hidden>
+    <button class="btn" id="bt-console">OPEN GM CONSOLE (place objectives)</button>
+    <button class="btn" id="bt-start">START OP</button>
+  </div>
+  <p id="lb-wait" style="text-align:center;color:var(--amber);letter-spacing:2px;margin-top:18px">STANDBY — WAITING FOR GM</p>
+  <button class="btn sec" id="bt-leavelobby">LEAVE</button>
+</div>
+
+<!-- ============ GAME ============ -->
+<div class="screen" id="scr-game">
+  <div id="hdr">
+    <span id="hud-mode">OP</span>
+    <span id="hud-timer">--:--</span>
+    <span id="hud-acc">GPS —</span>
+    <span id="hud-bat"></span>
+    <span id="hud-net" class="bad">⬤</span>
+    <span class="sp"></span>
+    <button class="hbtn" id="bt-fs">⛶</button>
+    <button class="hbtn" id="bt-exit">✕</button>
+  </div>
+  <div id="panels">
+    <div class="panel on" id="panel-map"><div id="map"></div></div>
+    <div class="panel" id="panel-radar">
+      <canvas id="radar"></canvas>
+      <div id="radar-ctl">
+        <button id="bt-range">250m</button>
+        <button id="bt-compass">HDG-UP</button>
+        <button id="bt-audio">AUDIO</button>
+      </div>
+    </div>
+    <div class="panel" id="panel-comms">
+      <div id="log"></div>
+      <div class="row"><input id="in-chat" placeholder="team channel…" autocomplete="off"><button class="btn" id="bt-chat" style="width:70px;margin-top:0">TX</button></div>
+    </div>
+    <div class="panel" id="panel-gm">
+      <div class="gmsec">TOOLS — select, then tap the map</div>
+      <div class="row wrap">
+        <button class="gmtool" data-tool="wp">+ WAYPOINT</button>
+        <button class="gmtool" data-tool="clue">+ CLUE CACHE</button>
+        <button class="gmtool" data-tool="target">SET TARGET TX</button>
+        <button class="gmtool" data-tool="defend">SET DEFEND PT</button>
+        <button class="mini" id="bt-clearobj">CLEAR OBJECTIVES</button>
+      </div>
+      <div class="gmsec">BROADCAST</div>
+      <div class="row"><input id="in-bcast" placeholder="message to all units" autocomplete="off"><button class="btn" id="bt-bcast" style="width:80px;margin-top:0">SEND</button></div>
+      <div class="row">
+        <button class="btn" id="bt-start2">START OP</button>
+        <button class="btn warn" id="bt-end">END OP</button>
+      </div>
+      <div class="gmsec">UNITS</div>
+      <div class="roster" id="gm-roster"></div>
+    </div>
+  </div>
+  <div id="actionbar">
+    <span id="action-info"></span>
+    <button id="action-btn" hidden></button>
+  </div>
+  <div id="tabbar">
+    <button class="tb on" data-tab="map">MAP</button>
+    <button class="tb" data-tab="radar">RADAR</button>
+    <button class="tb" data-tab="comms">COMMS</button>
+    <button class="tb" data-tab="gm" id="tab-gm" hidden>GM</button>
+  </div>
+</div>
+
+<div id="toasts"></div>
+<div id="modal" hidden><div class="mbox">
+  <div id="modal-title">CLUE RECOVERED</div>
+  <div id="modal-body"></div>
+  <button class="btn" id="modal-ok">ACKNOWLEDGE</button>
+</div></div>
+<div id="banner" hidden>
+  <div id="banner-text"></div>
+  <div id="banner-sub"></div>
+  <button class="btn" id="bt-stay">KEEP WATCHING</button>
+  <button class="btn sec" id="bt-leave">LEAVE OP</button>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
+<script>
+'use strict';
+/* =====================================================================
+   FIELD OPS prototype — real-world GPS team games on phones.
+   One file. Sync over MQTT-WSS (public broker; prototype only — all game
+   rules are enforced client-side and trust-based). See FIELDOPS.md.
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const now = () => Date.now();
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TOPIC_ROOT = 'andswarian/fieldops/v1';
+const DEFAULT_BROKER = 'wss://broker.emqx.io:8084/mqtt';
+const TEAM_COLORS = {ALPHA:'#39d3ff',BRAVO:'#ffb347',CHARLIE:'#ff5ad1',DELTA:'#a6ff4d',
+                     HUNTERS:'#ff5a5a',RUNNERS:'#39d3ff',DEFENDERS:'#39d3ff'};
+const teamColor = t => TEAM_COLORS[t] || '#b8ffe0';
+
+const MODES = {
+  freeplay:{name:'RECON (FREE PLAY)', teams:'pick',
+    blurb:'Everyone visible to everyone. Team comms and pings. Use for warm-ups, tests and guided walks.'},
+  manhunt:{name:'MANHUNT', teams:['HUNTERS','RUNNERS'],
+    blurb:'HUNTERS chase RUNNERS. Runners appear to hunters only as a position ping every N seconds; hunters stay invisible to runners. Get within capture range to tag. Runners win by surviving the clock.'},
+  waypoint:{name:'WAYPOINT RACE', teams:'pick',
+    blurb:'GM places a course. Teams must physically reach each waypoint IN ORDER (capture radius 20 m). You see only teammates. First team to finish the course wins.'},
+  triangulate:{name:'TRIANGULATE', teams:'pick',
+    blurb:'A hidden transmitter is out there. Your device reads only its DISTANCE — no direction. Drop range markers your team can see, cross the circles, close the fix. First unit within 15 m wins it.'},
+  clues:{name:'CLUE HUNT', teams:'pick',
+    blurb:'GM drops clue caches, shown as "?" on the map. Walk within 25 m to open one. Every team must open every cache — first team to open them all wins. Play it as a detective trail.'},
+  horde:{name:'HOLD THE LINE', teams:['DEFENDERS'],
+    blurb:'Co-op. Alien contacts converge on the defend point — watch the motion tracker. Physically intercept a contact (get within 25 m) to destroy it. A breach costs a life. Survive all waves.'},
+};
+
+/* ---------------- state ---------------- */
+const S = {
+  pid: localStorage.foPid || (localStorage.foPid = 'p' + Math.random().toString(36).slice(2,10)),
+  name:'', code:'', role:'player', team:null, testMode:false,
+  client:null, connected:false, game:null,
+  players:{},            // pid -> last presence msg
+  shownPing:{},          // manhunt delayed-ping snapshots
+  myPos:null, bat:null, hdgDev:null,
+  over:null, meOut:false,
+  outSet:{},             // manhunt: tagged-out pids
+  progress:{},           // waypoint: team -> waypoints captured
+  foundClues:{},         // clueId -> {teamName:true}
+  readings:[],           // triangulate range readings
+  horde:null, pings:[], evlog:[],
+  tab:'map', gmTool:null, joinWaitT:0,
+  radarRange:250, headingUp:false, audioOn:false, audioCtx:null, nextBeep:0,
+  map:null, layerObj:null, layerDyn:null, markers:{}, selfMarker:null, accCircle:null,
+  centered:false, lastLocPub:0, lastObjKey:'', lastAlienBuzz:0,
+  sentWpIdx:-1, sentFound:false, sentTag:false, sentClues:{}, wl:null,
+};
+
+/* ---------------- geometry ---------------- */
+const R_EARTH = 6371000, RAD = Math.PI/180;
+function distM(a,b){
+  const dLa=(b.lat-a.lat)*RAD, dLo=(b.lng-a.lng)*RAD;
+  const x=Math.sin(dLa/2)**2 + Math.cos(a.lat*RAD)*Math.cos(b.lat*RAD)*Math.sin(dLo/2)**2;
+  return 2*R_EARTH*Math.asin(Math.sqrt(x));
+}
+function bearing(a,b){
+  const y=Math.sin((b.lng-a.lng)*RAD)*Math.cos(b.lat*RAD);
+  const x=Math.cos(a.lat*RAD)*Math.sin(b.lat*RAD)-Math.sin(a.lat*RAD)*Math.cos(b.lat*RAD)*Math.cos((b.lng-a.lng)*RAD);
+  return (Math.atan2(y,x)/RAD+360)%360;
+}
+function destPoint(a,brg,d){
+  const dr=d/R_EARTH, br=brg*RAD, la=a.lat*RAD, lo=a.lng*RAD;
+  const la2=Math.asin(Math.sin(la)*Math.cos(dr)+Math.cos(la)*Math.sin(dr)*Math.cos(br));
+  const lo2=lo+Math.atan2(Math.sin(br)*Math.sin(dr)*Math.cos(la),Math.cos(dr)-Math.sin(la)*Math.sin(la2));
+  return {lat:la2/RAD,lng:lo2/RAD};
+}
+function stepToward(p,tgt,d){
+  const full=distM(p,tgt);
+  if(full<=d) return {lat:tgt.lat,lng:tgt.lng};
+  const f=d/full;
+  return {lat:p.lat+(tgt.lat-p.lat)*f, lng:p.lng+(tgt.lng-p.lng)*f};
+}
+const fresh = p => p && p.ts && (now()-p.ts) < 120000;
+
+/* ---------------- comms (MQTT) ---------------- */
+const topic = s => `${TOPIC_ROOT}/${S.code}/${s}`;
+function connect(onReady){
+  const url = ($('in-broker').value.trim()) || DEFAULT_BROKER;
+  const c = mqtt.connect(url,{
+    clientId:'fo_'+S.pid+'_'+Math.random().toString(36).slice(2,6),
+    keepalive:30, clean:true, reconnectPeriod:2000,
+    will:{topic:topic('loc/'+S.pid), payload:'', retain:true, qos:0},
+  });
+  S.client=c;
+  c.on('connect',()=>{ S.connected=true; setNet(true);
+    c.subscribe(topic('#'));
+    if(onReady){ onReady(); onReady=null; }
+    pubLoc(true);
+  });
+  c.on('close',()=>{ S.connected=false; setNet(false); });
+  c.on('error',()=>{});
+  c.on('message',onMsg);
+}
+function setNet(ok){ const n=$('hud-net'); n.className = ok?'ok':'bad'; }
+function pub(sub,obj,retain){ if(S.client&&S.connected) S.client.publish(topic(sub),JSON.stringify(obj),{retain:!!retain}); }
+function pubEv(o){ pub('ev',{...o,ts:now()}); }
+/* Retained topics are only a late-join snapshot; every live update is ALSO
+   sent as a plain publish — some brokers are unreliable at forwarding live
+   updates of retained topics to existing subscribers. */
+function pubGame(){
+  if(S.role!=='gm'||!S.game) return;
+  S.game.rev=(S.game.rev||0)+1;
+  pub('game',S.game,true);                 // snapshot for late joiners
+  pubEv({type:'gamedoc',game:S.game});     // live path
+}
+function pubLoc(force){
+  if(!S.client||!S.connected) return;
+  if(!force && now()-S.lastLocPub<3000) return;
+  S.lastLocPub=now();
+  const p=S.myPos;
+  const me={pid:S.pid,name:S.name,team:S.team,role:S.role,
+    lat:p?p.lat:null,lng:p?p.lng:null,acc:p?Math.round(p.acc):null,
+    bat:S.bat,ts:now()};
+  pub('pos',me,false);                     // live path
+  if(force||now()-(S.lastSnapPub||0)>15000){ S.lastSnapPub=now(); pub('loc/'+S.pid,me,true); }
+}
+function onMsg(t,payload){
+  const rel=t.split('/').slice(4).join('/');
+  const raw=payload.toString();
+  let msg=null;
+  if(raw){ try{ msg=JSON.parse(raw); }catch(e){ return; } }
+  if(rel==='game'){ if(msg&&(!S.game||(msg.rev||0)>=(S.game.rev||0))) applyGame(msg); }
+  else if(rel==='pos'){
+    if(msg&&msg.pid){ const old=S.players[msg.pid]; if(!old||old.ts<=msg.ts) S.players[msg.pid]=msg; }
+  }
+  else if(rel.startsWith('loc/')){
+    const pid=rel.slice(4);
+    if(!msg) delete S.players[pid];
+    else { const old=S.players[pid]; if(!old||old.ts<=msg.ts) S.players[pid]=msg; }
+  }
+  else if(rel==='ev'){ if(msg) onEvent(msg); }
+  else if(rel==='chat'){ if(msg) onChat(msg); }
+  else if(rel==='horde'){ S.horde=msg; }
+}
+
+/* ---------------- game doc ---------------- */
+function applyGame(g){
+  const first=!S.game;
+  S.game=g;
+  if(S.role==='player'){
+    if(first && !S.team){ showTeamPick(); }
+    if(g.started && S.team && !$('scr-game').classList.contains('on')) enterGame();
+  }
+  if($('scr-lobby').classList.contains('on')) renderLobby();
+  renderObjectives();
+}
+function genCode(){
+  const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let s='';
+  for(let i=0;i<4;i++) s+=A[Math.floor(Math.random()*A.length)];
+  return s;
+}
+
+/* ---------------- screens ---------------- */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  $(id).classList.add('on');
+}
+function toast(txt){
+  const d=document.createElement('div'); d.className='toast'; d.textContent=txt;
+  $('toasts').appendChild(d); setTimeout(()=>d.remove(),4200);
+}
+const buzz = p => { try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} };
+function modal(title,body){ $('modal-title').textContent=title; $('modal-body').textContent=body; $('modal').hidden=false; buzz([80,60,80]); }
+$('modal-ok').onclick=()=>{ $('modal').hidden=true; };
+
+/* ---- home ---- */
+let createMode='freeplay';
+function renderModeList(){
+  const el=$('mode-list'); el.innerHTML='';
+  for(const k in MODES){
+    const m=MODES[k], d=document.createElement('div');
+    d.className='mode'+(k===createMode?' on':'');
+    d.innerHTML=`<b>${m.name}</b><p>${m.blurb}</p>`;
+    d.onclick=()=>{ createMode=k; renderModeList(); };
+    el.appendChild(d);
+  }
+  $('cfg-teams').parentElement.style.visibility = MODES[createMode].teams==='pick'?'visible':'hidden';
+  $('cfg-ping-wrap').style.visibility = createMode==='manhunt'?'visible':'hidden';
+}
+function readName(){
+  const n=$('in-name').value.trim().toUpperCase().slice(0,14);
+  if(!n){ toast('ENTER A CALL SIGN'); return null; }
+  localStorage.foName=n; return n;
+}
+$('bt-create').onclick=()=>{
+  const n=readName(); if(!n) return;
+  S.name=n; S.testMode=$('in-test').checked;
+  renderModeList(); show('scr-create');
+};
+$('bt-back1').onclick=()=>show('scr-home');
+$('bt-launch').onclick=()=>{
+  const mode=createMode, spec=MODES[mode];
+  const teams = spec.teams==='pick'
+    ? ['ALPHA','BRAVO','CHARLIE','DELTA'].slice(0, parseInt($('cfg-teams').value,10)||2)
+    : spec.teams.slice();
+  S.code=genCode(); S.role='gm'; S.team=null;
+  S.game={v:1,code:S.code,mode,teams,
+    cfg:{durMin:Math.max(0,parseInt($('cfg-dur').value,10)||0),
+         pingSec:Math.max(5,parseInt($('cfg-ping').value,10)||60),
+         captureM:20, clueM:25, targetM:15, killM:25, breachM:12,
+         waves:5, lives:5},
+    hunters: mode==='manhunt'?'HUNTERS':null,
+    wps:[], clues:[], target:null, defend:null,
+    started:0, gmId:S.pid, created:now()};
+  connect(()=>{ pubGame(); startGeo(); show('scr-lobby'); renderLobby(); });
+};
+$('bt-join').onclick=()=>{
+  const n=readName(); if(!n) return;
+  const code=$('in-code').value.trim().toUpperCase();
+  if(code.length!==4){ toast('OP CODE IS 4 CHARACTERS'); return; }
+  S.name=n; S.code=code; S.role='player'; S.testMode=$('in-test').checked;
+  connect(()=>{ startGeo(); });
+  show('scr-lobby'); renderLobby();
+  $('lb-mode').textContent='SEARCHING…';
+  $('lb-code').textContent=code;
+  S.joinWaitT=setTimeout(()=>{ if(!S.game) toast('NO OP FOUND YET ON '+code+' — STILL LISTENING'); },7000);
+};
+
+/* ---- team pick ---- */
+function teamCount(t){
+  let n=0;
+  for(const pid in S.players){ const p=S.players[pid]; if(p.role!=='gm'&&p.team===t&&fresh(p)) n++; }
+  return n;
+}
+function showTeamPick(){
+  const el=$('team-btns'); el.innerHTML='';
+  for(const t of S.game.teams){
+    const b=document.createElement('button');
+    b.className='btn teambtn'; b.style.borderColor=teamColor(t); b.style.color=teamColor(t);
+    b.textContent=`${t}  (${teamCount(t)})`;
+    b.onclick=()=>pickTeam(t);
+    el.appendChild(b);
+  }
+  show('scr-team');
+}
+$('bt-auto').onclick=()=>{
+  let best=S.game.teams[0], bn=1e9;
+  for(const t of S.game.teams){ const c=teamCount(t); if(c<bn){ bn=c; best=t; } }
+  pickTeam(best);
+};
+function pickTeam(t){
+  S.team=t; pubLoc(true);
+  if(S.game.started) enterGame(); else { show('scr-lobby'); renderLobby(); }
+}
+
+/* ---- lobby ---- */
+function renderLobby(){
+  const g=S.game;
+  if(g){
+    $('lb-mode').textContent=MODES[g.mode].name;
+    $('lb-code').textContent=g.code;
+    $('lb-blurb').textContent=MODES[g.mode].blurb;
+  }
+  $('lb-gmbtns').hidden = S.role!=='gm';
+  $('lb-wait').hidden = S.role==='gm';
+  $('lb-roster').innerHTML=rosterHtml(false);
+}
+function rosterHtml(withMeta){
+  let h='';
+  const ps=Object.values(S.players).sort((a,b)=>(a.team||'zz').localeCompare(b.team||'zz'));
+  for(const p of ps){
+    if(!fresh(p)) continue;
+    const col=p.role==='gm'?'#888':teamColor(p.team);
+    let meta='';
+    if(withMeta){
+      const bits=[];
+      if(p.bat!=null) bits.push(p.bat+'%');
+      bits.push(p.lat==null?'NO FIX':('±'+(p.acc||'?')+'m'));
+      if(S.myPos&&p.lat!=null) bits.push(Math.round(distM(S.myPos,p))+'m');
+      bits.push(Math.round((now()-p.ts)/1000)+'s');
+      meta=bits.join(' · ');
+    } else {
+      meta = p.lat==null?'NO FIX':'FIX OK';
+    }
+    h+=`<div class="rrow"><span class="dotc" style="background:${col}"></span>
+        <span class="who">${esc(p.name||'?')}</span>
+        <span style="color:${col};font-size:11px">${p.role==='gm'?'GM':esc(p.team||'—')}${S.outSet[p.pid]?' ✕OUT':''}</span>
+        <span class="rmeta">${meta}</span></div>`;
+  }
+  return h||'<div class="rrow sys">no units yet…</div>';
+}
+function startOp(){
+  if(S.role!=='gm'||!S.game||S.game.started) return;
+  if(S.game.mode==='waypoint'&&!S.game.wps.length){ toast('PLACE WAYPOINTS FIRST (GM tab)'); return; }
+  if(S.game.mode==='clues'&&!S.game.clues.length){ toast('PLACE CLUE CACHES FIRST (GM tab)'); return; }
+  if(S.game.mode==='triangulate'&&!S.game.target){ toast('SET THE TARGET TX FIRST (GM tab)'); return; }
+  if(S.game.mode==='horde'&&!S.game.defend){ toast('SET THE DEFEND POINT FIRST (GM tab)'); return; }
+  S.game.started=now(); pubGame();
+  pubEv({type:'gmmsg',text:'OP IS LIVE. MOVE OUT.'});
+  enterGame();
+}
+$('bt-start').onclick=startOp;
+$('bt-start2').onclick=startOp;
+$('bt-console').onclick=()=>enterGame();
+$('bt-leavelobby').onclick=leaveOp;
+
+/* ---- game screen ---- */
+function enterGame(){
+  clearTimeout(S.joinWaitT);
+  show('scr-game');
+  $('tab-gm').hidden = S.role!=='gm';
+  $('hud-mode').textContent = S.game?MODES[S.game.mode].name:'OP';
+  initMap();
+  renderObjectives();
+  requestWakeLock();
+  if(S.role==='gm'&&!S.game.started) setTab('gm'); else setTab('map');
+}
+function setTab(t){
+  S.tab=t;
+  document.querySelectorAll('.tb').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='panel-'+t));
+  if(t==='map'&&S.map) setTimeout(()=>S.map.invalidateSize(),60);
+  if(t==='radar'){ sizeRadar(); requestAnimationFrame(drawRadar); }
+  if(t==='comms') renderLog();
+  if(t==='gm') $('gm-roster').innerHTML=rosterHtml(true);
+}
+document.querySelectorAll('.tb').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+$('bt-fs').onclick=()=>{
+  if(document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();
+};
+$('bt-exit').onclick=()=>{ if(confirm('Leave the op?')) leaveOp(); };
+function leaveOp(){
+  try{ if(S.client){ S.client.publish(topic('loc/'+S.pid),'',{retain:true}); S.client.end(true); } }catch(e){}
+  location.reload();
+}
+window.addEventListener('beforeunload',()=>{ try{ if(S.client) S.client.publish(topic('loc/'+S.pid),'',{retain:true}); }catch(e){} });
+async function requestWakeLock(){
+  try{ S.wl=await navigator.wakeLock.request('screen'); }catch(e){}
+}
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&$('scr-game').classList.contains('on')) requestWakeLock(); });
+
+/* ---------------- geolocation ---------------- */
+function startGeo(){
+  if(!navigator.geolocation){ toast('NO GEOLOCATION ON THIS DEVICE'); return; }
+  navigator.geolocation.watchPosition(p=>{
+    S.myPos={lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy||99,ts:now()};
+    if(p.coords.heading!=null&&!isNaN(p.coords.heading)&&S.hdgDev==null) S.hdgGps=p.coords.heading;
+    pubLoc(false);
+  },err=>{
+    if(!S.testMode) toast('GPS: '+(err&&err.message?err.message.slice(0,40):'unavailable'));
+  },{enableHighAccuracy:true,maximumAge:2000,timeout:20000});
+  if(navigator.getBattery) navigator.getBattery().then(b=>{
+    const up=()=>{ S.bat=Math.round(b.level*100); };
+    up(); b.addEventListener('levelchange',up);
+  });
+}
+
+/* ---------------- compass ---------------- */
+async function enableCompass(){
+  try{
+    if(window.DeviceOrientationEvent&&DeviceOrientationEvent.requestPermission)
+      await DeviceOrientationEvent.requestPermission();
+  }catch(e){}
+  window.addEventListener('deviceorientationabsolute',onOri,true);
+  window.addEventListener('deviceorientation',onOri,true);
+}
+function onOri(e){
+  let h=null;
+  if(e.webkitCompassHeading!=null) h=e.webkitCompassHeading;
+  else if(e.absolute&&e.alpha!=null) h=(360-e.alpha)%360;
+  if(h!=null) S.hdgDev=h;
+}
+
+/* ---------------- visibility engine ----------------
+   THE core mechanic: what each player may see is a per-mode rule. */
+function visibleEntry(p){
+  if(p.lat==null) return null;
+  if(S.role==='gm'||p.pid===S.pid) return p;
+  if(p.role==='gm') return null;                    // GM is a ghost to players
+  const g=S.game; if(!g) return null;
+  if(p.team===S.team) return p;                     // teammates: always live
+  const m=g.mode;
+  if(m==='freeplay'||m==='horde') return p;         // all visible
+  if(m==='manhunt'){
+    if(S.team===g.hunters&&p.team!==g.hunters){
+      if(S.outSet[p.pid]) return p;                 // tagged runners: live
+      return pingPos(p);                            // runners: delayed ping
+    }
+    return null;                                    // runners never see hunters
+  }
+  return null;                                      // race/hunt modes: rivals hidden
+}
+function pingPos(p){
+  const iv=((S.game.cfg.pingSec)||60)*1000;
+  let s=S.shownPing[p.pid];
+  if(!s||now()-s.shownAt>=iv){
+    s={lat:p.lat,lng:p.lng,shownAt:now()};
+    S.shownPing[p.pid]=s;
+    if(S.game.started&&!S.over){ toast('PING: '+(p.name||'runner')); buzz(40); }
+  }
+  return {...p,lat:s.lat,lng:s.lng,ping:true};
+}
+
+/* ---------------- events ---------------- */
+function logLine(html){ S.evlog.push(html); if(S.evlog.length>80) S.evlog.shift(); if(S.tab==='comms') renderLog(); }
+function renderLog(){
+  const el=$('log');
+  el.innerHTML=S.evlog.join('');
+  el.scrollTop=el.scrollHeight;
+}
+function onEvent(e){
+  if(e.type==='gamedoc'){
+    if(e.game&&(!S.game||(e.game.rev||0)>=(S.game.rev||0))) applyGame(e.game);
+    return;
+  }
+  const g=S.game; if(!g) return;
+  switch(e.type){
+    case 'gmmsg':
+      toast('GM: '+e.text); buzz([60,40,60]);
+      logLine(`<div class="ev">◈ GM: ${esc(e.text)}</div>`); break;
+    case 'ping':
+      S.pings.push({...e,at:now()});
+      if(e.team===S.team&&e.pid!==S.pid){ toast('TEAM PING FROM '+e.name); buzz(60); }
+      logLine(`<div class="sys">◉ ${esc(e.name)} pinged position to ${esc(e.team||'')}</div>`); break;
+    case 'chatless': break;
+    case 'wp':{
+      S.progress[e.team]=Math.max(S.progress[e.team]||0,e.idx+1);
+      logLine(`<div class="ev">⚑ ${esc(e.name)} captured WP${e.idx+1} for ${esc(e.team)}</div>`);
+      if(e.team===S.team){ toast('WP'+(e.idx+1)+' CAPTURED'); buzz(80); }
+      if(g.wps.length&&S.progress[e.team]>=g.wps.length&&e.pid===S.pid&&!S.over)
+        pubEv({type:'over',text:e.team+' WINS — COURSE COMPLETE'});
+      renderObjectives(); break; }
+    case 'clue':{
+      (S.foundClues[e.id]=S.foundClues[e.id]||{})[e.team]=true;
+      logLine(`<div class="ev">? ${esc(e.name)} opened a cache for ${esc(e.team)}</div>`);
+      if(e.pid===S.pid){
+        const c=(g.clues||[]).find(x=>x.id===e.id);
+        modal('CLUE RECOVERED',c?c.text:'(empty cache)');
+      } else if(e.team===S.team) toast('CACHE OPENED BY '+e.name);
+      if(g.mode==='clues'&&e.pid===S.pid&&!S.over){
+        const all=(g.clues||[]).every(c=>S.foundClues[c.id]&&S.foundClues[c.id][e.team]);
+        if(all&&g.clues.length) pubEv({type:'over',text:e.team+' WINS — ALL CACHES OPENED'});
+      }
+      renderObjectives(); break; }
+    case 'reading':
+      S.readings.push({...e,at:now()});
+      if(S.readings.length>40) S.readings.shift();
+      if(e.team===S.team&&e.pid!==S.pid) toast(e.name+' MARKED A READING: '+Math.round(e.dist)+'m');
+      logLine(`<div class="sys">◌ ${esc(e.name)} (${esc(e.team||'')}) range reading ${Math.round(e.dist)}m</div>`); break;
+    case 'tag':{
+      S.outSet[e.prey]=true;
+      logLine(`<div class="ev">✕ ${esc(e.byName||'hunter')} TAGGED ${esc(e.name)}</div>`);
+      toast(e.name+' IS OUT'); buzz([100,60,100]);
+      if(e.prey===S.pid){ S.meOut=true; modal('TAGGED','You are OUT. Your position is now visible to the hunters. Walk back or spectate.'); }
+      if(e.prey===S.pid&&!S.over){
+        const alive=Object.values(S.players).filter(p=>p.role!=='gm'&&p.team&&p.team!==g.hunters&&!S.outSet[p.pid]&&fresh(p));
+        if(alive.length===0) pubEv({type:'over',text:'HUNTERS WIN — ALL RUNNERS TAGGED'});
+      }
+      break; }
+    case 'akill':
+      logLine(`<div class="ev">☠ ${esc(e.name)} destroyed a contact</div>`); break;
+    case 'breach':
+      toast('!! BREACH — LIVES: '+e.lives+' !!'); buzz([200,80,200]);
+      logLine(`<div class="ev">!! CONTACT BREACHED THE LINE — ${e.lives} LIVES LEFT</div>`); break;
+    case 'wave':
+      toast('WAVE '+e.wave+' INBOUND'); buzz([80,50,80,50,80]);
+      logLine(`<div class="ev">▲ WAVE ${e.wave} INBOUND</div>`); break;
+    case 'over':
+      gameOver(e.text); break;
+  }
+}
+function gameOver(text){
+  if(S.over) return;
+  S.over={text,at:now()};
+  $('banner-text').textContent=text;
+  $('banner-sub').textContent='OP '+(S.game?S.game.code:'')+' — '+(S.game?MODES[S.game.mode].name:'');
+  $('banner').hidden=false;
+  buzz([300,100,300]);
+  logLine(`<div class="ev">■ ${esc(text)}</div>`);
+}
+$('bt-stay').onclick=()=>{ $('banner').hidden=true; };
+$('bt-leave').onclick=leaveOp;
+
+/* ---- chat ---- */
+function onChat(m){
+  const mine = S.role==='gm' || m.team===S.team || m.role==='gm';
+  if(!mine) return;
+  const col=m.role==='gm'?'#888':teamColor(m.team);
+  logLine(`<div><span class="who" style="color:${col}">${esc(m.name)}${m.role==='gm'?' [GM]':''}:</span> ${esc(m.text)}</div>`);
+}
+$('bt-chat').onclick=sendChat;
+$('in-chat').addEventListener('keydown',e=>{ if(e.key==='Enter') sendChat(); });
+function sendChat(){
+  const t=$('in-chat').value.trim(); if(!t) return;
+  $('in-chat').value='';
+  pub('chat',{pid:S.pid,name:S.name,team:S.team,role:S.role,text:t.slice(0,200),ts:now()});
+}
+
+/* ---------------- per-mode logic tick ---------------- */
+function tick(){
+  pubLoc(false);
+  refreshHud();
+  const g=S.game;
+  if(g&&$('scr-game').classList.contains('on')) renderMap();
+  if(!g||!g.started||S.over) return;
+  const me=S.myPos;
+  if(me){
+    if(g.mode==='waypoint'&&S.team) checkWp(me,g);
+    if(g.mode==='triangulate'&&S.team&&g.target) checkTarget(me,g);
+    if(S.team) checkClues(me,g);
+    if(g.mode==='manhunt'&&S.team&&S.team!==g.hunters&&!S.meOut) checkTagged(me,g);
+    if(g.mode==='horde') alienProximityBuzz(me);
+  }
+  if(S.role==='gm'&&g.mode==='horde') hordeTick(g);
+  checkTimer(g);
+  if(S.tab==='gm') $('gm-roster').innerHTML=rosterHtml(true);
+}
+function checkWp(me,g){
+  const idx=S.progress[S.team]||0;
+  if(idx>=g.wps.length||idx<=S.sentWpIdx) return;
+  if(distM(me,g.wps[idx])<=g.cfg.captureM){
+    S.sentWpIdx=idx;
+    pubEv({type:'wp',team:S.team,idx,pid:S.pid,name:S.name});
+  }
+}
+function checkTarget(me,g){
+  const d=distM(me,g.target);
+  if(d<=g.cfg.targetM&&!S.sentFound){
+    S.sentFound=true;
+    pubEv({type:'over',text:S.name+' ('+S.team+') LOCATED THE TRANSMITTER'});
+  }
+}
+function checkClues(me,g){
+  for(const c of g.clues||[]){
+    if(S.sentClues[c.id]) continue;
+    if(S.foundClues[c.id]&&S.foundClues[c.id][S.team]) continue;
+    if(distM(me,c)<=(c.r||g.cfg.clueM)){
+      S.sentClues[c.id]=true;
+      pubEv({type:'clue',id:c.id,team:S.team,pid:S.pid,name:S.name});
+    }
+  }
+}
+function checkTagged(me,g){
+  if(S.sentTag) return;
+  for(const pid in S.players){
+    const p=S.players[pid];
+    if(p.role==='gm'||p.team!==g.hunters||p.lat==null||!fresh(p)) continue;
+    if(distM(me,p)<=g.cfg.captureM){
+      S.sentTag=true;
+      pubEv({type:'tag',prey:S.pid,name:S.name,by:pid,byName:p.name,team:S.team});
+      return;
+    }
+  }
+}
+function checkTimer(g){
+  const dur=g.cfg.durMin;
+  if(!dur||!g.started) return;
+  if(now()-g.started<dur*60000) return;
+  // deterministic on every client — no event needed
+  let text='TIME UP — OP COMPLETE';
+  if(g.mode==='manhunt') text='TIME UP — RUNNERS ESCAPE';
+  else if(g.mode==='triangulate') text='TIME UP — TRANSMITTER NOT FOUND';
+  else if(g.mode==='waypoint'||g.mode==='clues'){
+    let best=null,bn=-1,tie=false;
+    for(const t of g.teams){
+      const n=g.mode==='waypoint'?(S.progress[t]||0)
+        :Object.values(S.foundClues).filter(f=>f[t]).length;
+      if(n>bn){ best=t; bn=n; tie=false; } else if(n===bn) tie=true;
+    }
+    text = tie||bn<=0 ? 'TIME UP — DRAW' : 'TIME UP — '+best+' LEADS AND WINS';
+  }
+  gameOver(text);
+}
+function alienProximityBuzz(me){
+  if(!S.horde||!S.horde.aliens) return;
+  if(now()-S.lastAlienBuzz<5000) return;
+  for(const a of S.horde.aliens){
+    if(distM(me,a)<60){ S.lastAlienBuzz=now(); buzz([60,40,60,40,60]); toast('CONTACT CLOSE — CHECK TRACKER'); return; }
+  }
+}
+
+/* ---- horde simulation (runs on the GM device, state relayed) ---- */
+function hordeTick(g){
+  let H=S.horde;
+  if(!H||H.gmRun!==S.pid) H={gmRun:S.pid,wave:1,seq:0,aliens:[],lives:g.cfg.lives,kills:0,spawned:0,announced:0,over:null};
+  if(H.over){ pub('horde',H,false); return; }
+  const D=g.defend; if(!D) return;
+  const per=3+2*H.wave;
+  const step=(1.1+0.15*H.wave)*2;              // metres per 2 s tick
+  if(H.announced!==H.wave){ H.announced=H.wave; pubEv({type:'wave',wave:H.wave}); }
+  if(H.spawned<per){                            // trickle-spawn one per tick
+    H.seq++; H.spawned++;
+    const p=destPoint(D,Math.random()*360,220+Math.random()*140);
+    H.aliens.push({id:'a'+H.seq,lat:p.lat,lng:p.lng});
+  }
+  const units=Object.values(S.players).filter(p=>p.role!=='gm'&&p.lat!=null&&fresh(p));
+  const next=[];
+  for(const a of H.aliens){
+    const killer=units.find(u=>distM(u,a)<=g.cfg.killM);
+    if(killer){ H.kills++; pubEv({type:'akill',name:killer.name}); continue; }
+    const m=stepToward(a,D,step*(0.8+0.4*Math.random()));
+    if(distM(m,D)<=g.cfg.breachM){
+      H.lives--; pubEv({type:'breach',lives:H.lives});
+      if(H.lives<=0){ H.over='loss'; pubEv({type:'over',text:'THE LINE IS BREACHED — GAME OVER ('+H.kills+' KILLS)'}); }
+      continue;
+    }
+    next.push({id:a.id,lat:m.lat,lng:m.lng});
+  }
+  H.aliens=next;
+  if(!H.over&&H.spawned>=per&&H.aliens.length===0){
+    if(H.wave>=g.cfg.waves){ H.over='win'; pubEv({type:'over',text:'LINE HELD — ALL WAVES CLEARED ('+H.kills+' KILLS)'}); }
+    else { H.wave++; H.spawned=0; }
+  }
+  S.horde=H; pub('horde',H,false);
+}
+
+/* ---------------- HUD + action bar ---------------- */
+function refreshHud(){
+  const g=S.game;
+  // timer
+  let t='--:--';
+  if(g&&g.started){
+    const dur=g.cfg.durMin*60000;
+    let ms=dur? Math.max(0,dur-(now()-g.started)) : now()-g.started;
+    const s=Math.floor(ms/1000);
+    t=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  } else if(g) t='STANDBY';
+  $('hud-timer').textContent=t;
+  $('hud-acc').textContent=S.myPos?('±'+Math.round(S.myPos.acc)+'m'):'GPS —';
+  $('hud-bat').textContent=S.bat!=null?(S.bat+'%'):'';
+  // action bar
+  const info=$('action-info'), btn=$('action-btn');
+  btn.hidden=false;
+  if(!g){ info.textContent=''; btn.hidden=true; return; }
+  if(g.mode==='triangulate'&&S.role!=='gm'&&g.target&&S.myPos&&g.started){
+    info.textContent='TX RANGE: '+Math.round(distM(S.myPos,g.target))+' m';
+    btn.textContent='MARK READING'; btn.onclick=markReading;
+  } else if(g.mode==='horde'){
+    const H=S.horde;
+    info.textContent=H?('WAVE '+H.wave+'/'+g.cfg.waves+' · LIVES '+H.lives+' · KILLS '+H.kills+' · CONTACTS '+H.aliens.length):'AWAITING CONTACT…';
+    btn.textContent='PING TEAM'; btn.onclick=pingTeam;
+  } else if(g.mode==='waypoint'&&S.team&&g.started){
+    const i=S.progress[S.team]||0;
+    info.textContent = i>=g.wps.length ? 'COURSE COMPLETE'
+      : 'NEXT: WP'+(i+1)+(S.myPos&&g.wps[i]?(' · '+Math.round(distM(S.myPos,g.wps[i]))+' m'):'');
+    btn.textContent='PING TEAM'; btn.onclick=pingTeam;
+  } else if(g.mode==='manhunt'&&S.team&&g.started){
+    info.textContent = S.meOut?'YOU ARE OUT':(S.team===g.hunters?'HUNT. PINGS EVERY '+g.cfg.pingSec+'s':'EVADE. STAY OFF THE SCOPES');
+    btn.textContent='PING TEAM'; btn.onclick=pingTeam;
+  } else if(S.role==='gm'){
+    info.textContent='GM CONSOLE — '+(g.started?'OP LIVE':'OP NOT STARTED');
+    btn.textContent='BROADCAST'; btn.onclick=()=>setTab('gm');
+  } else {
+    info.textContent=g.started?'':'STANDBY — GM WILL START';
+    btn.textContent='PING TEAM'; btn.onclick=pingTeam;
+  }
+}
+function pingTeam(){
+  if(!S.myPos||!S.team){ toast('NO FIX / NO TEAM'); return; }
+  pubEv({type:'ping',pid:S.pid,name:S.name,team:S.team,lat:S.myPos.lat,lng:S.myPos.lng});
+  toast('POSITION PINGED TO '+S.team);
+}
+function markReading(){
+  const g=S.game;
+  if(!S.myPos||!g.target) return;
+  pubEv({type:'reading',pid:S.pid,name:S.name,team:S.team,
+    lat:S.myPos.lat,lng:S.myPos.lng,dist:distM(S.myPos,g.target)});
+  toast('READING MARKED FOR '+S.team);
+}
+
+/* ---------------- map ---------------- */
+function initMap(){
+  if(S.map) return;
+  S.map=L.map('map',{zoomControl:false,attributionControl:true}).setView([51.505,-0.09],16);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {maxZoom:19,attribution:'© OpenStreetMap'}).addTo(S.map);
+  S.layerObj=L.layerGroup().addTo(S.map);
+  S.layerDyn=L.layerGroup().addTo(S.map);
+  S.map.on('click',onMapClick);
+  S.map.on('contextmenu',e=>{
+    if(S.testMode){
+      S.myPos={lat:e.latlng.lat,lng:e.latlng.lng,acc:5,ts:now()};
+      pubLoc(true); toast('TEST MODE: POSITION SET');
+    }
+  });
+  setTimeout(()=>S.map.invalidateSize(),80);
+}
+function onMapClick(e){
+  if(S.role!=='gm'||!S.gmTool||!S.game) return;
+  const g=S.game, ll=e.latlng;
+  if(S.gmTool==='wp'){
+    g.wps.push({id:'w'+(g.wps.length+1),lat:ll.lat,lng:ll.lng});
+    toast('WP'+g.wps.length+' PLACED (tool stays active)');
+  } else if(S.gmTool==='clue'){
+    const txt=prompt('Clue text for this cache:');
+    if(txt==null) return;
+    g.clues.push({id:'c'+(g.clues.length+1)+'_'+Math.random().toString(36).slice(2,5),
+      lat:ll.lat,lng:ll.lng,text:txt.slice(0,300),r:g.cfg.clueM});
+    toast('CACHE PLACED'); setTool(null);
+  } else if(S.gmTool==='target'){
+    g.target={lat:ll.lat,lng:ll.lng}; toast('TARGET TX SET'); setTool(null);
+  } else if(S.gmTool==='defend'){
+    g.defend={lat:ll.lat,lng:ll.lng}; toast('DEFEND POINT SET'); setTool(null);
+  }
+  pubGame(); renderObjectives();
+}
+function setTool(t){
+  S.gmTool=t;
+  document.querySelectorAll('.gmtool').forEach(b=>b.classList.toggle('on',b.dataset.tool===t));
+  if(t){ setTab('map'); toast('TAP MAP TO PLACE'); }
+}
+document.querySelectorAll('.gmtool').forEach(b=>b.onclick=()=>setTool(S.gmTool===b.dataset.tool?null:b.dataset.tool));
+$('bt-clearobj').onclick=()=>{
+  if(!S.game||!confirm('Clear all objectives?')) return;
+  Object.assign(S.game,{wps:[],clues:[],target:null,defend:null});
+  pubGame(); renderObjectives(); toast('OBJECTIVES CLEARED');
+};
+$('bt-bcast').onclick=()=>{
+  const t=$('in-bcast').value.trim(); if(!t) return;
+  $('in-bcast').value='';
+  pubEv({type:'gmmsg',text:t.slice(0,200)});
+};
+$('bt-end').onclick=()=>{
+  if(confirm('End the op for everyone?')) pubEv({type:'over',text:'OP ENDED BY GM'});
+};
+
+function renderObjectives(){
+  if(!S.map||!S.game) return;
+  const g=S.game;
+  const key=JSON.stringify([g.wps,g.clues,g.target,g.defend,S.progress,S.foundClues,S.role]);
+  if(key===S.lastObjKey) return;
+  S.lastObjKey=key;
+  S.layerObj.clearLayers();
+  const nextIdx=S.progress[S.team]||0;
+  g.wps.forEach((w,i)=>{
+    const cls='wpicon'+(i<nextIdx?' done':(i===nextIdx?' next':''));
+    L.marker([w.lat,w.lng],{icon:L.divIcon({className:'',html:`<div class="${cls}" style="width:26px;height:26px">${i+1}</div>`,iconSize:[26,26],iconAnchor:[13,13]})})
+      .addTo(S.layerObj);
+    L.circle([w.lat,w.lng],{radius:g.cfg.captureM,color:'#ffe14d',weight:1,fill:false,dashArray:'4 4'}).addTo(S.layerObj);
+  });
+  for(const c of g.clues||[]){
+    const found=S.foundClues[c.id]&&S.foundClues[c.id][S.team];
+    L.marker([c.lat,c.lng],{icon:L.divIcon({className:'',html:`<div class="clueicon" style="width:24px;height:24px;${found?'opacity:.35':''}">?</div>`,iconSize:[24,24],iconAnchor:[12,12]})})
+      .addTo(S.layerObj);
+  }
+  if(g.defend){
+    L.marker([g.defend.lat,g.defend.lng],{icon:L.divIcon({className:'',html:'<div class="clueicon" style="width:26px;height:26px;background:#39d3ff">◉</div>',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(S.layerObj);
+    L.circle([g.defend.lat,g.defend.lng],{radius:g.cfg.killM,color:'#39d3ff',weight:1,fill:false}).addTo(S.layerObj);
+  }
+  if(g.target&&S.role==='gm'){
+    L.marker([g.target.lat,g.target.lng],{icon:L.divIcon({className:'',html:'<div class="txicon" style="width:24px;height:24px">TX</div>',iconSize:[24,24],iconAnchor:[12,12]})}).addTo(S.layerObj);
+  }
+}
+
+function renderMap(){
+  if(!S.map) return;
+  // --- players ---
+  const seen={};
+  for(const pid in S.players){
+    if(pid===S.pid) continue;
+    const p=S.players[pid];
+    const v=(fresh(p)&&visibleEntry(p))||null;
+    if(!v){ if(S.markers[pid]){ S.map.removeLayer(S.markers[pid]); delete S.markers[pid]; } continue; }
+    seen[pid]=true;
+    const col=v.role==='gm'?'#888':teamColor(v.team);
+    const stale=now()-p.ts>60000;
+    const opts={radius:8,color:col,weight:2,fillColor:col,
+      fillOpacity:S.outSet[pid]?0.15:(v.ping?0.35:0.8),opacity:stale?0.4:1,dashArray:v.ping?'3 3':null};
+    if(!S.markers[pid]){
+      S.markers[pid]=L.circleMarker([v.lat,v.lng],opts).addTo(S.map)
+        .bindTooltip('',{permanent:true,direction:'top',offset:[0,-10],className:'sys'});
+    }
+    S.markers[pid].setLatLng([v.lat,v.lng]); S.markers[pid].setStyle(opts);
+    S.markers[pid].setTooltipContent(esc(v.name||'?')+(S.outSet[pid]?' ✕':(v.ping?' ◌':'')));
+  }
+  for(const pid in S.markers){ if(!seen[pid]){ S.map.removeLayer(S.markers[pid]); delete S.markers[pid]; } }
+  // --- self ---
+  if(S.myPos){
+    if(!S.selfMarker){
+      S.selfMarker=L.circleMarker([S.myPos.lat,S.myPos.lng],{radius:9,color:'#fff',weight:3,fillColor:teamColor(S.team),fillOpacity:1}).addTo(S.map);
+      S.accCircle=L.circle([S.myPos.lat,S.myPos.lng],{radius:S.myPos.acc,color:'#35ffb5',weight:1,fillOpacity:0.05}).addTo(S.map);
+      if(!S.centered){ S.map.setView([S.myPos.lat,S.myPos.lng],17); S.centered=true; }
+    }
+    S.selfMarker.setLatLng([S.myPos.lat,S.myPos.lng]);
+    S.accCircle.setLatLng([S.myPos.lat,S.myPos.lng]); S.accCircle.setRadius(S.myPos.acc);
+  }
+  // --- dynamic layer: aliens, readings, pings ---
+  S.layerDyn.clearLayers();
+  if(S.horde&&S.horde.aliens) for(const a of S.horde.aliens)
+    L.circleMarker([a.lat,a.lng],{radius:6,color:'#7dff3f',weight:2,fillColor:'#7dff3f',fillOpacity:0.9}).addTo(S.layerDyn);
+  for(const r of S.readings){
+    if(now()-r.at>300000) continue;
+    if(S.role!=='gm'&&r.team!==S.team) continue;
+    L.circle([r.lat,r.lng],{radius:r.dist,color:teamColor(r.team),weight:1.5,fill:false,dashArray:'6 6',opacity:0.7}).addTo(S.layerDyn);
+    L.circleMarker([r.lat,r.lng],{radius:3,color:teamColor(r.team),fillOpacity:1}).addTo(S.layerDyn);
+  }
+  S.pings=S.pings.filter(p=>now()-p.at<60000);
+  for(const p of S.pings){
+    if(S.role!=='gm'&&p.team!==S.team) continue;
+    const age=(now()-p.at)/60000;
+    L.circle([p.lat,p.lng],{radius:15+age*40,color:teamColor(p.team),weight:2,fill:false,opacity:1-age}).addTo(S.layerDyn);
+  }
+}
+
+/* ---------------- radar (motion tracker) ---------------- */
+const RANGES=[100,250,500,1000];
+$('bt-range').onclick=()=>{
+  const i=(RANGES.indexOf(S.radarRange)+1)%RANGES.length;
+  S.radarRange=RANGES[i];
+  $('bt-range').textContent=S.radarRange+'m';
+};
+$('bt-compass').onclick=async()=>{
+  if(!S.headingUp){ await enableCompass(); S.headingUp=true; }
+  else S.headingUp=false;
+  $('bt-compass').classList.toggle('on',S.headingUp);
+};
+$('bt-audio').onclick=()=>{
+  S.audioOn=!S.audioOn;
+  $('bt-audio').classList.toggle('on',S.audioOn);
+  if(S.audioOn&&!S.audioCtx){
+    try{ S.audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ S.audioOn=false; }
+  }
+  if(S.audioCtx&&S.audioCtx.state==='suspended') S.audioCtx.resume();
+};
+function beep(freq,dur){
+  const c=S.audioCtx; if(!c) return;
+  const o=c.createOscillator(), g=c.createGain();
+  o.frequency.value=freq; o.type='square';
+  g.gain.setValueAtTime(0.06,c.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+dur/1000);
+  o.connect(g); g.connect(c.destination);
+  o.start(); o.stop(c.currentTime+dur/1000);
+}
+function sizeRadar(){
+  const cv=$('radar'), r=cv.parentElement.getBoundingClientRect();
+  cv.width=r.width*devicePixelRatio; cv.height=r.height*devicePixelRatio;
+}
+window.addEventListener('resize',()=>{ if(S.tab==='radar') sizeRadar(); });
+
+function radarContacts(){
+  const out=[], g=S.game;
+  for(const pid in S.players){
+    if(pid===S.pid) continue;
+    const p=S.players[pid]; if(!fresh(p)) continue;
+    const v=visibleEntry(p); if(!v) continue;
+    out.push({lat:v.lat,lng:v.lng,label:v.name||'',ping:!!v.ping,
+      color:v.role==='gm'?'#888':teamColor(v.team),
+      hostile:v.role!=='gm'&&v.team!==S.team&&S.role!=='gm'});
+  }
+  if(S.horde&&S.horde.aliens) for(const a of S.horde.aliens)
+    out.push({lat:a.lat,lng:a.lng,label:'',color:'#7dff3f',hostile:true,alien:true});
+  if(g){
+    if(g.mode==='waypoint'&&g.wps.length&&S.team){
+      const i=Math.min(S.progress[S.team]||0,g.wps.length-1);
+      out.push({...g.wps[i],label:'WP'+(i+1),color:'#ffe14d',obj:true});
+    }
+    if(g.defend) out.push({...g.defend,label:'DEF',color:'#39d3ff',obj:true});
+    for(const c of g.clues||[])
+      if(!(S.foundClues[c.id]&&S.foundClues[c.id][S.team]))
+        out.push({lat:c.lat,lng:c.lng,label:'?',color:'#ffe14d',obj:true});
+  }
+  return out;
+}
+function drawRadar(t){
+  if(S.tab!=='radar') return;
+  const cv=$('radar'), ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height,cx=W/2,cy=H/2;
+  const R=Math.min(W,H)/2-36*devicePixelRatio;
+  ctx.clearRect(0,0,W,H);
+  ctx.save();
+  ctx.strokeStyle='#0f4a35'; ctx.fillStyle='#35ffb5';
+  ctx.lineWidth=1.2*devicePixelRatio;
+  ctx.font=`${11*devicePixelRatio}px monospace`;
+  const rot=(S.headingUp&&S.hdgDev!=null)?S.hdgDev:0;
+  // rings
+  for(let i=1;i<=3;i++){
+    ctx.beginPath(); ctx.arc(cx,cy,R*i/3,0,7); ctx.stroke();
+    ctx.fillStyle='#1e7a58';
+    ctx.fillText(Math.round(S.radarRange*i/3)+'m',cx+4*devicePixelRatio,cy-R*i/3+13*devicePixelRatio);
+  }
+  // cross
+  ctx.strokeStyle='#0a3325';
+  ctx.beginPath(); ctx.moveTo(cx-R,cy); ctx.lineTo(cx+R,cy); ctx.moveTo(cx,cy-R); ctx.lineTo(cx,cy+R); ctx.stroke();
+  // north tick
+  const na=(-rot-90)*RAD;
+  ctx.fillStyle='#35ffb5';
+  ctx.fillText('N',cx+(R+8*devicePixelRatio)*Math.cos(na)-4*devicePixelRatio,cy+(R+8*devicePixelRatio)*Math.sin(na)+4*devicePixelRatio);
+  // sweep
+  const sw=((t||0)/2400%1)*Math.PI*2;
+  const grad=ctx.createConicGradient?ctx.createConicGradient(sw,cx,cy):null;
+  if(grad){
+    grad.addColorStop(0,'rgba(53,255,181,0.28)');
+    grad.addColorStop(0.12,'rgba(53,255,181,0)');
+    grad.addColorStop(1,'rgba(53,255,181,0)');
+    ctx.fillStyle=grad; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,0,7); ctx.fill();
+  } else {
+    ctx.strokeStyle='rgba(53,255,181,0.5)';
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+R*Math.cos(sw),cy+R*Math.sin(sw)); ctx.stroke();
+  }
+  // self
+  ctx.save(); ctx.translate(cx,cy);
+  ctx.rotate(((S.headingUp?0:(S.hdgDev!=null?S.hdgDev:0)))*RAD);
+  ctx.fillStyle='#fff'; ctx.beginPath();
+  const u=6*devicePixelRatio;
+  ctx.moveTo(0,-u*1.4); ctx.lineTo(u,u); ctx.lineTo(0,u*0.4); ctx.lineTo(-u,u); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  // contacts
+  let nearestHostile=Infinity;
+  if(S.myPos){
+    for(const c of radarContacts()){
+      const d=distM(S.myPos,c);
+      if(c.hostile&&d<nearestHostile) nearestHostile=d;
+      if(d>S.radarRange) continue;
+      const b=bearing(S.myPos,c);
+      const a=(b-rot-90)*RAD, rr=d/S.radarRange*R;
+      const x=cx+rr*Math.cos(a), y=cy+rr*Math.sin(a);
+      ctx.fillStyle=c.color; ctx.shadowColor=c.color; ctx.shadowBlur=10*devicePixelRatio;
+      ctx.beginPath();
+      if(c.obj){ ctx.rect(x-4*devicePixelRatio,y-4*devicePixelRatio,8*devicePixelRatio,8*devicePixelRatio); }
+      else ctx.arc(x,y,(c.alien?5:4.5)*devicePixelRatio,0,7);
+      ctx.fill(); ctx.shadowBlur=0;
+      if(c.label){ ctx.fillStyle='#77c9aa'; ctx.fillText(c.label,x+7*devicePixelRatio,y+4*devicePixelRatio); }
+      if(c.ping){ ctx.strokeStyle=c.color; ctx.beginPath(); ctx.arc(x,y,9*devicePixelRatio,0,7); ctx.stroke(); }
+    }
+  }
+  // hostile-proximity beeper (the Aliens bit)
+  if(S.audioOn&&nearestHostile<Infinity&&(t||0)>S.nextBeep){
+    const f=Math.min(1,nearestHostile/S.radarRange);
+    S.nextBeep=(t||0)+200+1400*f;
+    beep(900+500*(1-f),70);
+  }
+  ctx.fillStyle='#1e7a58';
+  ctx.fillText('MOTION TRACKER · RNG '+S.radarRange+'m'+(S.headingUp?' · HDG-UP':' · N-UP'),12*devicePixelRatio,H-12*devicePixelRatio);
+  ctx.restore();
+  requestAnimationFrame(drawRadar);
+}
+
+/* ---------------- boot ---------------- */
+$('in-name').value=localStorage.foName||'';
+$('in-code').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase(); });
+renderModeList();
+setInterval(tick,2000);
+setInterval(()=>{ if($('scr-lobby').classList.contains('on')) renderLobby(); },2500);
+setInterval(refreshHud,1000);
+</script>
+</body>
+</html>
