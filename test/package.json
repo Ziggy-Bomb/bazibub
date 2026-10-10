@@ -1,0 +1,19 @@
+{
+  "name": "fieldops-tests",
+  "private": true,
+  "description": "End-to-end smoke tests for fieldops.html: local MQTT-WSS broker + multiple headless Chromium clients playing real game rounds.",
+  "scripts": {
+    "broker": "node broker.js",
+    "test:sim": "node smoke-sim.js",
+    "test:local": "node smoke-local.js",
+    "test:manhunt": "node smoke-manhunt.js",
+    "test:objectives": "node smoke-objectives.js"
+  },
+  "dependencies": {
+    "aedes": "^1.1.1",
+    "leaflet": "1.9.4",
+    "mqtt": "5.10.1",
+    "playwright-core": "^1.49.0",
+    "ws": "^8.18.0"
+  }
+}
