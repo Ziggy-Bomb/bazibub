@@ -63,6 +63,16 @@ visibility engine is the heart of the platform.
   proximity beep that quickens as hostiles close.
 - **Team comms**: team-scoped chat plus a one-tap "ping my location to team".
 - **Play area**: a dashed boundary with a buzz-and-warn when you leave it.
+- **Guidance**: a role-specific **briefing** at the start of every op (re-open
+  with **?**); a **nav arrow** with distance to the current objective (next
+  waypoint, nearest cache, nearest contact, last ping, or back to the play
+  area); the map follows you until you drag it; the radar pins out-of-range
+  objectives to its rim; COMMS shows an unread count.
+- **Asymmetric info in Manhunt**: runners get a THREAT meter (LOW / MED /
+  HIGH, with a heartbeat buzz) without direction; hunters see runners left.
+  Waypoint racers see rival teams' progress.
+- **Sim conveniences**: optional call sign, RUN as the default manual speed,
+  and **PLAY AGAIN** after a round.
 - **After-action debrief**: at game over everyone is revealed with their full
   movement trails, plus a per-player scoreboard (waypoints, caches, readings,
   tags, kills).
@@ -76,9 +86,9 @@ visibility engine is the heart of the platform.
 | **RECON** (free play) | any | everyone visible | none — warmups & testing |
 | **MANHUNT** | hunters vs runners | teammates live; runners appear to hunters only as a ping every N seconds; hunters invisible to runners | hunters tag all runners (within capture radius) / runners survive the clock |
 | **WAYPOINT RACE** | any | teammates only; course visible to all | first team to capture every waypoint in order |
-| **TRIANGULATE** | any | teammates only; hidden transmitter gives **distance-only** readout; players drop range-circle readings shared with their team | first player within 15 m of the transmitter |
-| **CLUE HUNT** | any | teammates only; caches shown as "?" markers | first team to open every cache (sim ships a 5-part detective case) |
-| **HOLD THE LINE** | one big team | everyone visible; alien contacts on radar | intercept aliens (get within 25 m) before they breach the defend point; survive all waves |
+| **TRIANGULATE** | any | teammates only; the transmitter's distance is known only by **SCAN** (±5% noise, 15 s recharge), and each scan draws a range ring for the team | first player within 15 m of the transmitter |
+| **CLUE HUNT** | any | teammates only; caches shown as "?" markers | auto-laid case: hold 3+ case files, then **ACCUSE** the right suspect (wrong = 60 s lockout). GM-written caches: first team to open them all |
+| **HOLD THE LINE** | one big team | everyone visible; alien contacts on radar | intercept aliens (within 25 m) before they breach the reactor; **weapons are safe inside the 50 m reactor zone**, so defenders must push out; survive all waves |
 
 **AI units** behave per mode: hunters chase the same delayed pings humans get
 (and give chase on sight within 60 m), runners wander and flee, racers walk

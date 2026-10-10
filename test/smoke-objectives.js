@@ -1,5 +1,5 @@
 // Waypoint race + clue cache + Hold the Line over the MQTT relay (needs `node broker.js` running).
-const { serve, launch, teleport, screenOn, sleep, check, finish } = require('./helpers');
+const { serve, launch, teleport, screenOn, sleep, check, finish, dismiss } = require('./helpers');
 (async () => {
   const srv = await serve();
   const { browser, errors, newPage } = await launch();
@@ -44,6 +44,7 @@ const { serve, launch, teleport, screenOn, sleep, check, finish } = require('./h
   await gm.click('#bt-start2');
   await sleep(2000);
   check('player in game', await screenOn(pl, 'scr-game'));
+  await dismiss(pl);
 
   await teleport(pl, obj.clues[0].lat, obj.clues[0].lng);
   await sleep(3000);
@@ -82,7 +83,8 @@ const { serve, launch, teleport, screenOn, sleep, check, finish } = require('./h
   await pl2.locator('#team-btns .btn').first().click();
   await teleport(pl2, 51.6000, -0.1000);
   await gm2.click('#bt-start2');
-  await sleep(8000);
+  await sleep(1500); await dismiss(pl2);
+  await sleep(6500);
   const horde = await pl2.evaluate(() => S.horde && { wave: S.horde.wave, aliens: S.horde.aliens.length });
   check('horde state relayed to player', !!horde && horde.aliens > 0, JSON.stringify(horde));
   const alien = await pl2.evaluate(() => S.horde.aliens[0]);

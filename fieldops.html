@@ -244,9 +244,18 @@ h2{color:var(--cyan);letter-spacing:3px;font-size:18px;margin:6px 0 10px;font-we
 .gmtool.on{border-color:var(--amber);color:var(--amber)}
 #actionbar{flex:none;display:flex;gap:10px;align-items:center;background:#04191f;border-top:1px solid var(--line);
   padding:8px 10px;min-height:52px}
-#action-info{flex:1;min-width:0;font-size:14px;letter-spacing:1px;color:var(--amber)}
+#action-info{flex:1;min-width:0;font-size:13px;line-height:1.35;letter-spacing:1px;color:var(--amber)}
 #action-btn{background:linear-gradient(180deg,#0d3a2c,#082418);border:1px solid var(--hot);color:var(--hot);
   font-size:14px;letter-spacing:2px;padding:10px 16px;border-radius:4px;cursor:pointer;flex:none}
+#nav{flex:none;display:flex;align-items:center;gap:6px;color:var(--hot);font-size:13px;letter-spacing:1px;
+  border:1px solid var(--line);border-radius:4px;padding:4px 8px;font-variant-numeric:tabular-nums}
+#nav-arrow{display:inline-block;width:20px;text-align:center;font-size:16px;transition:transform .4s}
+#nav small{display:block;color:var(--dim);font-size:9px;letter-spacing:1px}
+.badge{display:inline-block;min-width:16px;padding:0 4px;margin-left:4px;border-radius:8px;background:var(--amber);
+  color:#031510;font-size:10px;letter-spacing:0;vertical-align:1px}
+.choices{display:flex;flex-direction:column;margin-top:6px}
+.choices .btn{margin-top:10px;font-size:14px;letter-spacing:2px}
+.threat{letter-spacing:0}
 #tabbar{flex:none;display:flex;background:var(--deep);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
 .tb{flex:1;background:none;border:none;border-top:2px solid transparent;color:var(--dim);font-size:13px;letter-spacing:2px;padding:14px 0;cursor:pointer}
 .tb.on{color:var(--hot);border-top-color:var(--hot)}
@@ -260,7 +269,7 @@ h2{color:var(--cyan);letter-spacing:3px;font-size:18px;margin:6px 0 10px;font-we
   flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;text-align:center;overflow-y:auto}
 .mbox{background:var(--panel);border:1px solid var(--amber);border-radius:6px;padding:22px;max-width:440px;width:100%}
 .mtitle{color:var(--amber);letter-spacing:3px;margin-bottom:12px}
-.mbody{line-height:1.6;font-size:16px;white-space:pre-line}
+.mbody{line-height:1.6;font-size:16px;white-space:pre-line;text-align:left}
 #ask-input{margin-top:12px;text-align:left}
 #banner-text{font-size:28px;letter-spacing:4px;color:var(--hot);text-shadow:0 0 18px rgba(53,255,181,.6);line-height:1.4}
 #banner-sub{color:var(--dim);margin:14px 0 8px;letter-spacing:2px}
@@ -276,7 +285,7 @@ h2{color:var(--cyan);letter-spacing:3px;font-size:18px;margin:6px 0 10px;font-we
 <!-- ============ HOME ============ -->
 <div class="screen on" id="scr-home"><div class="inner">
   <div class="logo">FIELD<span>OPS</span></div>
-  <div class="tag">ANDSWARIAN TACTICAL GAMES // FIELD PROTOTYPE v0.2</div>
+  <div class="tag">ANDSWARIAN TACTICAL GAMES // FIELD PROTOTYPE v0.3</div>
   <label for="in-name">CALL SIGN</label>
   <input id="in-name" maxlength="14" placeholder="e.g. RIPLEY" autocomplete="off">
   <button class="btn big" id="bt-sim">TRAINING SIM<small>solo, this device, against AI units</small></button>
@@ -365,6 +374,7 @@ h2{color:var(--cyan);letter-spacing:3px;font-size:18px;margin:6px 0 10px;font-we
     <span id="hud-bat"></span>
     <span id="hud-net" class="bad" title="network">⬤</span>
     <span class="sp"></span>
+    <button class="hbtn" id="bt-brief" aria-label="Mission briefing">?</button>
     <button class="hbtn" id="bt-fs" aria-label="Fullscreen">⛶</button>
     <button class="hbtn" id="bt-exit" aria-label="Leave op">✕</button>
   </div>
@@ -376,7 +386,7 @@ h2{color:var(--cyan);letter-spacing:3px;font-size:18px;margin:6px 0 10px;font-we
         <button id="bt-style">GRID</button>
         <button id="bt-speed" hidden>WALK</button>
       </div>
-      <div id="nav-hint" hidden><b>MANUAL NAV</b> — tap the map to walk there. Arrow keys / WASD to step. Long-press or right-click to jump. Speed button cycles WALK · RUN · FAST.</div>
+      <div id="nav-hint" hidden><b>MANUAL NAV</b> — tap the map to walk there. Arrow keys / WASD to step. Long-press or right-click to jump. Speed button cycles WALK · RUN · FAST. Drag the map to look around; CENTER resumes follow.</div>
     </div>
     <div class="panel" id="panel-radar">
       <canvas id="radar"></canvas>
@@ -416,13 +426,14 @@ h2{color:var(--cyan);letter-spacing:3px;font-size:18px;margin:6px 0 10px;font-we
     </div>
   </div>
   <div id="actionbar">
+    <div id="nav" hidden><span id="nav-arrow">▲</span><span><span id="nav-dist">—</span><small id="nav-lbl"></small></span></div>
     <span id="action-info"></span>
     <button id="action-btn" hidden></button>
   </div>
   <div id="tabbar">
     <button class="tb on" data-tab="map">MAP</button>
     <button class="tb" data-tab="radar">RADAR</button>
-    <button class="tb" data-tab="comms">COMMS</button>
+    <button class="tb" data-tab="comms">COMMS<span class="badge" id="unread" hidden>0</span></button>
     <button class="tb" data-tab="gm" id="tab-gm" hidden>GM</button>
   </div>
 </div>
@@ -446,6 +457,7 @@ h2{color:var(--cyan);letter-spacing:3px;font-size:18px;margin:6px 0 10px;font-we
   <div id="banner-text"></div>
   <div id="banner-sub"></div>
   <table id="score"></table>
+  <button class="btn" id="bt-again" hidden>PLAY AGAIN<small>same mode and team, fresh layout</small></button>
   <button class="btn" id="bt-stay">AFTER-ACTION MAP<small>everyone revealed, with trails</small></button>
   <button class="btn sec" id="bt-leave">LEAVE OP</button>
 </div>
@@ -502,12 +514,13 @@ const MODES = {
     sim:{teams:['DEFENDERS'], fill:{DEFENDERS:4}, durMin:20}},
 };
 
+const SUSPECTS = ['MORGAN — R&D lead','DEV — the gate guard','SAL — catering manager','A visitor from the rival firm'];
 const STORY = [
   'CASE FILE — The Halcyon prototype drive vanished from the R&D tent at 09:40. The guard heard footsteps heading toward the water.',
   'CASE FILE — A wet boot print, size 10, pointing north. Company-issue boots: only R&D, Catering and Security wear them.',
   'CASE FILE — Catering\'s van log: parked all morning, engine cold. Catering is in the clear.',
   'CASE FILE — A torn Security lanyard snagged on a branch. But the guard on shift never left the gate. Check the rota.',
-  'CASE FILE — The rota shows a swap: R&D lead MORGAN covered the 09:30 security round. Name the culprit to the GM.',
+  'CASE FILE — The rota shows a swap: R&D lead MORGAN covered the 09:30 security round. When you are sure, ACCUSE.',
 ];
 
 /* ---------------- state ---------------- */
@@ -515,7 +528,7 @@ const S = {
   pid:'p'+Math.random().toString(36).slice(2,10),   // per page load, so two tabs are two units
   name:'', code:'', role:'player', team:null, host:false, sim:false,
   game:null, players:{}, shownPing:{},
-  myPos:null, bat:null, hdgDev:null, gotGps:false, manual:false, dest:null, speedIdx:0, spawnDefault:false,
+  myPos:null, bat:null, hdgDev:null, gotGps:false, manual:false, dest:null, speedIdx:1, spawnDefault:false, follow:true, unread:0, scanAt:0, lastScan:null, lockout:{}, lastPingToast:0, lastThreatBuzz:0, briefed:false,
   over:null, meOut:false, outSet:{}, progress:{}, foundClues:{}, readings:[], horde:null, pings:[], evlog:[],
   stats:{}, trails:{}, bots:[], botSent:{},
   tab:'map', gmTool:null, joinWaitT:0,
@@ -730,7 +743,7 @@ function genCode(){
 }
 function newGameDoc(mode,teams,cfg){
   return {v:2,code:S.code,mode,teams,
-    cfg:{durMin:30,pingSec:60,captureM:20,clueM:25,targetM:15,killM:25,breachM:12,waves:5,lives:5,...cfg},
+    cfg:{durMin:30,pingSec:60,captureM:20,clueM:25,targetM:15,killM:25,breachM:12,safeM:50,waves:5,lives:5,...cfg},
     hunters: mode==='manhunt'?'HUNTERS':null,
     wps:[], clues:[], target:null, defend:null, area:null,
     origin: S.myPos?ll(S.myPos):DEFAULT_START, originFix:!!(S.myPos&&S.gotGps),
@@ -738,7 +751,7 @@ function newGameDoc(mode,teams,cfg){
 }
 /* Lay out objectives for the mode around a centre point (GM button + sim). */
 function autoLay(g,C){
-  g.wps=[]; g.clues=[]; g.target=null; g.defend=null;
+  g.wps=[]; g.clues=[]; g.target=null; g.defend=null; g.case=null;
   g.area={lat:C.lat,lng:C.lng,r:450};
   if(g.mode==='waypoint'){
     const b0=rnd()*360;
@@ -747,6 +760,7 @@ function autoLay(g,C){
     const b0=rnd()*360;
     STORY.forEach((text,i)=>{ const p=destPoint(C,b0+i*72+rnd()*30,90+rnd()*190);
       g.clues.push({id:'c'+(i+1)+'_'+Math.random().toString(36).slice(2,5),...p,text,r:g.cfg.clueM}); });
+    g.case={suspects:SUSPECTS.slice(),answer:0};
   } else if(g.mode==='triangulate'){
     g.target=destPoint(C,rnd()*360,220+rnd()*160);
   } else if(g.mode==='horde'){
@@ -763,15 +777,33 @@ function toast(txt){
   const d=document.createElement('div'); d.className='toast'; d.textContent=txt;
   $('toasts').appendChild(d); setTimeout(()=>d.remove(),4200);
 }
-const buzz = p => { try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} };
-function modal(title,body){ $('modal-title').textContent=title; $('modal-body').textContent=body; $('modal').hidden=false; buzz([80,60,80]); }
-$('modal-ok').onclick=()=>{ $('modal').hidden=true; };
+const buzz = p => { try{ const ua=navigator.userActivation; if(navigator.vibrate&&(!ua||ua.hasBeenActive)) navigator.vibrate(p); }catch(e){} };
+function modal(title,body,onOk,okText){
+  $('modal-title').textContent=title; $('modal-body').textContent=body; $('modal').hidden=false;
+  $('modal-ok').textContent=okText||'ACKNOWLEDGE';
+  $('modal-ok').onclick=()=>{ $('modal').hidden=true; if(onOk) onOk(); };
+  buzz([80,60,80]);
+}
+/* Multiple-choice dialog: resolves the chosen index, or null. */
+function choose(title,body,opts){
+  return new Promise(res=>{
+    $('ask-title').textContent=title;
+    const b=$('ask-body'); b.textContent=body;
+    const box=document.createElement('div'); box.className='choices';
+    const done=v=>{ $('ask').hidden=true; $('ask-ok').hidden=false; res(v); };
+    opts.forEach((o,i)=>{ const x=document.createElement('button'); x.className='btn'; x.textContent=o; x.onclick=()=>done(i); box.appendChild(x); });
+    b.appendChild(box);
+    $('ask-input').hidden=true; $('ask-ok').hidden=true; $('ask-cancel').textContent='NOT YET';
+    $('ask-cancel').onclick=()=>done(null);
+    $('ask').hidden=false;
+  });
+}
 /* In-page replacement for confirm()/prompt(): resolves true / text, or null on cancel. */
 function ask({title,body='',input=null,ok='CONFIRM',cancel='CANCEL'}){
   return new Promise(res=>{
     $('ask-title').textContent=title; $('ask-body').textContent=body;
     const inp=$('ask-input'); inp.hidden=input==null; inp.value=''; inp.placeholder=input||'';
-    $('ask-ok').textContent=ok; $('ask-cancel').textContent=cancel;
+    $('ask-ok').textContent=ok; $('ask-ok').hidden=false; $('ask-cancel').textContent=cancel;
     $('ask').hidden=false;
     if(input!=null) setTimeout(()=>inp.focus(),50);
     const done=v=>{ $('ask').hidden=true; res(v); };
@@ -779,6 +811,34 @@ function ask({title,body='',input=null,ok='CONFIRM',cancel='CANCEL'}){
     $('ask-cancel').onclick=()=>done(null);
   });
 }
+
+/* ---------------- mission briefing ---------------- */
+function briefText(){
+  const g=S.game; if(!g) return '';
+  const c=g.cfg, hunter=S.team===g.hunters;
+  const goal={
+    freeplay:'Warm-up. Everyone is visible. Get used to the map, the motion tracker and team pings.',
+    manhunt: S.role==='gm' ? 'Hunters chase runners. You see everyone.' : hunter
+      ? `Tag every runner: get within ${c.captureM} m. Runners show only as a ping every ${c.pingSec} s (dashed blips are where they WERE). They cannot see you, but their devices warn them when you are close.`
+      : `Survive until the clock runs out. Hunters are invisible to you, but your THREAT meter rises when one is near. Your position leaks to the hunters every ${c.pingSec} s, so move after each ping.`,
+    waypoint:`Reach waypoints in order (${c.captureM} m capture). Follow the arrow bottom-left. Rival teams are hidden; their progress shows in the status bar.`,
+    triangulate:`A transmitter is hidden nearby. SCAN gives your distance to it (±5%, 15 s recharge) and draws a range ring your team can see. Cross the rings, close in, and get within ${c.targetM} m to win.`,
+    clues: g.case
+      ? `Walk within ${c.clueM} m of a ? cache to open a case file (re-read them in COMMS). Once your team holds 3 files you can ACCUSE a suspect. Right wins the op; wrong locks your team out for 60 s.`
+      : `Walk within ${c.clueM} m of a ? cache to open it. First team to open every cache wins.`,
+    horde:`Alien contacts converge on the reactor (◉). Intercept them: get within ${c.killM} m. Weapons are SAFE inside the ${c.safeM||50} m reactor zone, so meet them out there. ${c.lives} breaches and the line falls. Survive ${c.waves} waves.`,
+  }[g.mode];
+  const team=S.team?`You are ${S.team}. `:'';
+  const ctl=S.manual
+    ? 'CONTROLS: tap the map to walk (arrow keys / WASD work too), long-press to jump, WALK / RUN / FAST button at top right. RADAR tab is your motion tracker; COMMS is team chat.'
+    : 'CONTROLS: your real position drives your unit. RADAR tab is your motion tracker; COMMS is team chat.';
+  return team+goal+'\n\n'+ctl+(c.durMin?`\n\nTime limit: ${c.durMin} min.`:'')+(g.area?' Stay inside the red dashed play area.':'');
+}
+function showBriefing(onOk){
+  S.briefed=true;
+  modal('BRIEFING — '+MODES[S.game.mode].name,briefText(),onOk,onOk?'READY':'ACKNOWLEDGE');
+}
+$('bt-brief').onclick=()=>{ if(S.game) showBriefing(); };
 
 /* ---------------- home ---------------- */
 $('home-fine').innerHTML = (IN_ARTIFACT
@@ -854,7 +914,10 @@ function renderSim(){
     el.appendChild(b);
   }
 }
-$('bt-sim').onclick=()=>{ const n=readName(); if(!n) return; S.name=n; renderSim(); show('scr-sim'); };
+$('bt-sim').onclick=()=>{
+  if(!$('in-name').value.trim()) $('in-name').value=['RECRUIT','ROOKIE','CADET'][Math.floor(rnd()*3)]+'-'+(10+Math.floor(rnd()*90));
+  const n=readName(); if(!n) return; S.name=n; renderSim(); show('scr-sim');
+};
 $('bt-back2').onclick=()=>show('scr-home');
 $('bt-simgo').onclick=startSim;
 async function startSim(){
@@ -877,13 +940,15 @@ async function startSim(){
   }
   pubGame(); pubLoc(true);
   enterGame();
-  let n=5;
-  const cd=setInterval(()=>{
-    if(n>0){ toast('OP STARTS IN '+n); n--; return; }
-    clearInterval(cd);
-    S.game.started=now(); pubGame();
-    pubEv({type:'gmmsg',text:'OP IS LIVE. MOVE OUT.'});
-  },1000);
+  showBriefing(()=>{
+    let n=3;
+    const cd=setInterval(()=>{
+      if(n>0){ toast('OP STARTS IN '+n); n--; return; }
+      clearInterval(cd);
+      S.game.started=now(); pubGame();
+      pubEv({type:'gmmsg',text:'OP IS LIVE. MOVE OUT.'});
+    },1000);
+  });
 }
 
 /* ---------------- team pick ---------------- */
@@ -972,6 +1037,7 @@ function enterGame(){
   requestWakeLock();
   updateNavUi();
   if(S.role==='gm'&&!S.game.started) setTab('gm'); else setTab('map');
+  if(S.role!=='gm'&&!S.sim&&!S.briefed) showBriefing();
 }
 function setTab(t){
   S.tab=t;
@@ -979,7 +1045,7 @@ function setTab(t){
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='panel-'+t));
   if(t==='map'&&S.map) setTimeout(()=>S.map.invalidateSize(),60);
   if(t==='radar'){ sizeRadar(); requestAnimationFrame(drawRadar); }
-  if(t==='comms') renderLog();
+  if(t==='comms'){ renderLog(); S.unread=0; $('unread').hidden=true; }
   if(t==='gm') $('gm-roster').innerHTML=rosterHtml(true);
 }
 document.querySelectorAll('.tb').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
@@ -1107,13 +1173,16 @@ function pingPos(p){
   if(!s||now()-s.shownAt>=iv){
     s={lat:p.lat,lng:p.lng,shownAt:now()};
     S.shownPing[p.pid]=s;
-    if(S.game.started&&!S.over){ toast('PING: '+(p.name||'runner')); buzz(40); }
+    if(S.game.started&&!S.over&&now()-S.lastPingToast>5000){ S.lastPingToast=now(); toast('RUNNER PINGS UPDATED'); buzz(40); }
   }
   return {...p,lat:s.lat,lng:s.lng,ping:true};
 }
 
 /* ---------------- events ---------------- */
-function logLine(html){ S.evlog.push(html); if(S.evlog.length>120) S.evlog.shift(); if(S.tab==='comms') renderLog(); }
+function logLine(html){
+  S.evlog.push(html); if(S.evlog.length>120) S.evlog.shift();
+  if(S.tab==='comms') renderLog(); else { S.unread++; $('unread').textContent=S.unread>99?'99+':S.unread; $('unread').hidden=false; }
+}
 function renderLog(){ const el=$('log'); el.innerHTML=S.evlog.join(''); el.scrollTop=el.scrollHeight; }
 function stat(name,k){ if(!name) return; const s=S.stats[name]||(S.stats[name]={}); s[k]=(s[k]||0)+1; }
 function onEvent(e){
@@ -1134,7 +1203,8 @@ function onEvent(e){
       if((S.progress[e.team]||0)>e.idx) break;            // duplicate capture
       S.progress[e.team]=e.idx+1; stat(e.name,'wp');
       logLine(`<div class="ev">⚑ ${esc(e.name)} captured WP${e.idx+1} for ${esc(e.team)}</div>`);
-      if(e.team===S.team){ toast('WP'+(e.idx+1)+' CAPTURED'); buzz(80); }
+      if(e.team===S.team){ toast('WP'+(e.idx+1)+' CAPTURED'); buzz(80); chirp(true); }
+      else toast(e.team+' TOOK WP'+(e.idx+1));
       if(S.host&&g.wps.length&&S.progress[e.team]>=g.wps.length&&!S.over)
         pubEv({type:'over',text:e.team+' WINS — COURSE COMPLETE'});
       renderObjectives(); break; }
@@ -1144,9 +1214,10 @@ function onEvent(e){
       f[e.team]=true; stat(e.name,'clue');
       logLine(`<div class="ev">? ${esc(e.name)} opened a cache for ${esc(e.team)}</div>`);
       const c=(g.clues||[]).find(x=>x.id===e.id);
+      if(e.team===S.team&&c){ chirp(true); if(e.pid===S.pid) logLine(`<div class="ev">  “${esc(c.text)}”</div>`); }
       if(e.pid===S.pid) modal('CLUE RECOVERED',c?c.text:'(empty cache)');
       else if(e.team===S.team){ toast('CACHE OPENED BY '+e.name); if(c) logLine(`<div class="ev">  “${esc(c.text)}”</div>`); }
-      if(S.host&&g.mode==='clues'&&!S.over){
+      if(S.host&&g.mode==='clues'&&!g.case&&!S.over){
         const all=(g.clues||[]).every(c=>S.foundClues[c.id]&&S.foundClues[c.id][e.team]);
         if(all&&g.clues.length) pubEv({type:'over',text:e.team+' WINS — ALL CACHES OPENED'});
       }
@@ -1162,17 +1233,28 @@ function onEvent(e){
       S.outSet[e.prey]=true; stat(e.byName,'tag');
       logLine(`<div class="ev">✕ ${esc(e.byName||'hunter')} TAGGED ${esc(e.name)}</div>`);
       toast(e.name+' IS OUT'); buzz([100,60,100]);
-      if(e.prey===S.pid){ S.meOut=true; modal('TAGGED','You are OUT. Your position is now visible to the hunters. Walk back or spectate.'); }
+      if(e.prey===S.pid){ S.meOut=true; chirp(false); modal('TAGGED','You are OUT. Your position is now visible to the hunters. Walk back or spectate.'); }
       if(S.host&&!S.over){
         const alive=Object.values(S.players).filter(p=>p.role!=='gm'&&p.team&&p.team!==g.hunters&&!S.outSet[p.pid]&&fresh(p));
         if(alive.length===0) pubEv({type:'over',text:'HUNTERS WIN — ALL RUNNERS TAGGED'});
       }
       break; }
+    case 'accuse':{
+      if(!g.case||S.over) break;
+      const right=e.pick===g.case.answer, who=g.case.suspects[e.pick]||'?';
+      logLine(`<div class="ev">⚖ ${esc(e.name)} (${esc(e.team)}) accused ${esc(who)} — ${right?'CORRECT':'WRONG'}</div>`);
+      if(right){ stat(e.name,'solve'); if(S.host) pubEv({type:'over',text:e.team+' SOLVED THE CASE — IT WAS '+who.split(' — ')[0]}); }
+      else {
+        S.lockout[e.team]=now()+60000;
+        if(e.team===S.team){ toast('WRONG — YOUR TEAM IS LOCKED OUT FOR 60 s'); buzz([300]); chirp(false); }
+        else toast(e.team+' MADE A WRONG ACCUSATION');
+      }
+      break; }
     case 'akill':
-      stat(e.name,'kill');
+      stat(e.name,'kill'); chirp(true);
       logLine(`<div class="ev">☠ ${esc(e.name)} destroyed a contact</div>`); break;
     case 'breach':
-      toast('!! BREACH — LIVES: '+e.lives+' !!'); buzz([200,80,200]);
+      toast('!! BREACH — LIVES: '+e.lives+' !!'); buzz([200,80,200]); chirp(false);
       logLine(`<div class="ev">!! CONTACT BREACHED THE LINE — ${e.lives} LIVES LEFT</div>`); break;
     case 'wave':
       toast('WAVE '+e.wave+' INBOUND'); buzz([80,50,80,50,80]);
@@ -1181,7 +1263,7 @@ function onEvent(e){
       gameOver(e.text); break;
   }
 }
-const STAT_COLS=[['wp','WP'],['clue','CACHES'],['read','READS'],['tag','TAGS'],['kill','KILLS']];
+const STAT_COLS=[['solve','SOLVED'],['wp','WP'],['clue','CACHES'],['read','READS'],['tag','TAGS'],['kill','KILLS']];
 function scoreHtml(){
   const rows=Object.entries(S.stats);
   if(!rows.length) return '';
@@ -1197,6 +1279,7 @@ function gameOver(text){
   $('banner-text').textContent=text;
   $('banner-sub').textContent='OP '+(S.game?S.game.code:'')+' — '+(S.game?MODES[S.game.mode].name:'');
   $('score').innerHTML=scoreHtml();
+  $('bt-again').hidden=!S.sim;
   $('banner').hidden=false;
   buzz([300,100,300]);
   logLine(`<div class="ev">■ ${esc(text)}</div>`);
@@ -1207,6 +1290,7 @@ $('bt-stay').onclick=()=>{
   if(S.map){ const pts=[].concat(...Object.values(S.trails)); if(pts.length>1) S.map.fitBounds(pts,{padding:[30,30]}); }
 };
 $('bt-leave').onclick=leaveOp;
+$('bt-again').onclick=()=>{ store.set('foAgain',JSON.stringify({m:S.game.mode,t:S.team,n:S.name,man:S.manual})); leaveOp(); };
 
 /* ---- chat ---- */
 function onChat(m){
@@ -1332,7 +1416,7 @@ function hordeTick(g){
   const units=Object.values(S.players).filter(p=>p.role!=='gm'&&p.lat!=null&&fresh(p));
   const next=[];
   for(const a of H.aliens){
-    const killer=units.find(u=>distM(u,a)<=g.cfg.killM);
+    const killer=units.find(u=>distM(u,a)<=g.cfg.killM&&distM(u,D)>(g.cfg.safeM||50));   // no firing inside the reactor zone
     if(killer){ H.kills++; pubEv({type:'akill',name:killer.name}); continue; }
     const m=stepToward(a,D,step*(0.8+0.4*rnd()));
     if(distM(m,D)<=g.cfg.breachM){
@@ -1442,6 +1526,11 @@ function botThink(b,g){
       break; }
     case 'clues':{
       const left=(g.clues||[]).filter(c=>!(S.foundClues[c.id]&&S.foundClues[c.id][b.team]));
+      if(g.case&&(g.clues.length-left.length)>=4&&!S.botSent['acc'+b.team]&&!(S.lockout[b.team]>now())){
+        S.botSent['acc'+b.team]=1;
+        pubEv({type:'accuse',team:b.team,pid:b.pid,name:b.name,pick:g.case.answer});
+        break;
+      }
       if(!left.length){ b.dest=null; break; }
       let best=left[0],bd=1e9;
       for(const c of left){ const d=distM(b,c); if(d<bd){ bd=d; best=c; } }
@@ -1454,9 +1543,10 @@ function botThink(b,g){
     case 'horde':{
       const D=g.defend; if(!D) break;
       let tgt=null,bd=1e9;
-      for(const a of (S.horde&&S.horde.aliens)||[]){ if(distM(a,D)>320) continue; const d=distM(b,a); if(d<bd){ bd=d; tgt=a; } }
+      const safe=g.cfg.safeM||50;
+      for(const a of (S.horde&&S.horde.aliens)||[]){ const da=distM(a,D); if(da>320||da<safe+8) continue; const d=distM(b,a); if(d<bd){ bd=d; tgt=a; } }
       if(tgt){ b.dest=ll(tgt); b.speed=2.4; }
-      else if(distM(b,D)>45||!b.dest) b.dest=destPoint(D,rnd()*360,10+rnd()*30);
+      else { const dd=distM(b,D); if(dd>140||dd<safe+10||!b.dest) b.dest=destPoint(D,rnd()*360,safe+25+rnd()*50); }
       break; }
     default: wander(b,C,R*0.7);
   }
@@ -1485,6 +1575,7 @@ function refreshHud(){
   $('hud-timer').textContent=t;
   $('hud-acc').textContent=S.manual?'MANUAL':(S.myPos?('±'+Math.round(S.myPos.acc)+'m'):'GPS —');
   $('hud-bat').textContent=S.bat!=null?(S.bat+'%'):'';
+  updateNav();
   const info=$('action-info'), btn=$('action-btn');
   btn.hidden=false;
   if(!g){ info.textContent=''; btn.hidden=true; return; }
@@ -1492,23 +1583,40 @@ function refreshHud(){
     info.textContent='AFTER-ACTION — '+S.over.text;
     btn.textContent='RESULTS'; btn.onclick=()=>{ $('banner').hidden=false; };
   } else if(g.mode==='triangulate'&&S.role!=='gm'&&g.target&&S.myPos&&g.started){
-    info.textContent='TX RANGE: '+Math.round(distM(S.myPos,g.target))+' m';
-    btn.textContent='MARK READING'; btn.onclick=markReading;
+    const w=Math.ceil((S.scanAt-now())/1000);
+    info.textContent=(S.lastScan!=null?'LAST SCAN '+S.lastScan+' m':'TX RANGE UNKNOWN')+' · '+(w>0?'RECHARGING '+w+' s':'SCANNER READY');
+    btn.textContent=w>0?'SCAN ('+w+')':'SCAN'; btn.onclick=markReading;
   } else if(g.mode==='horde'){
     const H=S.horde;
-    info.textContent=H?('WAVE '+H.wave+'/'+g.cfg.waves+' · LIVES '+H.lives+' · KILLS '+H.kills+' · CONTACTS '+H.aliens.length):'AWAITING CONTACT…';
+    const safe=S.role!=='gm'&&g.defend&&S.myPos&&distM(S.myPos,g.defend)<=(g.cfg.safeM||50);
+    info.textContent=(safe&&g.started?'WEAPONS SAFE — LEAVE THE REACTOR ZONE · ':'')+
+      (H?('WAVE '+H.wave+'/'+g.cfg.waves+' · LIVES '+H.lives+' · KILLS '+H.kills+' · CONTACTS '+H.aliens.length):'AWAITING CONTACT…');
     btn.textContent='PING TEAM'; btn.onclick=pingTeam;
   } else if(g.mode==='waypoint'&&S.team&&g.started){
     const i=S.progress[S.team]||0;
     info.textContent = i>=g.wps.length ? 'COURSE COMPLETE'
-      : 'NEXT: WP'+(i+1)+'/'+g.wps.length+(S.myPos&&g.wps[i]?(' · '+Math.round(distM(S.myPos,g.wps[i]))+' m'):'');
+      : 'NEXT: WP'+(i+1)+'/'+g.wps.length;
+    const riv=g.teams.filter(t=>t!==S.team).map(t=>t+' '+(S.progress[t]||0)+'/'+g.wps.length).join(' · ');
+    if(riv) info.textContent+=' — RIVALS: '+riv;
     btn.textContent='PING TEAM'; btn.onclick=pingTeam;
   } else if(g.mode==='clues'&&S.team&&g.started){
     const n=(g.clues||[]).filter(c=>S.foundClues[c.id]&&S.foundClues[c.id][S.team]).length;
     info.textContent='CASE FILES: '+n+'/'+(g.clues||[]).length;
-    btn.textContent='PING TEAM'; btn.onclick=pingTeam;
+    const lock=Math.ceil(((S.lockout[S.team]||0)-now())/1000);
+    if(g.case){
+      info.textContent+=lock>0?' · LOCKED OUT '+lock+' s':(n>=3?' · READY TO ACCUSE':' · 3 NEEDED TO ACCUSE');
+      btn.textContent='ACCUSE'; btn.onclick=accuse;
+    } else { btn.textContent='PING TEAM'; btn.onclick=pingTeam; }
   } else if(g.mode==='manhunt'&&S.team&&g.started){
-    info.textContent = S.meOut?'YOU ARE OUT':(S.team===g.hunters?'HUNT. PINGS EVERY '+g.cfg.pingSec+'s':'EVADE. STAY OFF THE SCOPES');
+    if(S.meOut) info.textContent='YOU ARE OUT';
+    else if(S.team===g.hunters){
+      const left=Object.values(S.players).filter(p=>p.role!=='gm'&&p.team&&p.team!==g.hunters&&!S.outSet[p.pid]&&fresh(p)).length;
+      info.textContent='HUNT · '+left+' RUNNER'+(left===1?'':'S')+' LEFT · PINGS EVERY '+g.cfg.pingSec+' s';
+    } else if(S.myPos){
+      const th=threat(g);
+      info.innerHTML='EVADE · THREAT <span class="threat" style="color:'+(th.lv===3?'var(--red)':th.lv===2?'var(--amber)':'var(--hot)')+'">'+th.t+'</span>';
+      if(th.lv===3&&now()-S.lastThreatBuzz>4000){ S.lastThreatBuzz=now(); buzz([60,120,60]); if(S.audioOn) beep(160,90); }
+    }
     btn.textContent='PING TEAM'; btn.onclick=pingTeam;
   } else if(S.role==='gm'){
     info.textContent='GM CONSOLE — '+(g.started?'OP LIVE':'OP NOT STARTED');
@@ -1523,11 +1631,56 @@ function pingTeam(){
   pubEv({type:'ping',pid:S.pid,name:S.name,team:S.team,lat:S.myPos.lat,lng:S.myPos.lng});
   toast('POSITION PINGED TO '+S.team);
 }
+const SCAN_MS=15000;
 function markReading(){
   const g=S.game;
   if(!S.myPos||!g.target) return;
-  pubEv({type:'reading',pid:S.pid,name:S.name,team:S.team,lat:S.myPos.lat,lng:S.myPos.lng,dist:distM(S.myPos,g.target)});
-  toast('READING MARKED FOR '+S.team);
+  const wait=S.scanAt-now();
+  if(wait>0){ toast('SCANNER RECHARGING — '+Math.ceil(wait/1000)+' s'); return; }
+  const d=distM(S.myPos,g.target)*(1+(rnd()-0.5)*0.1);        // ±5% noise
+  S.scanAt=now()+SCAN_MS; S.lastScan=Math.round(d);
+  pubEv({type:'reading',pid:S.pid,name:S.name,team:S.team,lat:S.myPos.lat,lng:S.myPos.lng,dist:d});
+  toast('SCAN: '+S.lastScan+' m — RING SHARED WITH '+S.team); chirp(true); refreshHud();
+}
+function accuse(){
+  const g=S.game; if(!g||!g.case||S.over) return;
+  const n=(g.clues||[]).filter(c=>S.foundClues[c.id]&&S.foundClues[c.id][S.team]).length;
+  if(n<3){ toast('YOU NEED 3 CASE FILES TO ACCUSE ('+n+'/3)'); return; }
+  const lock=(S.lockout[S.team]||0)-now();
+  if(lock>0){ toast('LOCKED OUT — '+Math.ceil(lock/1000)+' s'); return; }
+  choose('ACCUSE','Who took the Halcyon prototype drive? A wrong accusation locks your team out for 60 s.',g.case.suspects).then(i=>{
+    if(i==null||S.over) return;
+    pubEv({type:'accuse',team:S.team,pid:S.pid,name:S.name,pick:i});
+  });
+}
+/* Where should I go? An arrow + distance for the current objective. */
+function navTarget(){
+  const g=S.game, me=S.myPos;
+  if(!g||!me||!g.started||S.over||S.role==='gm'||!S.team) return null;
+  if(g.area&&distM(me,g.area)>g.area.r) return {p:g.area,l:'PLAY AREA'};
+  const nearest=(pts,l)=>{ let b=null,bd=1e12; for(const q of pts){ const d=distM(me,q); if(d<bd){ bd=d; b=q; } } return b?{p:b,l}:null; };
+  if(g.mode==='waypoint'){ const i=S.progress[S.team]||0; return g.wps[i]?{p:g.wps[i],l:'WP'+(i+1)}:null; }
+  if(g.mode==='clues') return nearest((g.clues||[]).filter(c=>!(S.foundClues[c.id]&&S.foundClues[c.id][S.team])),'CACHE');
+  if(g.mode==='horde'&&g.defend){
+    const safe=g.cfg.safeM||50;
+    return nearest(((S.horde&&S.horde.aliens)||[]).filter(a=>distM(a,g.defend)>safe),'CONTACT')||{p:g.defend,l:'REACTOR'};
+  }
+  if(g.mode==='manhunt'&&S.team===g.hunters)
+    return nearest(Object.keys(S.shownPing).filter(pid=>!S.outSet[pid]&&S.players[pid]).map(pid=>S.shownPing[pid]),'LAST PING');
+  return null;
+}
+function updateNav(){
+  const t=navTarget(); $('nav').hidden=!t; if(!t) return;
+  const d=distM(S.myPos,t.p), b=bearing(S.myPos,t.p);
+  const rel=(S.headingUp&&S.hdgDev!=null)?b-S.hdgDev:b;
+  $('nav-arrow').style.transform='rotate('+Math.round(rel)+'deg)';
+  $('nav-dist').textContent=d>=1000?(d/1000).toFixed(1)+' km':Math.round(d)+' m';
+  $('nav-lbl').textContent=t.l+' · '+['N','NE','E','SE','S','SW','W','NW'][Math.round(b/45)%8];
+}
+function threat(g){
+  let d=1e9;
+  for(const p of Object.values(S.players)) if(p.team===g.hunters&&p.lat!=null&&fresh(p)) d=Math.min(d,distM(S.myPos,p));
+  return d<50?{lv:3,t:'▮▮▮ HIGH'}:d<120?{lv:2,t:'▮▮▯ MED'}:{lv:1,t:'▮▯▯ LOW'};
 }
 
 /* =====================================================================
@@ -1598,6 +1751,8 @@ function initMap(){
   S.layerObj=L.layerGroup().addTo(S.map);
   S.layerDyn=L.layerGroup().addTo(S.map);
   S.map.on('click',onMapClick);
+  S.map.on('dragstart',()=>{ S.follow=false; $('bt-center').classList.remove('on'); });
+  $('bt-center').classList.add('on');
   S.map.on('contextmenu',e=>{
     if(!S.manual) return;
     S.myPos={lat:e.latlng.lat,lng:e.latlng.lng,acc:3,ts:now()}; S.dest=null;
@@ -1606,7 +1761,10 @@ function initMap(){
   setTimeout(()=>S.map.invalidateSize(),80);
 }
 $('bt-style').onclick=()=>setMapStyle(S.mapStyle==='street'?'tactical':'street');
-$('bt-center').onclick=()=>{ if(S.map&&S.myPos) S.map.setView([S.myPos.lat,S.myPos.lng],Math.max(S.map.getZoom(),17)); };
+$('bt-center').onclick=()=>{
+  S.follow=true; $('bt-center').classList.add('on');
+  if(S.map&&S.myPos) S.map.setView([S.myPos.lat,S.myPos.lng],Math.max(S.map.getZoom(),16));
+};
 async function onMapClick(e){
   const ll2=e.latlng;
   if(S.role==='gm'&&S.gmTool&&S.game){
@@ -1680,7 +1838,8 @@ function renderObjectives(){
   }
   if(g.defend){
     L.marker([g.defend.lat,g.defend.lng],{icon:divIcon('<div class="clueicon" style="width:26px;height:26px;background:#39d3ff">◉</div>',26),interactive:false}).addTo(S.layerObj);
-    L.circle([g.defend.lat,g.defend.lng],{radius:g.cfg.killM,color:'#39d3ff',weight:1,fill:false,interactive:false}).addTo(S.layerObj);
+    L.circle([g.defend.lat,g.defend.lng],{radius:g.cfg.safeM||50,color:'#39d3ff',weight:1,fill:true,fillOpacity:0.06,dashArray:'3 5',interactive:false})
+      .bindTooltip('REACTOR ZONE — WEAPONS SAFE',{direction:'bottom',className:'lbl'}).addTo(S.layerObj);
   }
   if(g.target&&(S.role==='gm'||S.over)){
     L.marker([g.target.lat,g.target.lng],{icon:divIcon('<div class="txicon" style="width:24px;height:24px">TX</div>',24),interactive:false}).addTo(S.layerObj);
@@ -1695,6 +1854,7 @@ function drawSelf(){
   }
   if(!S.centered){ S.map.setView(p,16); S.centered=true; }
   S.selfMarker.setLatLng(p);
+  if(S.follow&&!S.map.getBounds().pad(-0.3).contains(p)) S.map.panTo(p);
   S.accCircle.setLatLng(p); S.accCircle.setRadius(S.manual?3:S.myPos.acc);
   if(S.dest){
     if(!S.destLine) S.destLine=L.polyline([p,[S.dest.lat,S.dest.lng]],{color:'#ffe14d',weight:1.5,dashArray:'4 6',interactive:false}).addTo(S.map);
@@ -1774,6 +1934,10 @@ function beep(freq,dur){
   o.connect(g); g.connect(c.destination);
   o.start(); o.stop(c.currentTime+dur/1000);
 }
+function chirp(good){
+  if(!S.audioOn) return;
+  if(good){ beep(880,70); setTimeout(()=>beep(1320,110),90); } else { beep(300,160); setTimeout(()=>beep(220,220),180); }
+}
 function sizeRadar(){
   const cv=$('radar'), r=cv.parentElement.getBoundingClientRect();
   cv.width=Math.max(1,r.width*devicePixelRatio); cv.height=Math.max(1,r.height*devicePixelRatio);
@@ -1843,8 +2007,15 @@ function drawRadar(t){
     for(const c of radarContacts()){
       const d=distM(S.myPos,c);
       if(c.hostile&&d<nearestHostile) nearestHostile=d;
-      if(d>S.radarRange) continue;
-      const a=(bearing(S.myPos,c)-rot-90)*RAD, rr=d/S.radarRange*R;
+      const beyond=d>S.radarRange;
+      if(beyond&&!c.obj) continue;
+      const a=(bearing(S.myPos,c)-rot-90)*RAD, rr=beyond?R:d/S.radarRange*R;
+      if(beyond){                                  // off-scale objective: hollow marker on the rim
+        const x=cx+rr*Math.cos(a), y=cy+rr*Math.sin(a);
+        ctx.strokeStyle=c.color; ctx.lineWidth=1.5*dp; ctx.strokeRect(x-4*dp,y-4*dp,8*dp,8*dp); ctx.lineWidth=1.2*dp;
+        ctx.fillStyle='#77c9aa'; ctx.fillText((c.label?c.label+' ':'')+Math.round(d)+'m',x+7*dp,y+4*dp);
+        continue;
+      }
       const x=cx+rr*Math.cos(a), y=cy+rr*Math.sin(a);
       ctx.fillStyle=c.color; ctx.shadowColor=c.color; ctx.shadowBlur=10*dp;
       ctx.beginPath();
@@ -1869,6 +2040,18 @@ function drawRadar(t){
 $('in-name').value=store.get('foName')||'';
 $('in-code').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase(); });
 if(IN_ARTIFACT) $('in-pos').value='manual';
+for(const id of ['in-net','in-pos']){                    // remember settings between visits
+  const v=store.get('fo-'+id); if(v&&[...$(id).options].some(o=>o.value===v)) $(id).value=v;
+  $(id).addEventListener('change',()=>store.set('fo-'+id,$(id).value));
+}
+(()=>{                                                   // PLAY AGAIN: relaunch the same sim after reload
+  const a=store.get('foAgain'); if(!a) return;
+  store.set('foAgain','');
+  try{ const o=JSON.parse(a); if(!MODES[o.m]) return;
+    if(o.man) $('in-pos').value='manual';
+    $('in-name').value=o.n; S.name=o.n; simMode=o.m; simTeam=o.t; startSim();
+  }catch(e){}
+})();
 setInterval(tick,1000);
 setInterval(()=>navTick(0.2),200);
 setInterval(()=>{ if(onScreen('scr-lobby')) renderLobby(); },2500);

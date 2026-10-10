@@ -1,7 +1,7 @@
 // Offline multiplayer: (A) same-browser tabs over BroadcastChannel, and
 // (B) the Claude-artifact room transport, using a stand-in room that enforces
 // the platform's 4 KiB message cap (so chunking is exercised).
-const { serve, launch, teleport, screenOn, sleep, check, finish } = require('./helpers');
+const { serve, launch, teleport, screenOn, sleep, check, finish, dismiss } = require('./helpers');
 const FAKE_ROOM = () => {
   const bc = new BroadcastChannel('fake-room');
   const handlers = {};

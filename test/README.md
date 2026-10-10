@@ -7,6 +7,7 @@ rounds, and prints PASS/FAIL per check (exit 0 when all pass).
 ```sh
 npm install
 node smoke-sim.js         # Training Sim: AI units, tap-to-walk, all modes solo (no network)
+node smoke-replay.js      # PLAY AGAIN relaunches the same sim; generated call sign
 node smoke-local.js       # same-browser tabs + Claude-artifact room transport (4 KiB chunking)
 node broker.js &          # local MQTT-over-WebSocket broker on ws://127.0.0.1:9001, for:
 node smoke-manhunt.js     # GM + hunter + runner: visibility rules, chat scoping, tag → win

@@ -1,5 +1,5 @@
 // GM + hunter + runner over the MQTT relay (needs `node broker.js` running).
-const { serve, launch, teleport, screenOn, sleep, check, finish } = require('./helpers');
+const { serve, launch, teleport, screenOn, sleep, check, finish, dismiss } = require('./helpers');
 (async () => {
   const srv = await serve();
   const { browser, errors, newPage } = await launch();
@@ -35,6 +35,8 @@ const { serve, launch, teleport, screenOn, sleep, check, finish } = require('./h
   await gm.click('#bt-start');
   await sleep(2500);
   check('players enter game on START', await screenOn(runner, 'scr-game') && await screenOn(hunter, 'scr-game'));
+  check('joiners get a role-specific briefing', /Tag every runner/.test(await hunter.textContent('#modal-body')) && /THREAT meter/.test(await runner.textContent('#modal-body')));
+  await dismiss(hunter); await dismiss(runner);
 
   const hunterSees = await hunter.evaluate(() => { const p = Object.values(S.players).find(x => x.name === 'RIPLEY'); const v = p && visibleEntry(p); return v && v.ping; });
   const runnerSeesHunter = await runner.evaluate(() => { const p = Object.values(S.players).find(x => x.name === 'HICKS'); return !!(p && visibleEntry(p)); });

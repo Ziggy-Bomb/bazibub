@@ -52,6 +52,7 @@ const teleport = (page, lat, lng) => page.evaluate(([la, lo]) => {
   S.myPos = { lat: la, lng: lo, acc: 3, ts: Date.now() }; S.dest = null; pubLoc(true);
 }, [lat, lng]);
 const screenOn = (page, id) => page.evaluate(i => document.getElementById(i).classList.contains('on'), id);
+const dismiss = page => page.evaluate(() => { const m = document.getElementById('modal'); if (!m.hidden) document.getElementById('modal-ok').click(); });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 let fails = 0;
@@ -61,4 +62,4 @@ function finish(errors) {
   console.log(fails ? `\n${fails} FAILURE(S)` : '\nALL CHECKS PASSED');
   process.exit(fails ? 1 : 0);
 }
-module.exports = { serve, launch, teleport, screenOn, sleep, check, finish };
+module.exports = { serve, launch, teleport, screenOn, sleep, check, finish, dismiss };
