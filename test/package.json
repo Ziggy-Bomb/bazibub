@@ -4,6 +4,8 @@
   "description": "End-to-end smoke tests for fieldops.html: local MQTT-WSS broker + multiple headless Chromium clients playing real game rounds.",
   "scripts": {
     "broker": "node broker.js",
+    "test:sim": "node smoke-sim.js",
+    "test:local": "node smoke-local.js",
     "test:manhunt": "node smoke-manhunt.js",
     "test:objectives": "node smoke-objectives.js"
   },

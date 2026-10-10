@@ -28,7 +28,7 @@ outdoor team games on a fleet of phones — live GPS sharing with per-game
 visibility rules, an *Aliens*-style motion tracker, manhunt / triangulation /
 waypoint-race / clue-hunt / horde-defence modes, and a Game Master console.
 
-- **Prototype (one file, same philosophy):** [`fieldops.html`](fieldops.html)
+- **Prototype (one file, same philosophy):** [`fieldops.html`](fieldops.html). Try **TRAINING SIM** for solo play against AI units in any browser.
 - **Design document:** [`FIELDOPS.md`](FIELDOPS.md)
 - **End-to-end tests:** [`test/`](test/)
 

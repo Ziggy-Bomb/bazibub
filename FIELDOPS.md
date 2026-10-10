@@ -30,60 +30,91 @@ visibility engine is the heart of the platform.
 ## 2. What the prototype already does
 
 `fieldops.html` is a self-contained web app (same philosophy as
-`bazibub.html`). No accounts, no server of ours — real-time sync runs over a
-public MQTT broker via WebSocket, with a room per 4-letter op code.
+`bazibub.html`). No accounts and no server of ours.
 
-- **Roles** — one phone creates an op as **Game Master (GM)**; everyone else
-  joins with the code and picks a team. The GM console sees everything and
-  places objectives by tapping the map.
-- **Live GPS sharing** with per-mode visibility rules (the "some games share
-  some locations" engine).
-- **Map view** — Leaflet + OpenStreetMap, teammates/contacts/objectives,
-  accuracy circle, your heading.
-- **Radar view** — canvas motion tracker in the *Aliens* style: sweep, range
+- **Three ways to play**
+  - **Training Sim**: solo on one device. AI units fill the other slots,
+    objectives are laid out around you, and the op starts after a countdown.
+    Good for rehearsing a mode before an event, or for demos.
+  - **Create / Join op**: one device is **Game Master (GM)** and gets a
+    4-letter code; everyone else joins with it and picks a team.
+  - **GM tools**: tap-to-place objectives, **auto-lay** a course / caches /
+    transmitter / defend point around you, **add AI units** to any team
+    (handy when you have 3 people but want to test a 10-player game),
+    broadcast, end op.
+- **Pluggable network** (Settings → Network):
+  - **Online relay**: MQTT over WSS (public broker by default); rooms per op code.
+  - **Live room**: inside the Claude artifact build, everyone who has the
+    page open shares a real-time room; big messages are chunked under its
+    4 KiB cap.
+  - **Same-browser tabs**: BroadcastChannel; zero network, for desktop testing.
+  - **Solo loopback**: Training Sim.
+- **Position**: real GPS, or **manual nav** when there is none (desktop, or
+  the artifact, which cannot read location): tap the map to walk there,
+  arrow keys / WASD to step, long-press or right-click to jump, and a
+  WALK / RUN / FAST speed toggle. Manual players spawn next to the GM's op.
+- **Per-game visibility engine**: what each player may see is a per-mode rule
+  (the "some games share some locations" idea).
+- **Map view**: OpenStreetMap when reachable; otherwise a **procedural
+  tactical terrain** (water, woods, paths, 100 m grid) drawn on canvas, which
+  works offline. Toggle with the STREET / GRID button.
+- **Radar view**: canvas motion tracker in the *Aliens* style: sweep, range
   rings, blips by bearing/distance, optional compass heading-up, and a
-  proximity beep that quickens as hostiles close. Vibration on new contacts.
-- **Team comms** — team-scoped chat plus a one-tap "ping my location to team".
-- **Immersion & field practicality** — screen wake lock (GPS games die when
-  screens sleep), fullscreen mode, battery level in the HUD and on the GM
-  roster, GPS accuracy readout.
+  proximity beep that quickens as hostiles close.
+- **Team comms**: team-scoped chat plus a one-tap "ping my location to team".
+- **Play area**: a dashed boundary with a buzz-and-warn when you leave it.
+- **After-action debrief**: at game over everyone is revealed with their full
+  movement trails, plus a per-player scoreboard (waypoints, caches, readings,
+  tags, kills).
+- **Field practicality**: screen wake lock, fullscreen, vibration, battery
+  and GPS accuracy on the GM roster.
 
 ### Game modes implemented
 
 | Mode | Teams | Location rules | Win condition |
 |---|---|---|---|
 | **RECON** (free play) | any | everyone visible | none — warmups & testing |
-| **MANHUNT** | hunters vs prey | teammates live; prey appear to hunters only as a ping every N seconds; hunters invisible to prey | hunters tag all prey (within capture radius) / prey survive the clock |
-| **WAYPOINT RACE** | any | teammates only; GM-placed course visible to all | first team to capture every waypoint in order |
+| **MANHUNT** | hunters vs runners | teammates live; runners appear to hunters only as a ping every N seconds; hunters invisible to runners | hunters tag all runners (within capture radius) / runners survive the clock |
+| **WAYPOINT RACE** | any | teammates only; course visible to all | first team to capture every waypoint in order |
 | **TRIANGULATE** | any | teammates only; hidden transmitter gives **distance-only** readout; players drop range-circle readings shared with their team | first player within 15 m of the transmitter |
-| **CLUE HUNT** | any | teammates only; caches shown as "?" markers | walk within cache radius to open it; first team to open all caches |
-| **HOLD THE LINE** | one big team | everyone visible; alien contacts on radar | intercept aliens (get within kill radius) before they breach the defend point; survive all waves |
+| **CLUE HUNT** | any | teammates only; caches shown as "?" markers | first team to open every cache (sim ships a 5-part detective case) |
+| **HOLD THE LINE** | one big team | everyone visible; alien contacts on radar | intercept aliens (get within 25 m) before they breach the defend point; survive all waves |
 
-The GM can also drop clue caches and broadcast messages in *any* mode — so a
-detective scenario can be layered on top of Manhunt, etc.
+**AI units** behave per mode: hunters chase the same delayed pings humans get
+(and give chase on sight within 60 m), runners wander and flee, racers walk
+the course, triangulators converge on the transmitter via their own range
+readings, detectives visit caches, defenders intercept aliens. They publish
+positions exactly like phones, so every rule applies to them unchanged.
 
-### Honest prototype limitations
+### Prototype limitations
 
 - **Public broker = no privacy.** Anyone who knows the op code (or sniffs the
   broker) can read positions. Fine for a field trial, not for a product.
-- **Client-side rules = trust-based.** Visibility filtering, captures, and win
-  detection happen on the phones. A curious player with dev tools could cheat.
-  Production moves all of this server-side (§5).
-- **Online maps.** Tiles come from OpenStreetMap, so phones need data. Real
-  events want pre-cached offline maps (§6).
+- **Client-side rules = trust-based.** Visibility filtering and captures run on
+  the phones; the GM / sim page is the "host" that runs AI units, the horde
+  and win detection, so the GM device must stay connected. Production moves
+  all of this server-side (§5).
+- **Online maps** need data; the tactical terrain is decorative, not a real map.
 
 ## 3. Trying the prototype
 
-1. Serve `fieldops.html` anywhere (GitHub Pages works — it's a static file),
-   or open it locally. **HTTPS is required** for geolocation on phones.
-2. On phone 1: enter a name → **CREATE OP** → pick a mode → **LAUNCH**. Note
-   the 4-letter code.
-3. On other phones: enter the code → **JOIN** → pick a team.
-4. GM presses **START** from the lobby or GM tab.
-5. Desktop testing: tick **desktop test mode** on the home screen, then
-   right-click (long-press) the map to teleport yourself.
+**In a browser, right now**: open the published artifact build (the
+browser test link) → enter a call sign → **TRAINING SIM** → pick a mode →
+**DEPLOY**. Tap the map to walk. For multiplayer inside the artifact, share
+the page (Contributor access) and have others join your op code; or open the
+page in two tabs yourself.
+
+**On phones with real GPS**: serve `fieldops.html` from any HTTPS static host
+(GitHub Pages, Netlify, Cloudflare Pages, or bazibub.com alongside the game).
+HTTPS is required for geolocation.
+
+1. Phone 1: call sign → **CREATE OP** → pick a mode → **LAUNCH**. Note the code.
+2. Other phones: enter the code → **JOIN** → pick a team.
+3. GM: open the console, place or **auto-lay** objectives, optionally add AI
+   units, then **START OP**.
 
 Two phones and a garden are enough to test Manhunt or Triangulate.
+`tools/build-artifact.py` produces the artifact variant from the same file.
 
 ## 4. The phone fleet (up to 100 devices)
 
